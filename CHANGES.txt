@@ -1,0 +1,130 @@
+lightweight tag 314e9b216d6e11ab2825790cb1e9f153a54c8cff v3.33
+Author:	FireSiku <chaoslux@gmail.com>
+Date:	Mon Nov 2 01:52:08 2020 -0500
+
+commit 314e9b216d6e11ab2825790cb1e9f153a54c8cff
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Mon Nov 2 01:51:21 2020 -0500
+
+    Core: Updated Patron list and increased version
+
+commit ba22e5513de15a89f1ada5cd5e8463530813fafb
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Sun Nov 1 05:30:59 2020 -0500
+
+    Script: Finished NewPlayerExperience script.
+    - All of Exile Reach should be working fine now.
+    - Supports LUI Bars and BT4 until they add their own support for it.
+    - Correctly detect if Spellbook notification should be shown.
+    - Do not show LFG tutorial while you're inside the dungeon.
+
+commit 39e47dbfc03c00bc42ff57dced7691bca03f3ebc
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Wed Oct 28 03:51:08 2020 -0400
+
+    Addons: Fix Omen position on Install. Hopefully.
+
+commit 0acf2b75e8e37d93e900b8b1280e679e3f9393b6
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Wed Oct 28 03:44:51 2020 -0400
+
+    Addons: Re-enabled Details skinning
+
+commit 1463c751a814a55baed238b432e866402b6f0dc3
+Author: jewebr <47604279+jewebr@users.noreply.github.com>
+Date:   Tue Oct 27 10:15:45 2020 +0100
+
+    Grid is no longer maintained, it has been forked and renamed to Plexus. (#3)
+    
+    The codebase is largely the same, these commits reflect the rename. The installation of the Plexus addon is required and a restore to the default settings (e.g. Restore Plexus) for users who already installed LUI with Grid.
+
+commit 11d60bac80fa754aa92c3bbc6db721491e2889d5
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Tue Oct 27 04:51:03 2020 -0400
+
+    Core: Removed all BFA compatibility code.
+
+commit ebc9668fa8cc5105190b7caedad2b666350ec0a1
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Tue Oct 27 04:00:35 2020 -0400
+
+    Bars: Fix Show Dummy Extra Action Button
+
+commit c1a635a4e6d8e131c725ec287185e5c1a0370bc0
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Thu Oct 22 04:10:17 2020 -0400
+
+    Minimap: Check if MiniMapMailFrame is shown inside the Garrison hook
+
+commit cd0d40c20a4909fdb3dfa08d5ef30a251ad4881f
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Thu Oct 22 04:04:25 2020 -0400
+
+    Bars: Check if sidebar is enabled before changing SidebarAlpha
+
+commit c438610f86a3e3683c69b8b110f7a0658dfd8662
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Wed Oct 21 04:34:05 2020 -0400
+
+    Infotext-Currency: Fix Currency Display not fetching list.
+
+commit b39bf8e483554ba894d9bc202b23d14aa5cf5bb9
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Wed Oct 21 03:02:20 2020 -0400
+
+    Bars: Hide Bar if Alpha is 0. Fix buttons being clickable
+
+commit 14fbbb285d6d4ab92fe7cb37df3adaacabaeed1d
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Tue Oct 20 03:25:30 2020 -0400
+
+    Core: Updated Version detection to make alphas more obvious
+
+commit 5f78333f2280e5f9782302a343e2c2b934a64f9a
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Tue Oct 20 03:02:58 2020 -0400
+
+    Infotext-Currency: Check if info exists.
+
+commit 05c4fb39c75e720920e2f9bb31854233824c2a98
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Tue Oct 20 03:01:58 2020 -0400
+
+    Unitframes: Check to make sure PartyMemberPowerBarAlt exists.
+
+commit 9cc0d844870a89abf01923a482106fe95677ebc2
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Tue Oct 20 01:53:43 2020 -0400
+
+    Changed Revision substituion to Version. Will see how it looks.
+
+commit 84f31f1307be37014de5344c8e581871f1ccf7fe
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Mon Oct 19 03:13:03 2020 -0400
+
+    Adding new experimental script that should alleviate issues on Exile Reach.
+
+commit df7f7fc50dbf935e3bce36ee531034d831312ea5
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Mon Oct 19 03:08:29 2020 -0400
+
+    Bars: No longer RawHookk MainMenuArt, BonusActionBar and PossessBar.
+
+commit 5a40abe5d5d8d47ab35188508797a69a2ce1cb3d
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Sun Oct 18 20:40:27 2020 -0400
+
+    Datatext: CurrencyInfo moved to C_Currency
+
+commit 8f9aa5d9ba44f56cb6eb332f8f2fcb879ad8329e
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Sun Oct 18 19:15:31 2020 -0400
+
+    HideBlizz: Prevent TargetFrame:Show() from being called.
+
+commit 24aab202b927782c24d5b8c2f8a1d73577be70be
+Author: FireSiku <chaoslux@gmail.com>
+Date:   Sat Oct 17 22:08:25 2020 -0400
+
+    Bars: Fix attempt to compare nil with number
+
