@@ -48,3 +48,5 @@ Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonF
 *Bank errors out when accessed and new bag slots are not working
 
 *Small graphical button above minimap that needs to be removed
+
+*oUF Unitframes have been disabled till it can be updated properly
