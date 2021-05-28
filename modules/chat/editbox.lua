@@ -75,9 +75,9 @@ local function decorate(editBox)
 		_G[name.."Right"]:Hide()
 		_G[name.."Mid"]:Hide()
 
-		editBox.focusLeft:SetTexture(nil)
-		editBox.focusRight:SetTexture(nil)
-		editBox.focusMid:SetTexture(nil)
+		-- editBox.focusLeft:SetTexture(nil)
+		-- editBox.focusRight:SetTexture(nil)
+		-- editBox.focusMid:SetTexture(nil)
 
 		editBox:SetMaxLetters(2048)
 		editBox:SetMaxBytes(2048)

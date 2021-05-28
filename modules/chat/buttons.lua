@@ -172,14 +172,8 @@ end
 
 local chatButtonNames = {
 	"ChatFrameMenuButton",
-	"QuickJoinToastButton",
-}
-local voiceButtonNames = {
 	"ChatFrameChannelButton",
-	"ChatFrameToggleVoiceDeafenButton",
-	"ChatFrameToggleVoiceMuteButton",
 }
-
 local voiceHideFunc = function() return false end
 local voiceOrigFunc = function() return C_VoiceChat.IsLoggedIn() end
 
@@ -194,12 +188,6 @@ local function configButtons(hide)
 			LUI:Kill(frame)
 		end
 
-		for i, name in pairs(voiceButtonNames) do
-			local frame = _G[name]
-			frame:SetVisibilityQueryFunction(voiceHideFunc)
-			frame:Hide()
-		end
-
 		for i, name in ipairs(CHAT_FRAMES) do
 			hideButtons(_G[name])
 		end
@@ -210,14 +198,6 @@ local function configButtons(hide)
 			local frame = _G[name]
 			frame.Show = nil
 			frame:Show()
-		end
-
-		for i, name in pairs(voiceButtonNames) do
-			local frame = _G[name]
-			frame:SetVisibilityQueryFunction(voiceOrigFunc)
-			if C_VoiceChat.IsLoggedIn() then
-				frame:Show()
-			end
 		end
 
 		for i, name in ipairs(CHAT_FRAMES) do

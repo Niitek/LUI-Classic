@@ -226,7 +226,7 @@ end
 
 function LUI:Scale(x) return scale(x) end
 
-function LUI:CreatePanel(f, w, h, a1, p, a2, x, y)  -- added for classic testing
+function LUI:CreatePanel(f, w, h, a1, p, a2, x, y)
 	local sh = scale(h)
 	local sw = scale(w)
 	f:SetFrameLevel(1)
@@ -234,27 +234,7 @@ function LUI:CreatePanel(f, w, h, a1, p, a2, x, y)  -- added for classic testing
 	f:SetWidth(sw)
 	f:SetFrameStrata("BACKGROUND")
 	f:SetPoint(a1, p, a2, x, y)
---[[ 	f:SetBackdrop({
-		bgFile = LUI.Media.blank,
-		edgeFile = LUI.Media.blank,
-		tile = false, tileSize = 0, edgeSize = LUI.mult,
-		insets = { left = -LUI.mult, right = -LUI.mult, top = -LUI.mult, bottom = -LUI.mult}
-	})
-	f:SetBackdropColor(.1,.1,.1,1)
-	f:SetBackdropBorderColor(.6,.6,.6,1) ]]
-end
-  -- used in Vanilla Classic
-
-
---[[ function LUI:CreatePanel(f, w, h, a1, p, a2, x, y)
-	local sh = scale(h)
-	local sw = scale(w)
-	f:SetFrameLevel(1)
-	f:SetHeight(sh)
-	f:SetWidth(sw)
-	f:SetFrameStrata("BACKGROUND")
-	f:SetPoint(a1, p, a2, x, y)
-	if not f.SetBackdrop then Mixin(f, BackdropTemplateMixin and "BackdropTemplate") end
+		Mixin(f, BackdropTemplateMixin)
 	f:SetBackdrop({
 		bgFile = LUI.Media.blank,
 		edgeFile = LUI.Media.blank,
@@ -263,7 +243,7 @@ end
 	})
 	f:SetBackdropColor(.1,.1,.1,1)
 	f:SetBackdropBorderColor(.6,.6,.6,1) 
-end ]] -- uncommented for classic testing
+end 
 
 function LUI:StyleButton(b, checked)
 	local name = b:GetName()
