@@ -50,7 +50,6 @@ local GetMoneyString = GetMoneyString
 local GetContainerNumSlots = GetContainerNumSlots
 local GetContainerItemInfo = GetContainerItemInfo
 local GetContainerItemLink = GetContainerItemLink
---[[ local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo ]]  -- 3.0 content
 local GetContainerItemCooldown = GetContainerItemCooldown
 local GetContainerNumFreeSlots = GetContainerNumFreeSlots
 
@@ -58,6 +57,7 @@ local CreateFrame = CreateFrame
 local OpenEditbox = OpenEditbox
 local SetItemButtonCount = SetItemButtonCount
 local SetItemButtonTexture = SetItemButtonTexture
+local SetItemButtonOverlay = SetItemButtonOverlay
 local SetItemButtonDesaturated = SetItemButtonDesaturated
 
 local BankFrameItemButton_Update = BankFrameItemButton_Update
@@ -209,7 +209,8 @@ function module:SlotUpdate(item)
 	local color = db.Colors.Border
 
 	if not item.frame.lock then
-		-- item.frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+		Mixin(item.frame, BackdropTemplateMixin)
+		item.frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
 
 		--Check for Profession Bag
 		local bagType = module:BagType(item.bag)
@@ -278,19 +279,12 @@ function module:SlotUpdate(item)
 		end
 	end
 
-	if (clink) then
-		local iType
-		item.name, _, item.rarity, _, _, iType = GetItemInfo(clink)
+	if (itemLink) then
+		local name, _, rarity, _, _, iType = GetItemInfo(itemLink)
+		item.name, item.rarity = name, rarity
 		-- color slot according to item quality
-		if db.Bags.ItemQuality and not item.frame.lock and item.rarity and item.rarity > 1 then
-			Mixin(item.frame, BackdropTemplateMixin)
-			item.frame:SetBackdropBorderColor(GetItemQualityColor(item.rarity))
-		end
-		if db.Bags.ShowQuest and not item.frame.lock and iType == "Quest" then
-			local color = db.Colors.Quest
-			Mixin(item.frame, BackdropTemplateMixin)
-			item.frame:SetBackdropBorderColor(GetItemQualityColor(6, item.rarity))
-			--[[ item.frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a) ]]
+		if db.Bags.ItemQuality and not item.frame.lock and rarity and rarity > 1 then
+			item.frame:SetBackdropBorderColor(GetItemQualityColor(rarity))
 		end
 	else
 		item.name, item.rarity = nil, nil
@@ -299,6 +293,14 @@ function module:SlotUpdate(item)
 	SetItemButtonTexture(item.frame, texture)
 	SetItemButtonCount(item.frame, count)
 	SetItemButtonDesaturated(item.frame, locked, 0.5, 0.5, 0.5)
+	if db.Bags.ShowOverlay and itemLink then
+		SetItemButtonOverlay(item.frame, itemLink, quality, isBound)
+	else
+		item.frame.IconOverlay:Hide()
+		if item.frame.IconOverlay2 then
+			item.frame.IconOverlay2:Hide()
+		end
+	end
 
 	item.frame:Show()
 end
@@ -344,7 +346,8 @@ function module:BagFrameSlotNew(slot, parent, bagType)
 	if bagType == "Bank" then
 		ret.slot = slot
 		slot = slot - 4
-		ret.frame = CreateFrame("Button", "LUIBank__Bag"..slot, parent, "BankItemButtonBagTemplate", BackdropTemplateMixin and "BackdropTemplate")
+		ret.frame = CreateFrame("Button", "LUIBank__Bag"..slot, parent, "BankItemButtonBagTemplate")
+		if not ret.frame.SetBackdrop then Mixin(ret.frame, BackdropTemplateMixin) end
 		ret.frame:SetID(slot)
 		tinsert(BagsSlots, ret)
 
@@ -355,7 +358,8 @@ function module:BagFrameSlotNew(slot, parent, bagType)
 			ret.frame.tooltipText = ""
 		end
 	else
-		ret.frame = CreateFrame("Button", "LUIBags__Bag"..slot.."Slot", parent, "BagSlotButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+		ret.frame = CreateFrame("Button", "LUIBags__Bag"..slot.."Slot", parent, "BagSlotButtonTemplate")
+		if not ret.frame.SetBackdrop then Mixin(ret.frame, BackdropTemplateMixin) end
 		ret.slot = slot
 		tinsert(BagsSlots, ret)
 	end
@@ -407,7 +411,8 @@ function module:SlotNew(bag, slot)
 	end
 
 	if not ret.frame then
-		ret.frame = CreateFrame("Button", "LUIBags_Item" .. bag .. "_" .. slot, BagsInfo[bag], template, BackdropTemplateMixin and "BackdropTemplate")
+		ret.frame = CreateFrame("Button", "LUIBags_Item" .. bag .. "_" .. slot, BagsInfo[bag], template)
+		if not ret.frame.SetBackdrop then Mixin(ret.frame, BackdropTemplateMixin) end
 	end
 
 	ret.bag = bag
@@ -530,7 +535,7 @@ function module:CreateBagFrame(bagType)
 	bagsFrame:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, LUI:Scale(2))
 	bagsFrame:SetFrameStrata("HIGH")
 	frame.BagsFrame = bagsFrame
-	frame:EnableMouse(0)
+	-- frame:EnableMouse(0)
 
 	-- Sort Button
 	local sortBtn = CreateFrame("Button", frameName.."_SortButton", frame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
@@ -671,7 +676,7 @@ function module:SetBags()
 	local OpenEditbox = function(self)
 		self:GetParent().search:Hide()
 		self:GetParent().gold:Hide()
-		self:GetParent().currency:Hide()
+		-- self:GetParent().currency:Hide()
 		self:GetParent().editbox:Show()
 		self:GetParent().editbox:HighlightText()
 	end
@@ -687,9 +692,9 @@ function module:SetBags()
 			if self:GetParent().editbox:IsShown() then
 				self:GetParent().editbox:Hide()
 				self:GetParent().editbox:ClearFocus()
-				--self:GetParent().detail:Show()
+				-- self:GetParent().detail:Show()
 				self:GetParent().gold:Show()
-				self:GetParent().currency:Show()
+				-- self:GetParent().currency:Show()
 				self:GetParent().search:Show()
 				module:SearchReset()
 			end
@@ -744,7 +749,7 @@ function module:Layout(bagType)
 		frame = LUIBags_Select(bagType)
 	end
 
---[[ 	local isBank = false
+	local isBank = false
 	if bagType == "Bank"  then
 		isBank = true
 	else
@@ -752,12 +757,12 @@ function module:Layout(bagType)
 		frame.editbox:SetFont(Media:Fetch("font", db.Bags.Font), 12)
 		frame.search:SetFont(Media:Fetch("font", db.Bags.Font), 12)
 		frame.gold:SetFont(Media:Fetch("font", db.Bags.Font), 12)
-		frame.currency:SetFont(Media:Fetch("font", db.Bags.Font), 12)
+		-- frame.currency:SetFont(Media:Fetch("font", db.Bags.Font), 12)
 
 		frame.search:ClearAllPoints()
 		frame.search:SetPoint("TOPLEFT", frame, LUI:Scale(db.Bags.Padding), LUI:Scale(-10))
 		frame.search:SetPoint("RIGHT", LUI:Scale(-(16 + 24)), 0)
-	end ]]
+	end
 
 	local bagsFrame = frame.BagsFrame
 	if not isCreated[bagType] then
@@ -770,6 +775,7 @@ function module:Layout(bagType)
 		local fColor = { color.r *1.5, color.g *1.5, color.b *1.5, color.a}
 		local fbgColor = { bgcolor.r /2, bgcolor.g /2, bgcolor.b /2, bgcolor.a}
 		if db.Colors.BlackFrameBG then
+			Mixin(item.frame, BackdropTemplateMixin)
 			frame:SetBackdropColor(0.1, 0.1, 0.1, 1)
 			frame:SetBackdropBorderColor(0.3, 0.3 ,0.3 ,1)
 		else
@@ -784,6 +790,7 @@ function module:Layout(bagType)
 			edgeFile = borderTex, edgeSize = 5,
 			insets = { left = 3, right = 3, top = 3, bottom = 3 }
 		})
+		Mixin(bagsFrame, BackdropTemplateMixin)
 		bagsFrame:SetBackdropColor(unpack(background_color))
 		bagsFrame:SetBackdropBorderColor(unpack(border_color))
 
@@ -916,7 +923,7 @@ function module:Layout(bagType)
 						tile = false, tileSize = 0, edgeSize = 15,
 						insets = { left = 5, right = 5, top = 5, bottom = 5 }
 					})
-
+					Mixin(item.frame, BackdropTemplateMixin)
 					item.frame:SetBackdropColor(unpack(background_color))
 					item.frame:SetBackdropBorderColor(unpack(border_color))
 
@@ -969,7 +976,7 @@ end
 
 
 function module:PLAYERBANKSLOTS_CHANGED(event, id)
-	if id > 6 then
+	if id > 7 then
 		for _, v in ipairs(BagsSlots) do
 			if v.frame and v.frame.GetInventorySlot then
 				if v.slot < GetNumBankSlots() + 5 then
@@ -1012,10 +1019,10 @@ function module:BANKFRAME_OPENED()
 		module:InitBank()
 	end
 
-	-- module:Layout("Bank")
-	-- for _, x in ipairs(GetBags["Bank"]) do
-	-- 	module:BagSlotUpdate(x)
-	-- end
+	module:Layout("Bank")
+	for _, x in ipairs(GetBags["Bank"]) do
+		module:BagSlotUpdate(x)
+	end
 	LUIBags_Open()
 	LUIBank:Show()
 	LUIBank:SetAlpha(1)
@@ -1124,6 +1131,7 @@ module.defaults = {
 			ItemQuality = false,
 			ShowNew = false,
 			ShowQuest = true,
+			ShowOverlay = true,
 			Locked = 0,
 			CoordX = 0,
 			CoordY = 0,
@@ -1226,6 +1234,7 @@ function module:LoadOptions()
 				ItemQuality = LUI:NewToggle("Show Item Quality", nil, 11, db.Bags, "ItemQuality", dbd.Bags, ReloadBoth),
 				ShowNew = LUI:NewToggle("Show New Item Animation", nil, 12, db.Bags, "ShowNew", dbd.Bags, ReloadBoth),
 				ShowQuest = LUI:NewToggle("Show Quest Highlights", nil, 13, db.Bags, "ShowQuest", dbd.Bags, ReloadBoth),
+				ShowOverlay = LUI:NewToggle("Show Overlays", nil, 14, db.Bags, "ShowOverlay", dbd.Bags, ReloadBoth),
 			},
 		},
 		Bank = {
