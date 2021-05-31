@@ -35,22 +35,22 @@ local ForceUpdate = function(element)
 	return Path(element.__owner, 'ForceUpdate')
 end
 
-local function Enable(self, unit)
-	local masterlooter = self.MasterLooter
-	if(masterlooter) then
-		masterlooter.__owner = self
-		masterlooter.ForceUpdate = ForceUpdate
+-- local function Enable(self, unit)
+-- 	local masterlooter = self.MasterLooter
+-- 	if(masterlooter) then
+-- 		masterlooter.__owner = self
+-- 		masterlooter.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('PARTY_LOOT_METHOD_CHANGED', Path)
-		self:RegisterEvent('PARTY_MEMBERS_CHANGED', Path)
+--		self:RegisterEvent('PARTY_LOOT_METHOD_CHANGED', Path)
+-- 		self:RegisterEvent('PARTY_MEMBERS_CHANGED', Path)
 
-		if(masterlooter:IsObjectType('Texture') and not masterlooter:GetTexture()) then
-			masterlooter:SetTexture([[Interface\GroupFrame\UI-Group-MasterLooter]])
-		end
+-- 		if(masterlooter:IsObjectType('Texture') and not masterlooter:GetTexture()) then
+-- 			masterlooter:SetTexture([[Interface\GroupFrame\UI-Group-MasterLooter]])
+-- 		end
 
-		return true
-	end
-end
+-- 		return true
+-- 	end
+-- end
 
 local function Disable(self)
 	if(self.MasterLooter) then

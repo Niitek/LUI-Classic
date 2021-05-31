@@ -209,7 +209,7 @@ do
 		backdrop:SetScale(obj:GetScale())
 		backdrop:SetPoint(obj:GetPoint())
 		backdrop:SetSize(obj:GetSize())
-		
+			Mixin(backdrop, BackdropTemplateMixin)
 		backdrop:SetBackdrop(_BACKDROP)
 		backdrop:SetBackdropColor(0, .9, 0)
 		backdrop:SetBackdropBorderColor(0, .9, 0)

@@ -53,7 +53,7 @@ local function Enable(self)
 		hp.__owner = self
 		hp.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('UNIT_HEAL_PREDICTION', Path)
+		-- self:RegisterEvent('UNIT_HEAL_PREDICTION', Path)
 		self:RegisterEvent('UNIT_MAXHEALTH', Path)
 		self:RegisterEvent('UNIT_HEALTH', Path)
 

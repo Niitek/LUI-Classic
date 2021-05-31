@@ -38,7 +38,7 @@ for tag, func in pairs({
 	end,
 }) do
 	oUF.Tags[tag] = func
-	oUF.TagEvents[tag] = 'PLAYER_XP_UPDATE PLAYER_LEVEL_UP UNIT_PET_EXPERIENCE UPDATE_EXHAUSTION'
+	oUF.TagEvents[tag] = 'PLAYER_XP_UPDATE UNIT_PET_EXPERIENCE UPDATE_EXHAUSTION'
 end
 
 local function Unbeneficial(self, unit)
@@ -104,12 +104,10 @@ local function Enable(self)
 		experience.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent('PLAYER_XP_UPDATE', Path)
-		self:RegisterEvent('PLAYER_LEVEL_UP', Path)
 		self:RegisterEvent('UNIT_PET_EXPERIENCE', Path)
 
 		local rested = experience.Rested
 		if(rested) then
-			self:RegisterEvent('UPDATE_EXHAUSTION', Path)
 			rested:SetFrameLevel(experience:GetFrameLevel() - 1)
 
 			if(not rested:GetStatusBarTexture()) then
@@ -129,12 +127,7 @@ local function Disable(self)
 	local experience = self.Experience
 	if(experience) then
 		self:UnregisterEvent('PLAYER_XP_UPDATE', Path)
-		self:UnregisterEvent('PLAYER_LEVEL_UP', Path)
 		self:UnregisterEvent('UNIT_PET_EXPERIENCE', Path)
-
-		if(experience.Rested) then
-			self:UnregisterEvent('UPDATE_EXHAUSTION', Path)
-		end
 	end
 end
 
