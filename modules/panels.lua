@@ -80,7 +80,7 @@ function module:CheckPanels()
 		Frames:SetNaviAlpha("Chat", 1)
 
 		ChatAlphaAnchor:SetAlpha(1)
-		--if LUI.db.profile.Chat.SecondChatFrame then ChatAlphaAnchor2:SetAlpha(1) end
+		if LUI.db.profile.Chat.SecondChatFrame then ChatAlphaAnchor2:SetAlpha(1) end
 
 		db.Chat.IsShown = true
 		LUI:SetChatVisible(true)
@@ -88,10 +88,10 @@ function module:CheckPanels()
 		Frames:SetNaviAlpha("Chat", 0)
 
 		ChatAlphaAnchor:SetAlpha(0)
-		--if LUI.db.profile.Chat.SecondChatFrame then ChatAlphaAnchor2:SetAlpha(0) end
+		if LUI.db.profile.Chat.SecondChatFrame then ChatAlphaAnchor2:SetAlpha(0) end
 
 		db.Chat.IsShown = false
-		--LUI:SetChatVisible(false)
+		LUI:SetChatVisible(false)
 		LUI:SetChatVisible(true)
 	end
 
@@ -506,13 +506,13 @@ end
 
 function module:AlphaIn(kind)
 	if not backgrounds[kind] then return end
-	--if _G[backgrounds[kind].frame]:IsProtected() and InCombatLockdown() then return end
+	if _G[backgrounds[kind].frame]:IsProtected() and InCombatLockdown() then return end
 	db[kind].IsShown = true
 
 	if LUI:CanAlterFrame(_G[backgrounds[kind].frame]) then
 		_G[backgrounds[kind].frame]:Show()
 
-		--if kind == "Chat" and LUI.db.profile.Chat.SecondChatFrame then ChatAlphaAnchor2:Show() end
+		-- if kind == "Chat" and LUI.db.profile.Chat.SecondChatFrame then ChatAlphaAnchor2:Show() end
 		for _, f in pairs(self:LoadAdditional(db[kind].Additional)) do
 			if LUI:CanAlterFrame(_G[f]) then _G[f]:Show() end
 		end
@@ -521,9 +521,9 @@ function module:AlphaIn(kind)
 	if db[kind].Animation == "AlphaSlide" then
 		backgrounds[kind].AlphaIn:Show()
 
-		--[[if kind == "Chat" and LUI.db.profile.Chat.SecondChatFrame then
-			backgrounds.Chat2.AlphaIn:Show()
-		end]]
+		-- if kind == "Chat" and LUI.db.profile.Chat.SecondChatFrame then
+		-- 	backgrounds.Chat2.AlphaIn:Show()
+		-- end
 	else
 		_G[backgrounds[kind].frame]:SetAlpha(1)
 
@@ -533,7 +533,7 @@ end
 
 function module:AlphaOut(kind)
 	if not backgrounds[kind] then return end
-	--if _G[backgrounds[kind].frame]:IsProtected() and InCombatLockdown() then return end
+	if _G[backgrounds[kind].frame]:IsProtected() and InCombatLockdown() then return end
 	db[kind].IsShown = false
 
 	if db[kind].Animation == "AlphaSlide" then
@@ -699,7 +699,7 @@ module.defaults = {
 			OffsetX = 0,
 			OffsetY = 0,
 			AlwaysShow = false,
-			IsShown = false,
+			IsShown = true,
 			Direction = "TOPRIGHT",
 			Animation = "AlphaSlide",
 			Width = 429,
@@ -735,7 +735,7 @@ module.defaults = {
 			Anchor = "oUF_LUI_raid",
 			Additional = "",
 			AlwaysShow = false,
-			IsShown = false,
+			IsShown = true,
 			Direction = "TOPLEFT",
 			Animation = "AlphaSlide",
 			Width = 409,
@@ -875,7 +875,7 @@ function module:LoadOptions()
 
 	local options = {
 		Chat = CreateOptionsPart("Chat", 1),
-		--Chat2 = CreateOptionsPart("Chat2", 2),
+		-- Chat2 = CreateOptionsPart("Chat2", 2),
 		Tps = CreateOptionsPart("Tps", 3),
 		Dps = CreateOptionsPart("Dps", 4),
 		Raid = CreateOptionsPart("Raid", 5),
@@ -902,7 +902,7 @@ function module:OnEnable()
 	self:SetPanels()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-		self:CheckPanels()
+		-- self:CheckPanels()
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end)
 

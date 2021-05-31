@@ -219,7 +219,7 @@ function module:SetFrames()
 	LUI.Orb.Ring2:SetBackdropBorderColor(0, 0, 0, 0)
 	LUI.Orb.Ring2:Show()
 
-	--[[
+	
 	LUI.Orb.Ring3 = LUI:CreateMeAFrame("FRAME", nil, LUI.Orb, 107, 107, 1, "LOW", 2, "CENTER", LUI.Orb, "CENTER", 1, 1, 1)
 	LUI.Orb.Ring3:SetBackdrop({
 		bgFile = fdir.."ring_inner",
@@ -230,13 +230,13 @@ function module:SetFrames()
 	LUI.Orb.Ring3:SetBackdropColor(0.25, 0.25, 0.25, 0.7)
 	LUI.Orb.Ring3:SetBackdropBorderColor(0, 0, 0, 0)
 	LUI.Orb.Ring3:Show()
-	]]
+	
 
 	LUI.Orb.Ring4 = LUI:CreateMeAFrame("Frame", nil, LUI.Orb, 115, 115, 1, "LOW", 1, "CENTER", LUI.Orb, "CENTER", 0, -1, 1)
 	SetFrameBackdrop(LUI.Orb.Ring4, "ring_inner2")
 	LUI.Orb.Ring4:Show()
 
-	--[[
+	
 	LUI.Orb.Ring5 = LUI:CreateMeAFrame("Frame", nil, LUI.Orb, 118, 118, 1, "LOW", 2, "CENTER", LUI.Orb, "CENTER", 0, -1, 1)
 	LUI.Orb.Ring5:SetBackdrop({
 		bgFile = fdir.."ring_inner3",
@@ -247,7 +247,7 @@ function module:SetFrames()
 	LUI.Orb.Ring5:SetBackdropColor(0.25, 0.25, 0.25, 0.7)
 	LUI.Orb.Ring5:SetBackdropBorderColor(0, 0, 0, 0)
 	LUI.Orb.Ring5:Show()
-	]]
+	
 
 	LUI.Orb.Cycle = LUI:CreateMeAFrame("Frame", nil, LUI.Orb, 115, 115, 1, "LOW", 0, "CENTER", LUI.Orb, "CENTER", 0, -1, 1)
 	SetFrameBackdrop(LUI.Orb.Cycle, "ring_inner4")
@@ -261,7 +261,7 @@ function module:SetFrames()
 	LUI.Orb:RegisterForClicks("AnyUp")
 	LUI.Orb:SetScript("OnClick", function(self)
 		-- Commented out to try and fix Orb issues when not all frames are in use
-		--isAllShown = (Panels.db.profile.Chat.IsShown and Panels.db.profile.Tps.IsShown and Panels.db.profile.Dps.IsShown and Panels.db.profile.Raid.IsShown)
+		-- isAllShown = (Panels.db.profile.Chat.IsShown and Panels.db.profile.Tps.IsShown and Panels.db.profile.Dps.IsShown and Panels.db.profile.Raid.IsShown)
 
 		if not isAllShown then
 			isAllShown = true
@@ -341,15 +341,15 @@ function module:SetFrames()
 	LUI.Navi.Chat.Clicker:SetScript("OnClick", function(self)
 		if LUI.Navi.Chat:GetAlpha() == 0 then
 			LUI.Navi.Chat.AlphaIn:Show()
-			Panels:AlphaIn("Chat")
 			Panels.db.profile.Chat.IsShown = true
 			LUI:SetChatVisible(true)
+			Panels:AlphaIn("Chat")
 		else
 			LUI.Navi.Chat.AlphaOut:Show()
-			Panels:AlphaOut("Chat")
 			Panels.db.profile.Chat.IsShown = false
-			LUI:SetChatVisible(true)
-			--LUI:SetChatVisible(false)
+			-- LUI:SetChatVisible(true)
+			LUI:SetChatVisible(false)
+			Panels:AlphaOut("Chat")
 		end
 	end)
 

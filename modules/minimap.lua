@@ -270,12 +270,15 @@ function module:SetMinimap()
 	-- Hide Zone Frame
 	MinimapZoneTextButton:Hide()
 
+	-- Hide Zone Frame
+	MinimapToggleButton:Hide()
+
 	-- Hide Clock
 	TimeManagerClockButton:Hide()
 	LUI:Kill(TimeManagerClockButton)
 
---[[ 	-- Hide Tracking Button
-	MiniMapTracking:Hide() ]] -- uncommented for classic compatibility
+ 	-- Hide Tracking Button
+	MiniMapTracking:Hide() -- uncommented for classic compatibility
 
 	-- Hide Calendar Button
 	GameTimeFrame:Hide()
@@ -289,25 +292,10 @@ function module:SetMinimap()
 	-- Move battleground icon
 	MiniMapBattlefieldFrame:ClearAllPoints()   -- Changed QueueStatusMinimapButton to MiniMapBattlefieldFrame for classic compatibility
 	MiniMapBattlefieldFrame:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
-	--[[ MiniMapBattlefieldFrameBorder:Hide() ]] -- uncommented for classic compatibility
-
-
---[[ 	MiniMapMailFrame:HookScript("OnShow", function()
-		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", MiniMapMailFrame, "TOPLEFT", 0, LUI:Scale(-5))
-	end)
-	MiniMapMailFrame:HookScript("OnHide", function()
-		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		GarrisonLandingPageMinimapButton:SetPoint(db.Minimap.Icon.Mail, Minimap, LUI:Scale(3), LUI:Scale(15))
-	end) ]] -- uncommented for classic compatibility
-
 	-- Hide world map button
 	MiniMapWorldMapButton:Hide()
 
-	-- shitty 3.3 flag to move
---[[ 	MiniMapInstanceDifficulty:ClearAllPoints()
-	MiniMapInstanceDifficulty:SetParent(Minimap)
-	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0) ]] -- uncommented for classic compatibility
+
 
 --[[ 	local function UpdateLFG()
 		QueueStatusMinimapButton:ClearAllPoints()
@@ -424,7 +412,7 @@ function module:SetMinimap()
 					x = math.floor(100 * x)
 					y = math.floor(100 * y)
 					m_coord_text:SetFormattedText("%.2d, %.2d", x, y)
-					--LUI:Print("valid Coords:", m_coord_text:GetText())
+					-- LUI:Print("valid Coords:", m_coord_text:GetText())
 					return
 				end
 			end
@@ -482,18 +470,6 @@ function module:GetMinimapPosition()
 	db.Minimap.General.Position.X = xOfs
 	db.Minimap.General.Position.Y = yOfs
 end
-
---[[ local emptyFunc = function() return end
-function module:ToggleMissionReport()
-	if C_Garrison.GetLandingPageGarrisonType() == 0 then return end
-	if db.Minimap.General.MissionReport then
-		GarrisonLandingPageMinimapButton.Show = nil
-		GarrisonLandingPageMinimapButton:Show()
-	else
-		GarrisonLandingPageMinimapButton.Show = emptyFunc
-		GarrisonLandingPageMinimapButton:Hide()
-	end
-end ]] -- uncommented for classic compatibility
 
 local defaults = {
 	Minimap = {
@@ -708,59 +684,14 @@ function module:LoadOptions()
 							end,
 							order = 4,
 						},
-						--[[ MissionReport = {
-							name = "Show Mission Report Button",
-							desc = "Whether or not the Mission Report in the corner of the minimap.\n\n The button will be in a 'dead' corner of the minimap in which Blizzard will never spawn icons or other information.",
-							disabled = function() return not db.Minimap.Enable end,
-							type = "toggle",
-							width = "full",
-							get = function() return db.Minimap.General.MissionReport end,
-							set = function(_)
-								db.Minimap.General.MissionReport = not db.Minimap.General.MissionReport
-								module:ToggleMissionReport()
-							end,
-							order = 4.5,
-						},
-						header1 = {
-							name = "Position",
-							type = "header",
-							order = 5,
-						},
-						PosX = {
-							name = "X Value",
-							desc = "X Value for your Minimap.\n\nNote:\nPositive values = right\nNegative values = left\nDefault: "..LUI.defaults.profile.Minimap.General.Position.X,
-							type = "input",
-							get = function() return tostring(db.Minimap.General.Position.X) end,
-							set = function(_,PosX)
-									if PosX == nil or PosX == "" then
-										PosX = "-24"
-									end
-									db.Minimap.General.Position.X = tonumber(PosX)
-									module:SetMinimapPosition()
-								end,
-							order = 6,
-						},
-						PosY = {
-							name = "Y Value",
-							desc = "Y Value for your Minimap.\n\nNote:\nPositive values = up\nNegative values = down\nDefault: "..LUI.defaults.profile.Minimap.General.Position.Y,
-							type = "input",
-							get = function() return tostring(db.Minimap.General.Position.Y) end,
-							set = function(_,PosY)
-									if PosY == nil or PosY == "" then
-										PosY = "-80"
-									end
-									db.Minimap.General.Position.Y = tonumber(PosY)
-									module:SetMinimapPosition()
-								end,
-							order = 7,
-						},
 						Restore = LUI:NewExecute("Restore Default Position", "Restores Default Minimap Position", 8, function()
 							db.Minimap.General.Position.RelativePoint = LUI.defaults.profile.Minimap.General.Position.RelativePoint
 							db.Minimap.General.Position.Point = LUI.defaults.profile.Minimap.General.Position.Point
 							db.Minimap.General.Position.X = LUI.defaults.profile.Minimap.General.Position.X
 							db.Minimap.General.Position.Y = LUI.defaults.profile.Minimap.General.Position.Y
 							module:SetMinimapPosition()
-						end), ]]
+						end),
+
 						Unlocked = {
 							name = "Locked",
 							desc = "Weather or not the Minimap is locked or not.\n",
@@ -927,5 +858,4 @@ function module:OnEnable()
 	end
 	self:SetMinimap()
 	self:SetAdditionalFrames()
---[[ 	C_Timer.After(0.25, self.ToggleMissionReport) ]] -- uncommented for classic compatibility
 end
