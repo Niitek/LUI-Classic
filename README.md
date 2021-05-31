@@ -43,8 +43,8 @@ Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonF
 
 ## Known Issues ##
 
-*Bags Module causes errors when moving bags on the bag bar
+*Bags Module causes errors when moving bags on the bag bar.
 
-*Small graphical button above minimap that needs to be removed
+*Small graphical button above minimap that needs to be removed.
 
-*oUF Unitframes have been disabled till it can be updated properly
+*oUF Unitframes have been **Enabled**, however some features have been disabled; Heal/Absorb prediction.
