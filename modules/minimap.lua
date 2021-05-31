@@ -26,13 +26,13 @@ local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end
 	self:SecureHook(DurabilityFrame, "SetPoint", "DurabilityFrame_SetPoint")
---[[ 	self:SecureHook(VehicleSeatIndicator, "SetPoint", "VehicleSeatIndicator_SetPoint")
-	self:SecureHook(ObjectiveTrackerFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
-	self:SecureHook(UIWidgetTopCenterContainerFrame, "SetPoint", "AlwaysUpFrame_SetPoint")
+	-- self:SecureHook(VehicleSeatIndicator, "SetPoint", "VehicleSeatIndicator_SetPoint")
+	-- self:SecureHook(ObjectiveTrackerFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
+	-- self:SecureHook(UIWidgetTopCenterContainerFrame, "SetPoint", "AlwaysUpFrame_SetPoint")
 	self:SecureHook(TicketStatusFrame, "SetPoint", "TicketStatus_SetPoint")
 	self:SecureHook(UIWidgetBelowMinimapContainerFrame, "SetPoint", "CaptureBar_SetPoint")
-	self:SecureHook(PlayerPowerBarAlt, "SetPoint", "PlayerPowerBarAlt_SetPoint")
-	self:SecureHook(GroupLootContainer, "SetPoint", "GroupLootContainer_SetPoint") ]] -- uncommented for classic testing
+	-- self:SecureHook(PlayerPowerBarAlt, "SetPoint", "PlayerPowerBarAlt_SetPoint")
+	-- self:SecureHook(GroupLootContainer, "SetPoint", "GroupLootContainer_SetPoint") -- uncommented for classic testing
 	
 end
 
@@ -291,16 +291,6 @@ function module:SetMinimap()
 	MiniMapBattlefieldFrame:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
 	--[[ MiniMapBattlefieldFrameBorder:Hide() ]] -- uncommented for classic compatibility
 
---[[ 	-- Move Garrison icon
-	module:SecureHook("GarrisonLandingPageMinimapButton_UpdateIcon", function()
-		GarrisonLandingPageMinimapButton:SetSize(32,32)
-		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		if MiniMapMailFrame:IsShown() then
-			GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", MiniMapMailFrame, "TOPLEFT", 0, LUI:Scale(-5))
-		else
-			GarrisonLandingPageMinimapButton:SetPoint(db.Minimap.Icon.Mail, Minimap, LUI:Scale(3), LUI:Scale(15))
-		end
-	end) ]] -- uncommented for classic compatibility
 
 --[[ 	MiniMapMailFrame:HookScript("OnShow", function()
 		GarrisonLandingPageMinimapButton:ClearAllPoints()

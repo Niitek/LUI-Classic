@@ -17,6 +17,7 @@ local addonname, LUI = ...
 local module = LUI:Module("Infotext", "AceHook-3.0")
 local Media = LibStub("LibSharedMedia-3.0")
 local widgetLists = AceGUIWidgetLSMlists
+local Themes = LUI:Module("Themes")
 
 local db, dbd
 
@@ -3975,6 +3976,15 @@ function module:LoadOptions()
 					set = function(info, value) db.Guild.ShowNotes = value end,
 					order = 5,
 				},
+				-- ShowCLassColor = {
+				-- 	name = "Class Colors",
+				-- 	desc = "Whether you want to have names colored by class.",
+				-- 	type = "toggle",
+				-- 	disabled = StatDisabled,
+				-- 	get = function() return db.Guild.ShowCLassColor end,
+				-- 	set = function(info, value) db.Guild.ShowClassColor = value end,
+				-- 	order = 5,
+				-- },
 				Position = PositionOptions(6),
 				Font = FontOptions(7),
 				Reset = ResetOption(8),

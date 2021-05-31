@@ -39,7 +39,7 @@
 	<Script file="modules\faq.lua"/>
 	<Script file="modules\micromenu.lua"/>
 	<Include file="modules\raidmenu.xml"/>
-	<!-- <Script file="modules\swing.lua"/> -->
+	<Script file="modules\swing.lua"/>
 	<Script file="modules\threatbar.lua"/>
 	<Script file="modules\merchant.lua"/>
 	<Script file="modules\removethatbuff.lua"/>
@@ -58,11 +58,11 @@
 	<Script file="scripts\newplayerexperience.lua"/>
 
 	<!-- Initialize Unitframes -->
-<!-- 	<Include file="unitframes\templates.xml"/>
+ 	<Include file="unitframes\templates.xml"/>
 	<Script file="unitframes\init.lua"/> -->
 
 	<!-- Unitframe Default Values -->
-<!-- 	<Script file="unitframes\defaults\player.lua"/>
+	<Script file="unitframes\defaults\player.lua"/>
 	<Script file="unitframes\defaults\target.lua"/>
 	<Script file="unitframes\defaults\tot.lua"/>
 	<Script file="unitframes\defaults\totot.lua"/>
@@ -81,40 +81,40 @@
 	<Script file="unitframes\defaults\arena.lua"/>
 	<Script file="unitframes\defaults\arenapet.lua"/>
 	<Script file="unitframes\defaults\arenatarget.lua"/>
-	<Script file="unitframes\defaults\raid.lua"/> -->
+	<Script file="unitframes\defaults\raid.lua"/>
 
 	<!-- Unitframe Options -->
-<!-- 	<Script file="unitframes\options\colors.lua"/>
-	<Script file="unitframes\options\copysettings.lua"/>
+	<Script file="unitframes\options\colors.lua"/>
+	<Script file="unitframes\options\copysettings.lua"/> -->
 	<Script file="unitframes\options\general.lua"/>
 	<Script file="unitframes\options\importexport.lua"/>
 	<Script file="unitframes\options\movable.lua"/>
 	<Script file="unitframes\options\ouf.lua"/>
 	<Script file="unitframes\options\showhide.lua"/>
-	<Script file="unitframes\options\toggle.lua"/> -->
+	<Script file="unitframes\options\toggle.lua"/>
 
 	<!-- LUI Unitframe Additions -->
-<!-- 	<Script file="unitframes\plugins\oUF_CombatFeedback.lua"/>
+	<Script file="unitframes\plugins\oUF_CombatFeedback.lua"/>
 	<Script file="unitframes\plugins\oUF_Experience.lua"/>
 	<Script file="unitframes\plugins\oUF_Reputation.lua"/>
-	<Script file="unitframes\plugins\oUF_RaidDebuffs.lua"/> -->
+	<Script file="unitframes\plugins\oUF_RaidDebuffs.lua"/>
 
 	<!-- to investigate as we may not need these anymore -->
-<!-- 	<Script file="unitframes\plugins\singleauras.lua"/>
-	<Script file="unitframes\plugins\raiddebuffs.lua"/>
-	<Script file="unitframes\plugins\maintank.lua"/>
-	<Script file="unitframes\plugins\vehicle.lua"/> -->
+	<Script file="unitframes\plugins\singleauras.lua"/>
+	<!-- <Script file="unitframes\plugins\raiddebuffs.lua"/> -->
+	<!-- <Script file="unitframes\plugins\maintank.lua"/> -->
+	<!-- <Script file="unitframes\plugins\vehicle.lua"/> -->
 
 	<!-- to possibly move into the core/standard oUF style -->
-<!-- 	<Script file="unitframes\plugins\arcanecharges.lua"/>
-	<Script file="unitframes\plugins\chi.lua"/>
-	<Script file="unitframes\plugins\holypower.lua"/>
-	<Script file="unitframes\plugins\warlockbar.lua"/>
-	<Script file="unitframes\plugins\totalabsorb.lua"/> -->
+	<!-- <Script file="unitframes\plugins\arcanecharges.lua"/> -->
+	<!-- <Script file="unitframes\plugins\chi.lua"/> -->
+	<!-- <Script file="unitframes\plugins\holypower.lua"/> -->
+	<!-- <Script file="unitframes\plugins\warlockbar.lua"/> -->
+	<!-- <Script file="unitframes\plugins\totalabsorb.lua"/> -->
 
 	<!-- Unitframe Layout -->
-<!-- 	<Script file="unitframes\layout\tags.lua"/>
+	<Script file="unitframes\layout\tags.lua"/>
 	<Script file="unitframes\layout\meta.lua"/>
-	<Script file="unitframes\layout\layout.lua"/> -->
+	<Script file="unitframes\layout\layout.lua"/>
 
 </Ui>

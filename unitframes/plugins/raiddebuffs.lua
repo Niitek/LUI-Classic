@@ -93,7 +93,7 @@ local debuff_data = {
 	[79630] = 6, -- Drakonid Rush
 	[79589] = 6, -- Constricting Chains
 	[79580] = 6, -- Overhead Smash
-	[91910] = 7, -- Grievous Wound
+--	[91910] = 7, -- Grievous Wound
 	[81060] = 6, -- Flash Bomb
 	[80127] = 4, -- Flame Buffet
 
@@ -179,7 +179,7 @@ local debuff_data = {
 	[98492] = 5, -- Eruption
 	
 	-- Alysrazor
-	[101729] = 5, -- Blazing Claw
+--	[101729] = 5, -- Blazing Claw
 	[100094] = 5, -- Fieroblast
 	[99389] = 5, -- Imprinted
 	[99308] = 5, -- Gushing Wound
@@ -190,7 +190,7 @@ local debuff_data = {
 	-- Shannox
 	[99936] = 4, -- Jagged Tear
 	[99837] = 4, -- Crystal Prison Trap Effect
-	[101208] = 4, -- Immolation Trap
+--	[101208] = 4, -- Immolation Trap
 	[99840] = 4, -- Magma Rupture
 	[99947] = 4, -- Face Rage
 	[100415] = 4, -- Rage
@@ -198,28 +198,28 @@ local debuff_data = {
 	-- Baleroc
 	[99252] = 5, -- Blaze of Glory
 	[99256] = 5, -- Torment
-	[99403] = 6, -- Tormented
+--	[99403] = 6, -- Tormented
 	[99262] = 4, -- Vital Spark
 	[99263] = 4, -- Vital Flame
 	[99516] = 7, -- Countdown
 	[99353] = 7, -- Decimating Strike
-	[100908] = 6, -- Fiery Torment
+--	[100908] = 6, -- Fiery Torment
 	
 	-- Majordomo Staghelm
 	[98535] = 5, -- Leaping Flames
 	[98443] = 6, -- Fiery Cyclone
 	[98450] = 5, -- Searing Seeds
-	[100210] = 6, -- Burning Orb
+--	[100210] = 6, -- Burning Orb
 	[96993] = 5, -- Stay Withdrawn?
 	
 	-- Ragnaros
 	[99399] = 5, -- Burning Wound
-	[100293] = 5, -- Lava Wave
+--	[100293] = 5, -- Lava Wave
 	[100238] = 4, -- Magma Trap Vulnerability
 	[98313] = 4, -- Magma Blast
 	[100460] = 7, -- Blazing Heat
 	[98981] = 5, -- Lava Bolt
-	[100249] = 5, -- Combustion
+--	[100249] = 5, -- Combustion
 	[99613] = 6, -- Molten Blast
 
 --en_zone, debuffID, order, icon_priority, color_priority, timer, stackable, color, default_disable, noicon

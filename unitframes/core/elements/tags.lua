@@ -39,19 +39,20 @@ local tagStrings = {
 	end]],
 
 	["leader"] = [[function(u)
-		if(UnitIsPartyLeader(u)) then
+		if(UnitIsGroupLeader(u)) then
 			return 'L'
 		end
 	end]],
 
 	["leaderlong"]  = [[function(u)
-		if(UnitIsPartyLeader(u)) then
+		if(UnitIsGroupLeader(u)) then
 			return 'Leader'
 		end
 	end]],
 
 	["level"] = [[function(u)
 		local l = UnitLevel(u)
+
 		if(l > 0) then
 			return l
 		else
@@ -208,27 +209,45 @@ local tagStrings = {
 
 	["classification"] = [[function(u)
 		local c = UnitClassification(u)
+		local l = UnitLevel(u)
 		if(c == 'rare') then
 			return 'Rare'
-		elseif(c == 'eliterare') then
+		elseif(c == 'rareelite') then
 			return 'Rare Elite'
+		elseif(c == 'elite' and l == -1) then
+			return 'Boss'
 		elseif(c == 'elite') then
 			return 'Elite'
 		elseif(c == 'worldboss') then
 			return 'Boss'
+		elseif(c == 'minus') then
+			return ''
+		elseif(c == 'trivial') then
+			return ''
+		elseif(c == 'normal') then
+			return ''
 		end
 	end]],
 
 	["shortclassification"] = [[function(u)
 		local c = UnitClassification(u)
+		local l = UnitLevel(u)
 		if(c == 'rare') then
 			return 'R'
-		elseif(c == 'eliterare') then
+		elseif(c == 'rareelite') then
 			return 'R+'
+		elseif(c == 'elite' and l == -1) then
+			return 'B'
 		elseif(c == 'elite') then
 			return '+'
 		elseif(c == 'worldboss') then
 			return 'B'
+		elseif(c == 'minus') then
+			return '-'
+		elseif(c == 'trivial') then
+			return '-'
+		elseif(c == 'normal') then
+			return ''
 		end
 	end]],
 
@@ -238,7 +257,7 @@ local tagStrings = {
 			name = string.format("%s-%s", name, server)
 		end
 
-		for i=1, GetNumRaidMembers() do
+		for i=1, GetNumGroupMembers() do
 			local raidName, _, group = GetRaidRosterInfo(i)
 			if( raidName == name ) then
 				return group
@@ -255,21 +274,53 @@ local tagStrings = {
 		end
 	end]],
 
-	['pereclipse'] = [[function(u)
-		local m = UnitPowerMax('player', SPELL_POWER_ECLIPSE)
-		if(m == 0) then
-			return 0
-		else
-			return math.abs(UnitPower('player', SPELL_POWER_ECLIPSE)/m*100)
-		end
-	end]],
-
 	['curmana'] = [[function(unit)
-		return UnitPower(unit, SPELL_POWER_MANA)
+		return UnitPower(unit, Enum.PowerType.Mana)
 	end]],
 
 	['maxmana'] = [[function(unit)
-		return UnitPowerMax(unit, SPELL_POWER_MANA)
+		return UnitPowerMax(unit, Enum.PowerType.Mana)
+	end]],
+
+	['soulshards'] = [[function()
+		local num = UnitPower('player', Enum.PowerType.SoulShards)
+		if(num > 0) then
+			return num
+		end
+	end]],
+
+	['holypower'] = [[function()
+		if(GetSpecialization() == SPEC_PALADIN_RETRIBUTION) then
+			local num = UnitPower('player', Enum.PowerType.HolyPower)
+			if(num > 0) then
+				return num
+			end
+		end
+	end]],
+
+	['chi'] = [[function()
+		if(GetSpecialization() == SPEC_MONK_WINDWALKER) then
+			local num = UnitPower('player', Enum.PowerType.Chi)
+			if(num > 0) then
+				return num
+			end
+		end
+	end]],
+
+	['arcanecharges'] = [[function()
+		if(GetSpecialization() == SPEC_MAGE_ARCANE) then
+			local num = UnitPower('player', Enum.PowerType.ArcaneCharges)
+			if(num > 0) then
+				return num
+			end
+		end
+	end]],
+
+	['minus'] = [[function(u)
+		local c = UnitClassification(u)
+		if(c == 'minus') then
+			return 'Minus'
+		end
 	end]],
 }
 
@@ -334,20 +385,25 @@ local tagEvents = {
 	["smartlevel"]          = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED",
 	["threat"]              = "UNIT_THREAT_SITUATION_UPDATE",
 	["threatcolor"]         = "UNIT_THREAT_SITUATION_UPDATE",
-	['cpoints']             = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
+	['cpoints']             = 'UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED',
+	['minus']				= 'UNIT_CLASSIFICATION_CHANGED',
+	['plus']				= 'UNIT_CLASSIFICATION_CHANGED',
 	['rare']                = 'UNIT_CLASSIFICATION_CHANGED',
 	['classification']      = 'UNIT_CLASSIFICATION_CHANGED',
 	['shortclassification'] = 'UNIT_CLASSIFICATION_CHANGED',
-	["group"]               = "RAID_ROSTER_UPDATE",
-	["curpp"]               = 'UNIT_POWER',
+	["group"]               = "GROUP_ROSTER_UPDATE",
+	["curpp"]               = 'UNIT_POWER_UPDATE',
 	["maxpp"]               = 'UNIT_MAXPOWER',
-	["missingpp"]           = 'UNIT_MAXPOWER UNIT_POWER',
-	["perpp"]               = 'UNIT_MAXPOWER UNIT_POWER',
+	["missingpp"]           = 'UNIT_MAXPOWER UNIT_POWER_UPDATE',
+	["perpp"]               = 'UNIT_MAXPOWER UNIT_POWER_UPDATE',
 	["offline"]             = "UNIT_HEALTH UNIT_CONNECTION",
 	["status"]              = "UNIT_HEALTH PLAYER_UPDATE_RESTING UNIT_CONNECTION",
-	["pereclipse"]          = 'UNIT_POWER',
-	['curmana']             = 'UNIT_POWER UNIT_MAXPOWER',
-	['maxmana']             = 'UNIT_POWER UNIT_MAXPOWER',
+	['curmana']             = 'UNIT_POWER_UPDATE UNIT_MAXPOWER',
+	['maxmana']             = 'UNIT_POWER_UPDATE UNIT_MAXPOWER',
+	['soulshards']          = 'UNIT_POWER_UPDATE',
+	['holypower']           = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
+	['chi']                 = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
+	['arcanecharges']       = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
 }
 
 local unitlessEvents = {
@@ -357,9 +413,7 @@ local unitlessEvents = {
 
 	PARTY_LEADER_CHANGED = true,
 
-	RAID_ROSTER_UPDATE = true,
-
-	UNIT_COMBO_POINTS = true
+	GROUP_ROSTER_UPDATE = true,
 }
 
 local events = {}
@@ -602,7 +656,7 @@ local Tag = function(self, fs, tagstr)
 	fs.UpdateTag = func
 
 	local unit = self.unit
-	if((unit and unit:match'%w+target') or fs.frequentUpdates) then
+	if(self.__eventless or fs.frequentUpdates) then
 		local timer
 		if(type(fs.frequentUpdates) == 'number') then
 			timer = fs.frequentUpdates
@@ -642,9 +696,11 @@ local Untag = function(self, fs)
 	fs.UpdateTag = nil
 end
 
-oUF.Tags = tags
-oUF.TagEvents = tagEvents
-oUF.UnitlessTagEvents = unitlessEvents
+oUF.Tags = {
+	Methods = tags,
+	Events = tagEvents,
+	SharedEvents = unitlessEvents,
 
+}
 oUF:RegisterMetaFunction('Tag', Tag)
 oUF:RegisterMetaFunction('Untag', Untag)

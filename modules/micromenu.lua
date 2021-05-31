@@ -598,56 +598,6 @@ LUI.MicroMenu.Buttons.Pets = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Butt
 		end
 	end) ]]
 
---[[ 	LUI.MicroMenu.Buttons.Journal = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Buttons.LFG, 64, 64, 1, "BACKGROUND", 3, "LEFT", LUI.MicroMenu.Buttons.LFG, "LEFT", -33, 0, 1)  --Uncommented for Classic Compatibility
-	LUI.MicroMenu.Buttons.Journal:SetBackdrop({
-		bgFile = fdir.."micro_encounter",
-		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		tile = false, tileSize = 0, edgeSize = 1,
-		insets = {left = 0, right = 0, top = 0, bottom = 0}
-	})
-	LUI.MicroMenu.Buttons.Journal:SetBackdropColor(micro_r, micro_g, micro_b, 1)
-	LUI.MicroMenu.Buttons.Journal:SetBackdropBorderColor(0, 0, 0, 0)
-
-	LUI.MicroMenu.Buttons.Journal.Clicker = LUI:CreateMeAFrame("Button", nil, LUI.MicroMenu.Buttons.Journal, 30, 25, 1, "BACKGROUND", 2, "CENTER", LUI.MicroMenu.Buttons.Journal, "CENTER", -2, 0, 1)
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetBackdrop({
-		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		tile = false, tileSize = 0, edgeSize = 1,
-		insets = {left = 0, right = 0, top = 0, bottom = 0}
-	})
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetBackdropColor(0, 0, 0, 1)
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetBackdropBorderColor(0, 0, 0, 0)
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetAlpha(0)
-
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetScript("OnEnter", function(self)
-		self:SetAlpha(1)
-		self.State = true
-		GameTooltip:SetOwner(self, "ANCHOR_NONE ", 40, -90)
-		GameTooltip:SetText("Encounter Journal")
-		GameTooltip:AddLine("Dungeon & Encounter Journal", 1, 1, 1)
-		GameTooltip:Show()
-	end)
-
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetScript("OnLeave", function(self)
-		self:SetAlpha(0)
-		self.State = nil
-		GameTooltip:Hide()
-	end)
-
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetScript("OnClick", function(self) --Uncommented for Classic Compatibility
-		ToggleEncounterJournal()
-	end)
-
-	LUI.MicroMenu.Buttons.Journal.Clicker:SetScript("OnUpdate", function(self)
-		if IsAddOnLoaded("Blizzard_EncounterJournal") then
-			if not LUI.MicroMenu.Buttons.Journal.Clicker.State and not EncounterJournal:IsShown() then
-				LUI.MicroMenu.Buttons.Journal.Clicker:SetAlpha(0)
-			else
-				LUI.MicroMenu.Buttons.Journal.Clicker:SetAlpha(1)
-			end
-		end
-	end) ]]
-
 	--[[ LUI.MicroMenu.Buttons.PVP = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Buttons.Store, 64, 64, 1, "BACKGROUND", 3, "LEFT", LUI.MicroMenu.Buttons.Store, "LEFT", -33, 0, 1)
 	LUI.MicroMenu.Buttons.PVP:SetBackdrop({
 		bgFile = fdir.."micro_pvp",

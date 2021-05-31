@@ -171,10 +171,20 @@ module.defaults.profile.Player = {
 				g = 1,
 				b = 0,
 				a = 0.25
-			}
+			},
+		},
+		TotalAbsorb = {
+			Enable = false,
+			Texture = "LUI_Gradient",
+			MyColor = {
+				r = 0,
+				g = 1,
+				b = 0,
+				a = 0.5
+			},
 		},
 		AltPower = {
-			Enable = true,
+			Enable = false,
 			OverPower = false,
 			Height = 10,
 			Width = 250,
@@ -237,7 +247,17 @@ module.defaults.profile.Player = {
 			Padding = 1,
 			Lock = true,
 		},
-		SoulShards = {
+		Chi= {
+			Enable = true,
+			X = 0,
+			Y = 0.5,
+			Height = 8,
+			Width = 250,
+			Texture = "LUI_Gradient",
+			Padding = 1,
+			Lock = true,
+		},
+		WarlockBar = {
 			Enable = true,
 			X = 0,
 			Y = 0.5,
@@ -245,6 +265,26 @@ module.defaults.profile.Player = {
 			Width = 250,
 			Texture = "LUI_Gradient",
 			Padding = 2,
+			Lock = true,
+		},
+		ArcaneCharges = {
+			Enable = true,
+			X = 0,
+			Y = 0.5,
+			Height = 8,
+			Width = 250,
+			Texture = "LUI_Gradient",
+			Padding = 1,
+			Lock = true,
+		},
+		ShadowOrbs = {
+			Enable = true,
+			X = 0,
+			Y = 0.5,
+			Height = 8,
+			Width = 250,
+			Texture = "LUI_Gradient",
+			Padding = 1,
 			Lock = true,
 		},
 		Eclipse = {
@@ -376,6 +416,33 @@ module.defaults.profile.Player = {
 				r = 0.9,
 				g = 0.9,
 				b = 0.9,
+			},
+		},
+		Shield = {
+			Enable = true,
+			Text = true,
+			IndividualColor = false,
+			BarColor = {
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
+			},
+			IndividualBorder = true,
+			Color = {
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
+			},
+			Border = false,
+			Texture = "glow",
+			Thickness = 4,
+			Inset = {
+				left = 3,
+				right = 3,
+				top = 3,
+				bottom = 3,
 			},
 		},
 	},
@@ -589,6 +656,14 @@ module.defaults.profile.Player = {
 				g = 1,
 				b = 1,
 			},
+		},
+		WarlockBar = {
+			Enable = true,
+			X = 220,
+			Y = 0,
+			Font = "Prototype",
+			Size = 10,
+			Outline = "NONE",
 		},
 		Combat = {
 			Enable = false,

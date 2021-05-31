@@ -60,7 +60,7 @@ module.defaults.profile.Target = {
 			BGMultiplier = 0.4,
 			BGInvert = false,
 			Smooth = true,
-			Tapping = false,
+			Tapping = true,
 			IndividualColor = {
 				r = 0.25,
 				g = 0.25,
@@ -115,7 +115,17 @@ module.defaults.profile.Target = {
 				g = 1,
 				b = 0,
 				a = 0.25
-			}
+			},
+		},
+		TotalAbsorb = {
+			Enable = false,
+			Texture = "LUI_Gradient",
+			MyColor = {
+				r = 0,
+				g = 1,
+				b = 0,
+				a = 0.5
+			},
 		},
 		ComboPoints = {
 			Enable = true,
@@ -233,10 +243,10 @@ module.defaults.profile.Target = {
 				a = 0.7,
 			},
 			Shield = {
-				r = 0.5,
-				g = 0,
-				b = 0,
-				a = 0.1,
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
 			},
 			Name = {
 				r = 0.9,
@@ -247,6 +257,33 @@ module.defaults.profile.Target = {
 				r = 0.9,
 				g = 0.9,
 				b = 0.9,
+			},
+		},
+		Shield = {
+			Enable = true,
+			Text = true,
+			IndividualColor = false,
+			BarColor = {
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
+			},
+			IndividualBorder = true,
+			Color = {
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
+			},
+			Border = false,
+			Texture = "glow",
+			Thickness = 4,
+			Inset = {
+				left = 3,
+				right = 3,
+				top = 3,
+				bottom = 3,
 			},
 		},
 	},

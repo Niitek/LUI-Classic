@@ -9,25 +9,19 @@ local argcheck = Private.argcheck
 
 local print = Private.print
 local error = Private.error
-local OnEvent = Private.OnEvent
 
 local styles, style = {}
-local callback, units, objects = {}, {}, {}
+local callback, objects, headers = {}, {}, {}
 
-local select = select
-local UnitExists = UnitExists
-
-local conv = {
-	['playerpet'] = 'pet',
-	['playertarget'] = 'target',
-}
 local elements = {}
+local activeElements = {}
 
 -- updating of "invalid" units.
 local enableTargetUpdate = function(object)
-	local total = 0
 	object.onUpdateFrequency = object.onUpdateFrequency or .5
+	object.__eventless = true
 
+	local total = 0
 	object:SetScript('OnUpdate', function(self, elapsed)
 		if(not self.unit) then
 			return
@@ -41,38 +35,55 @@ local enableTargetUpdate = function(object)
 end
 Private.enableTargetUpdate = enableTargetUpdate
 
+local updateActiveUnit = function(self, event, unit)
+	-- Calculate units to work with
+	local realUnit, modUnit = SecureButton_GetUnit(self), SecureButton_GetModifiedUnit(self)
+
+	-- _GetUnit() doesn't rewrite playerpet -> pet like _GetModifiedUnit does.
+	if(realUnit == 'playerpet') then
+		realUnit = 'pet'
+	elseif(realUnit == 'playertarget') then
+		realUnit = 'target'
+	end
+
+	if(modUnit == "pet" and realUnit ~= "pet") then
+		modUnit = "vehicle"
+	end
+	
+	-- UNIT_EXITED_VEHICLE returns player as unit, which is not the case for pet frame
+	if(modUnit == 'pet') and(realUnit == 'pet') and(unit == 'player') then
+		unit = nil
+	end
+
+	-- Drop out if the event unit doesn't match any of the frame units.
+	if(not UnitExists(modUnit) or unit and unit ~= realUnit and unit ~= modUnit) then return end
+
+	-- Change the active unit and run a full update.
+	if Private.UpdateUnits(self, modUnit, realUnit) then
+		self:UpdateAllElements('RefreshUnit')
+
+		return true
+	end
+end
+
 local iterateChildren = function(...)
 	for l = 1, select("#", ...) do
 		local obj = select(l, ...)
 
 		if(type(obj) == 'table' and obj.isChild) then
-			local unit = SecureButton_GetModifiedUnit(obj)
-			local subUnit = conv[unit] or unit
-			units[subUnit] = obj
-			obj.unit = subUnit
-			obj.id = subUnit:match'^.-(%d+)'
-			obj:UpdateAllElements"PLAYER_ENTERING_WORLD"
+			updateActiveUnit(obj, "iterateChildren")
 		end
 	end
 end
 
 local OnAttributeChanged = function(self, name, value)
 	if(name == "unit" and value) then
-		if(self.unit and (self.unit == value or self.realUnit == value)) then
-			return
-		else
-			if(self.hasChildren) then
-				iterateChildren(self:GetChildren())
-			end
+		if(self.hasChildren) then
+			iterateChildren(self:GetChildren())
+		end
 
-			if(not self:GetAttribute'oUF-onlyProcessChildren') then
-				local unit = SecureButton_GetModifiedUnit(self)
-				unit = conv[unit] or unit
-				units[unit] = self
-				self.unit = unit
-				self.id = unit:match"^.-(%d+)"
-				self:UpdateAllElements"PLAYER_ENTERING_WORLD"
-			end
+		if(not self:GetAttribute'oUF-onlyProcessChildren') then
+			updateActiveUnit(self, "OnAttributeChanged")
 		end
 	end
 end
@@ -91,19 +102,31 @@ for k, v in pairs{
 		if(not element or self:IsElementEnabled(name)) then return end
 
 		if(element.enable(self, unit or self.unit)) then
-			table.insert(self.__elements, element.update)
+			activeElements[self][name] = true
+
+			if(element.update) then
+				table.insert(self.__elements, element.update)
+			end
 		end
 	end,
 
 	DisableElement = function(self, name)
 		argcheck(name, 2, 'string')
 
-		local enabled, k = self:IsElementEnabled(name)
+		local enabled = self:IsElementEnabled(name)
 		if(not enabled) then return end
 
-		table.remove(self.__elements, k)
+		local update = elements[name].update
+		for k, func in next, self.__elements do
+			if(func == update) then
+				table.remove(self.__elements, k)
+				break
+			end
+		end
 
-		-- We need to run a new update cycle incase we knocked ourself out of sync.
+		activeElements[self][name] = nil
+
+		-- We need to run a new update cycle in-case we knocked ourself out of sync.
 		-- The main reason we do this is to make sure the full update is completed
 		-- if an element for some reason removes itself _during_ the update
 		-- progress.
@@ -118,11 +141,8 @@ for k, v in pairs{
 		local element = elements[name]
 		if(not element) then return end
 
-		for k, update in next, self.__elements do
-			if(update == element.update) then
-				return true, k
-			end
-		end
+		local active = activeElements[self]
+		return active and active[name]
 	end,
 
 	Enable = RegisterUnitWatch,
@@ -151,40 +171,26 @@ for k, v in pairs{
 	frame_metatable.__index[k] = v
 end
 
-local updateActiveUnit = function(self, event, unit)
-	-- Calculate units to work with
-	local realUnit, modUnit = SecureButton_GetUnit(self), SecureButton_GetModifiedUnit(self)
-
-	-- _GetUnit() doesn't rewrite playerpet -> pet like _GetModifiedUnit does.
-	if(realUnit == 'playerpet') then
-		realUnit = 'pet'
-	end
-
-	if(modUnit == "pet" and realUnit ~= "pet") then
-		modUnit = "vehicle"
-	end
-
-	-- Drop out if the event unit doesn't match any of the frame units.
-	if(not UnitExists(modUnit) or unit and unit ~= realUnit and unit ~= modUnit) then return end
-
-	if(modUnit ~= realUnit) then
-		self.realUnit = realUnit
-	else
-		self.realUnit = nil
-	end
-
-	-- Change the active unit and run a full update.
-	if(self.unit ~= modUnit) then
-		self.unit = modUnit
-		self:UpdateAllElements('RefreshUnit')
-
-		return true
-	end
-end
-
 local OnShow = function(self)
 	if(not updateActiveUnit(self, 'OnShow')) then
 		return self:UpdateAllElements'OnShow'
+	end
+end
+
+local UpdatePet = function(self, event, unit)
+	local petUnit
+	if(unit == 'target') then
+		return
+	elseif(unit == 'player') then
+		petUnit = 'pet'
+	else
+		-- Convert raid26 -> raidpet26
+		petUnit = unit:gsub('^(%a+)(%d+)', '%1pet%2')
+	end
+
+	if(self.unit ~= petUnit) then return end
+	if(not updateActiveUnit(self, event)) then
+		return self:UpdateAllElements(event)
 	end
 end
 
@@ -212,21 +218,21 @@ local initObject = function(unit, style, styleFunc, header, ...)
 		end
 
 		if(not (suffix == 'target' or objectUnit and objectUnit:match'target')) then
-			object:RegisterEvent('UNIT_ENTERED_VEHICLE', updateActiveUnit)
-			object:RegisterEvent('UNIT_EXITED_VEHICLE', updateActiveUnit)
+			object:RegisterEvent('UNIT_ENTERED_VEHICLE', updateActiveUnit, true)
+			object:RegisterEvent('UNIT_EXITED_VEHICLE', updateActiveUnit, true)
 
-			-- We don't need to register UNIT_PET for the player unit. We rigester it
+			-- We don't need to register UNIT_PET for the player unit. We register it
 			-- mainly because UNIT_EXITED_VEHICLE and UNIT_ENTERED_VEHICLE doesn't always
 			-- have pet information when they fire for party and raid units.
 			if(objectUnit ~= 'player') then
-				object:RegisterEvent('UNIT_PET', updateActiveUnit)
+				object:RegisterEvent('UNIT_PET', UpdatePet, true)
 			end
 		end
 
 		if(not header) then
 			-- No header means it's a frame created through :Spawn().
 			object:SetAttribute("*type1", "target")
-			object:SetAttribute('*type2', 'menu')
+			object:SetAttribute('*type2', 'togglemenu')
 
 			-- No need to enable this for *target frames.
 			if(not (unit:match'target' or suffix == 'target')) then
@@ -236,12 +242,12 @@ local initObject = function(unit, style, styleFunc, header, ...)
 			-- Other boss and target units are handled by :HandleUnit().
 			if(suffix == 'target') then
 				enableTargetUpdate(object)
-			elseif(not (unit:match'%w+target' or unit:match'(boss)%d?$' == 'boss')) then
-				object:SetScript('OnEvent', Private.OnEvent)
+			else
+				oUF:HandleUnit(object)
 			end
 		else
 			-- Used to update frames when they change position in a group.
-			object:RegisterEvent('PARTY_MEMBERS_CHANGED', object.UpdateAllElements)
+			object:RegisterEvent('GROUP_ROSTER_UPDATE', object.UpdateAllElements)
 
 			if(num > 1) then
 				if(object:GetParent() == header) then
@@ -253,16 +259,17 @@ local initObject = function(unit, style, styleFunc, header, ...)
 
 			if(suffix == 'target') then
 				enableTargetUpdate(object)
-			else
-				object:SetScript('OnEvent', Private.OnEvent)
 			end
 		end
+
+		Private.UpdateUnits(object, objectUnit)
 
 		styleFunc(object, objectUnit, not header)
 
 		object:SetScript("OnAttributeChanged", OnAttributeChanged)
 		object:SetScript("OnShow", OnShow)
 
+		activeElements[object] = {}
 		for element in next, elements do
 			object:EnableElement(element, objectUnit)
 		end
@@ -391,7 +398,7 @@ local generateName = function(unit, ...)
 			else
 				local _, count = groupFilter:gsub(',', '')
 				if(count == 0) then
-					append = groupFilter
+					append = 'Raid' .. groupFilter
 				else
 					append = 'Raid'
 				end
@@ -411,6 +418,8 @@ local generateName = function(unit, ...)
 
 	-- Change oUF_LilyRaidRaid into oUF_LilyRaid
 	name = name:gsub('(%u%l+)([%u%l]*)%1', '%1')
+	-- Change oUF_LilyTargettarget into oUF_LilyTargetTarget
+	name = name:gsub('t(arget)', 'T%1')
 
 	local base = name
 	local i = 2
@@ -469,7 +478,7 @@ do
 				end
 
 				frame:SetAttribute('*type1', 'target')
-				frame:SetAttribute('*type2', 'menu')
+				frame:SetAttribute('*type2', 'togglemenu')
 				frame:SetAttribute('toggleForVehicle', true)
 				frame:SetAttribute('oUF-guessUnit', unit)
 			end
@@ -496,7 +505,7 @@ do
 
 		local isPetHeader = template:match'PetHeader'
 		local name = overrideName or generateName(nil, ...)
-		local header = CreateFrame('Frame', name, UIParent, template)
+		local header = CreateFrame('Frame', name, oUF_PetBattleFrameHider, template)
 
 		header:SetAttribute("template", "oUF_ClickCastUnitTemplate")
 		for i=1, select("#", ...), 2 do
@@ -507,6 +516,9 @@ do
 
 		header.style = style
 		header.styleFunction = styleProxy
+
+		-- Expose the header through oUF.headers.
+		table.insert(headers, header)
 
 		-- We set it here so layouts can't directly override it.
 		header:SetAttribute('initialConfigFunction', initialConfigFunction)
@@ -541,18 +553,14 @@ function oUF:Spawn(unit, overrideName)
 	unit = unit:lower()
 
 	local name = overrideName or generateName(unit)
-	local object = CreateFrame("Button", name, UIParent, "SecureUnitButtonTemplate")
-	object.unit = unit
-	object.id = unit:match"^.-(%d+)"
+	local object = CreateFrame("Button", name, oUF_PetBattleFrameHider, "SecureUnitButtonTemplate")
+	Private.UpdateUnits(object, unit)
 
-	units[unit] = object
+	self:DisableBlizzard(unit)
 	walkObject(object, unit)
 
 	object:SetAttribute("unit", unit)
 	RegisterUnitWatch(object)
-
-	self:DisableBlizzard(unit)
-	self:HandleUnit(object)
 
 	return object
 end
@@ -572,8 +580,8 @@ function oUF:AddElement(name, update, enable, disable)
 end
 
 oUF.version = _VERSION
-oUF.units = units
 oUF.objects = objects
+oUF.headers = headers
 
 if(global) then
 	if(parent ~= 'oUF' and global == 'oUF') then

@@ -121,7 +121,17 @@ module.defaults.profile.Party = {
 				g = 1,
 				b = 0,
 				a = 0.25
-			}
+			},
+		},
+		TotalAbsorb = {
+			Enable = false,
+			Texture = "LUI_Gradient",
+			MyColor = {
+				r = 0,
+				g = 1,
+				b = 0,
+				a = 0.5
+			},
 		},
 	},
 	Aura = {
@@ -235,6 +245,33 @@ module.defaults.profile.Party = {
 				r = 0.9,
 				g = 0.9,
 				b = 0.9,
+			},
+		},
+		Shield = {
+			Enable = true,
+			Text = true,
+			IndividualColor = false,
+			BarColor = {
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
+			},
+			IndividualBorder = true,
+			Color = {
+				r = 0.13,
+				g = 0.59,
+				b = 1,
+				a = 0.68,
+			},
+			Border = false,
+			Texture = "glow",
+			Thickness = 4,
+			Inset = {
+				left = 3,
+				right = 3,
+				top = 3,
+				bottom = 3,
 			},
 		},
 	},

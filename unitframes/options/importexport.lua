@@ -7,7 +7,6 @@
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes", "AceSerializer-3.0")
 local Fader = LUI:Module("Fader")
-local Forte = LUI:Module("Forte")
 local ACR = LibStub("AceConfigRegistry-3.0")
 
 local importLayoutName
@@ -160,6 +159,11 @@ local layouts = setmetatable({
 					Font = "vibroceb",
 					Size = 12,
 				},
+				Combat = {
+					Size = 20,
+					Font = "vibrocen",
+					Outline = "OUTLINE",
+				},
 			},
 		},
 		Target = {
@@ -210,9 +214,9 @@ local layouts = setmetatable({
 					TextureBG = "Otravi",
 					Texture = "Otravi",
 				},
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 				ComboPoints = {
 					Y = -4,
 					X = 25,
@@ -249,10 +253,6 @@ local layouts = setmetatable({
 				},
 			},
 			Texts = {
-				Combat = {
-					Enable = true,
-					Size = 13,
-				},
 				Name = {
 					ColorLevelByDifficulty = false,
 					Font = "neuropol",
@@ -272,6 +272,11 @@ local layouts = setmetatable({
 					Y = 5,
 					Color = "By Class",
 					Font = "vibroceb",
+				},
+				Combat = {
+					Size = 20,
+					Font = "vibrocen",
+					Outline = "OUTLINE",
 				},
 			},
 		},
@@ -327,6 +332,11 @@ local layouts = setmetatable({
 					ColorNameByClass = true,
 					Font = "vibroceb",
 					Size = 12,
+				},
+				Combat = {
+					Size = 20,
+					Font = "vibrocen",
+					Outline = "OUTLINE",
 				},
 			},
 		},
@@ -425,9 +435,9 @@ local layouts = setmetatable({
 			Y = -220,
 			Height = 42,
 			Bars = {
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -443,9 +453,9 @@ local layouts = setmetatable({
 					Texture = "Otravi",
 				},
 			},
-			Border = {
-				Aggro = true,
-			},
+			-- Border = {
+			-- 	Aggro = true,
+			-- },
 			Texts = {
 				HealthPercent = {
 					Outline = "OUTLINE",
@@ -455,6 +465,11 @@ local layouts = setmetatable({
 				},
 				Name = {
 					Enable = false,
+				},
+				Combat = {
+					Size = 20,
+					Font = "vibrocen",
+					Outline = "OUTLINE",
 				},
 			},
 		},
@@ -472,9 +487,9 @@ local layouts = setmetatable({
 				Alpha = 0.15,
 			},
 			Bars = {
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -539,9 +554,9 @@ local layouts = setmetatable({
 					TextureBG = "Otravi",
 					Texture = "Otravi",
 				},
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 				DruidMana = {
 					OverPower = false,
 					TextureBG = "Otravi",
@@ -600,14 +615,10 @@ local layouts = setmetatable({
 					Texture = "Otravi",
 				},
 			},
-			Border = {
-				Aggro = true,
-			},
+			-- Border = {
+			-- 	Aggro = true,
+			-- },
 			Texts = {
-				Combat = {
-					Enable = true,
-					Size = 13,
-				},
 				Power = {
 					Y = -48,
 					ShowEmpty = false,
@@ -625,6 +636,11 @@ local layouts = setmetatable({
 					Y = 5,
 					Color = "By Class",
 					Font = "vibroceb",
+				},
+				Combat = {
+					Size = 20,
+					Font = "vibrocen",
+					Outline = "OUTLINE",
 				},
 			},
 		},
@@ -723,9 +739,9 @@ local layouts = setmetatable({
 		},
 		Party = {
 			ShowPlayer = true,
-			Border = {
-				Aggro = true,
-			},
+			-- Border = {
+			-- 	Aggro = true,
+			-- },
 			Aura = {
 				Debuffs = {
 					Num = 4,
@@ -756,9 +772,9 @@ local layouts = setmetatable({
 				Full = {
 					Y = -32,
 				},
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -1127,9 +1143,9 @@ local layouts = setmetatable({
 				},
 			},
 			Scale = 0.85,
-			Border = {
-				Aggro = true,
-			},
+			-- Border = {
+			-- 	Aggro = true,
+			-- },
 			Y = -210,
 			X = -300,
 			Fader = {
@@ -1147,9 +1163,9 @@ local layouts = setmetatable({
 				},
 			},
 			Bars = {
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 			},
 			Icons = {
 				Role = {
@@ -1316,9 +1332,9 @@ local layouts = setmetatable({
 				Health = {
 					Tapping = true,
 				},
-				HealPrediction = {
-					Enable = true,
-				},
+				-- HealPrediction = {
+				-- 	Enable = true,
+				-- },
 			},
 			Fader = {
 				Enable = true,
@@ -1529,6 +1545,7 @@ end
 
 do
 	StaticPopupDialogs["ALREADY_A_LAYOUT"] = {
+		preferredIndex = 3,
 		text = "That layout already exists.\nPlease choose another name.",
 		button1 = "OK",
 		timeout = 0,
@@ -1538,6 +1555,7 @@ do
 	}
 	
 	StaticPopupDialogs["SAVE_LAYOUT"] = {
+		preferredIndex = 3,
 		text = 'Enter the name for your new layout',
 		button1 = "Save Layout",
 		button2 = "Cancel",
@@ -1559,6 +1577,7 @@ do
 	}
 	
 	StaticPopupDialogs["DELETE_LAYOUT"] = {
+		preferredIndex = 3,
 		text = 'Are you sure you want to delete the current layout?',
 		button1 = "Yes",
 		button2 = "No",
@@ -1569,6 +1588,7 @@ do
 	}
 	
 	StaticPopupDialogs["IMPORT_LAYOUT"] = {
+		preferredIndex = 3,
 		text = 'Enter a name for your new layout',
 		button1 = "Continue",
 		button2 = "Cancel",
@@ -1590,6 +1610,7 @@ do
 	}
 	
 	StaticPopupDialogs["IMPORT_LAYOUT_DATA"] = {
+		preferredIndex = 3,
 		text = "Paste the new layout string here:",
 		button1 = "Import Layout",
 		button2 = "Cancel",
@@ -1610,6 +1631,7 @@ do
 	}
 	
 	StaticPopupDialogs["EXPORT_LAYOUT"] = {
+		preferredIndex = 3,
 		text = "Copy the following to share it with others:",
 		button1 = "Close",
 		hasEditBox = 1,
@@ -1628,6 +1650,7 @@ do
 	}
 	
 	StaticPopupDialogs["RESET_LAYOUTS"] = {
+		preferredIndex = 3,
 		text = "Are you sure you want to reset all your layouts?",
 		button1 = "Yes",
 		button2 = "No",

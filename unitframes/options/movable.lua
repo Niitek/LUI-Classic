@@ -202,14 +202,13 @@ do
 			return backdropPool[obj]
 		end
 
-		local backdrop = CreateFrame("Frame")
-		backdrop:SetParent(UIParent)
+		local backdrop = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 		backdrop:Hide()
 
 		backdrop:SetScale(obj:GetScale())
 		backdrop:SetPoint(obj:GetPoint())
 		backdrop:SetSize(obj:GetSize())
-			Mixin(backdrop, BackdropTemplateMixin)
+		
 		backdrop:SetBackdrop(_BACKDROP)
 		backdrop:SetBackdropColor(0, .9, 0)
 		backdrop:SetBackdropBorderColor(0, .9, 0)
@@ -241,6 +240,7 @@ do
 end
 
 StaticPopupDialogs["DRAG_UNITFRAMES"] = {
+	preferredIndex = 3,
 	text = "oUF_LUI UnitFrames are dragable.",
 	button1 = "Save",
 	button3 = "Reset",
