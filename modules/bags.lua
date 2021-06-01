@@ -209,14 +209,12 @@ function module:SlotUpdate(item)
 	local color = db.Colors.Border
 
 	if not item.frame.lock then
-		Mixin(item.frame, BackdropTemplateMixin)
 		item.frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
 
 		--Check for Profession Bag
 		local bagType = module:BagType(item.bag)
 		if (bagType == ST_SPECIAL) then
 			local color = db.Colors.Professions
-			Mixin(item.frame, BackdropTemplateMixin)
 			item.frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
 		end
 
@@ -347,7 +345,7 @@ function module:BagFrameSlotNew(slot, parent, bagType)
 		ret.slot = slot
 		slot = slot - 4
 		ret.frame = CreateFrame("Button", "LUIBank__Bag"..slot, parent, "BankItemButtonBagTemplate")
-		if not ret.frame.SetBackdrop then Mixin(ret.frame, BackdropTemplateMixin) end
+		Mixin(ret.frame, BackdropTemplateMixin)
 		ret.frame:SetID(slot)
 		tinsert(BagsSlots, ret)
 
@@ -359,7 +357,7 @@ function module:BagFrameSlotNew(slot, parent, bagType)
 		end
 	else
 		ret.frame = CreateFrame("Button", "LUIBags__Bag"..slot.."Slot", parent, "BagSlotButtonTemplate")
-		if not ret.frame.SetBackdrop then Mixin(ret.frame, BackdropTemplateMixin) end
+		Mixin(ret.frame, BackdropTemplateMixin)
 		ret.slot = slot
 		tinsert(BagsSlots, ret)
 	end
@@ -1128,7 +1126,7 @@ module.defaults = {
 			Scale = 1,
 			BagScale = 1,
 			BagFrame = true,
-			ItemQuality = false,
+			ItemQuality = true,
 			ShowNew = false,
 			ShowQuest = true,
 			ShowOverlay = true,

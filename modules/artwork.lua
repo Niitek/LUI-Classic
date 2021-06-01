@@ -66,7 +66,7 @@ function toggleArt(what)
 		LUI.Orb.Galaxy3:Show()
 		LUI.Orb.Fill:Show()
 		LUI.Orb:EnableMouse(true)
-		--LUI.Orb:Show()
+		LUI.Orb:Show()
 	else
 		LUI.Orb.Hover:Hide()
 		LUI.Orb.Ring2:Hide()
@@ -78,7 +78,7 @@ function toggleArt(what)
 		LUI.Orb.Galaxy3:Hide()
 		LUI.Orb.Fill:Hide()
 		LUI.Orb:EnableMouse(false)
-		--LUI.Orb:Hide()
+		LUI.Orb:Hide()
 	end
 	if not db.UpperArt.Background or what == "enable" then
 		LUI.Navi.Top2:Show()

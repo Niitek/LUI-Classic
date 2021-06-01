@@ -17,9 +17,6 @@ local hidden = {}
 
 local show, hide, hook, unhook
 do
-	--[[ Blizzard:SecureHook("OrderHall_LoadUI", function()  -- Uncommented for Classic testing
-		LUI:Kill(OrderHallCommandBar)
-	end) ]]
 	hook = setmetatable({}, {
 		__call = function(t, type, hookto)
 			if t[type] then return end
@@ -100,12 +97,12 @@ do
 			if CompactRaidFrameManager then
 				CompactRaidFrameManager:UnregisterEvent("GROUP_ROSTER_UPDATE")
 				CompactRaidFrameManager:UnregisterEvent("PLAYER_ENTERING_WORLD")
-				CompactRaidFrameManager:Hide()
 				compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
 				if compact_raid and compact_raid ~= "0" then
 					CompactRaidFrameManager_SetSetting("IsShown", "0")
 				end
 				hook("raid", "CompactRaidFrameManager_UpdateShown")
+				CompactRaidFrameManager:Hide()
 			end
 		end,
 		boss = function()

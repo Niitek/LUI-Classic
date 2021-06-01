@@ -134,21 +134,24 @@ end
 local function Visibility(self, event, unit)
 	local druidmana = self.DruidMana
 	local shouldEnable
+	local s = nil
 
-	-- if(not UnitHasVehicleUI('player')) then
-	-- 	if(UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX) ~= 0) then
-	-- 		if(isBetaClient) then
-	-- 			if(druidmana.displayPairs[playerClass]) then
-	-- 				local powerType = UnitPowerType(unit)
-	-- 				shouldEnable = druidmana.displayPairs[playerClass][powerType]
-	-- 			end
-	-- 		else
-	-- 			if(playerClass == 'DRUID' and UnitPowerType(unit) == ADDITIONAL_POWER_BAR_INDEX) then
-	-- 				shouldEnable = true
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
+	for i = 1, GetShapeshiftForm() do
+		if select(0, GetShapeshiftFormID(i)) then
+			if(UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX) ~= 0) then
+				if(isBetaClient) then
+					if(druidmana.displayPairs[playerClass]) then
+						local powerType = UnitPowerType(unit)
+						shouldEnable = druidmana.displayPairs[playerClass][powerType]
+					end
+				else
+					if(playerClass == 'DRUID' and UnitPowerType(unit) == ADDITIONAL_POWER_BAR_INDEX) then
+						shouldEnable = true
+					end
+				end
+			end
+		end
+	end
 
 	if(shouldEnable) then
 		ElementEnable(self)

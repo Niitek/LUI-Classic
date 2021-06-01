@@ -577,96 +577,96 @@ end
 -- / CURRENCY / --
 ------------------------------------------------------
 
-function module:SetCurrency()
-	local stat = NewStat("Currency")
+-- function module:SetCurrency()
+-- 	local stat = NewStat("Currency")
 
-	if db.Currency.Enable and not stat.Created then
-		NewIcon(stat)
+-- 	if db.Currency.Enable and not stat.Created then
+-- 		NewIcon(stat)
 
-		local CurrencyList
-		stat.Currencies = function(self)
-			if CurrencyList then return CurrencyList end
+-- 		local CurrencyList
+-- 		stat.Currencies = function(self)
+-- 			if CurrencyList then return CurrencyList end
 
-			local CurrencyList = {[0] = "None",}
-			for i=1, 2048 do
-				local n, _,_,_,_,_,d = GetCurrencyInfo(i)
-				if n ~= "" and d then
-					CurrencyList[i] = n
-				end
-			end
-			return CurrencyList
-		end
+-- 			local CurrencyList = {[0] = "None",}
+-- 			for i=1, 2048 do
+-- 				local n, _,_,_,_,_,d = GetCurrencyInfo(i)
+-- 				if n ~= "" and d then
+-- 					CurrencyList[i] = n
+-- 				end
+-- 			end
+-- 			return CurrencyList
+-- 		end
 
-		-- Events
-		stat.Events = { "PLAYER_ENTERING_WORLD" }
+-- 		-- Events
+-- 		stat.Events = { "PLAYER_ENTERING_WORLD" }
 
-		-- Script functions
-		local factionTex
-		if UnitFactionGroup("player") == "Neutral" then factionTex = LUI.blank
-		-- else factionTex = [[Interface\PVPFrame\PVP-Currency-]] .. UnitFactionGroup("player")
-		end
-		stat.OnEnable = function(self)
-			local tex = factionTex
-			self.icon:SetBackdrop({bgFile = tex, edgeFile = nil, tile = false, edgeSize = 0, insets = {top = 0, right = 0, bottom = 0, left = 0}})
-			self.text:SetText("Currency")
-			self:CURRENCY_DISPLAY_UPDATE()
-		end
+-- 		-- Script functions
+-- 		local factionTex
+-- 		if UnitFactionGroup("player") == "Neutral" then factionTex = LUI.blank
+-- 		-- else factionTex = [[Interface\PVPFrame\PVP-Currency-]] .. UnitFactionGroup("player")
+-- 		end
+-- 		stat.OnEnable = function(self)
+-- 			local tex = factionTex
+-- 			self.icon:SetBackdrop({bgFile = tex, edgeFile = nil, tile = false, edgeSize = 0, insets = {top = 0, right = 0, bottom = 0, left = 0}})
+-- 			self.text:SetText("Currency")
+-- 			self:CURRENCY_DISPLAY_UPDATE()
+-- 		end
 
-		stat.OnClick = function(self, button)
-			if button == "RightButton" then
-				LUI:Open()
-				LibStub("AceConfigDialog-3.0"):SelectGroup(addonname, module:GetName(), "Currency")
-			else -- Toggle CurrencyFrame
-				ToggleCharacter("TokenFrame")
-			end
-		end
+-- 		stat.OnClick = function(self, button)
+-- 			if button == "RightButton" then
+-- 				LUI:Open()
+-- 				LibStub("AceConfigDialog-3.0"):SelectGroup(addonname, module:GetName(), "Currency")
+-- 			else -- Toggle CurrencyFrame
+-- 				ToggleCharacter("TokenFrame")
+-- 			end
+-- 		end
 
-		stat.CURRENCY_DISPLAY_UPDATE = function (self)
-			if db.Currency.Display == 0 then
-				self.text:SetText("Currency")
-				return
-			end
+-- 		stat.CURRENCY_DISPLAY_UPDATE = function (self)
+-- 			if db.Currency.Display == 0 then
+-- 				self.text:SetText("Currency")
+-- 				return
+-- 			end
 
-			local name, count = GetCurrencyInfo(db.Currency.Display)
-			name = name:sub(1, db.Currency.DisplayLimit)
-			name = (#name > 0 and name..":") or name
-			self.text:SetFormattedText("%s %d", name, count)
-		end
+-- 			local name, count = GetCurrencyInfo(db.Currency.Display)
+-- 			name = name:sub(1, db.Currency.DisplayLimit)
+-- 			name = (#name > 0 and name..":") or name
+-- 			self.text:SetFormattedText("%s %d", name, count)
+-- 		end
 
-		stat.OnEnter = function(self)
-			if CombatTips() then
-				GameTooltip:SetOwner(self, getOwnerAnchor(self))
-				GameTooltip:ClearLines()
-				GameTooltip:AddLine("Currency:", 0.4, 0.78, 1)
+-- 		stat.OnEnter = function(self)
+-- 			if CombatTips() then
+-- 				GameTooltip:SetOwner(self, getOwnerAnchor(self))
+-- 				GameTooltip:ClearLines()
+-- 				GameTooltip:AddLine("Currency:", 0.4, 0.78, 1)
 
-				for i = 1, GetCurrencyListSize() do
-					local name, isHeader, _, _, _, count = GetCurrencyListInfo(i)
-					if isHeader then
-						GameTooltip:AddLine(" ")
-						GameTooltip:AddLine(name)
-					elseif name then
-						if count and count ~= 0 then
-							GameTooltip:AddDoubleLine(name, count, 1,1,1, 1,1,1)
-						else
-							GameTooltip:AddDoubleLine(name, "--", 1,1,1, 1,1,1)
-						end
-					end
-				end
+-- 				for i = 1, GetCurrencyListSize() do
+-- 					local name, isHeader, _, _, _, count = GetCurrencyListInfo(i)
+-- 					if isHeader then
+-- 						GameTooltip:AddLine(" ")
+-- 						GameTooltip:AddLine(name)
+-- 					elseif name then
+-- 						if count and count ~= 0 then
+-- 							GameTooltip:AddDoubleLine(name, count, 1,1,1, 1,1,1)
+-- 						else
+-- 							GameTooltip:AddDoubleLine(name, "--", 1,1,1, 1,1,1)
+-- 						end
+-- 					end
+-- 				end
 
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Hint:", 0, 1, 0)
-				GameTooltip:AddLine("- Left Click to open Currency frame.", 0, 1, 0)
-				GameTooltip:AddLine("- Right Click to open LUI Currency Options.", 0, 1, 0)
-				GameTooltip:Show()
-			end
-		end
-		stat.OnLeave = function()
-			GameTooltip:Hide()
-		end
+-- 				GameTooltip:AddLine(" ")
+-- 				GameTooltip:AddLine("Hint:", 0, 1, 0)
+-- 				GameTooltip:AddLine("- Left Click to open Currency frame.", 0, 1, 0)
+-- 				GameTooltip:AddLine("- Right Click to open LUI Currency Options.", 0, 1, 0)
+-- 				GameTooltip:Show()
+-- 			end
+-- 		end
+-- 		stat.OnLeave = function()
+-- 			GameTooltip:Hide()
+-- 		end
 
-		stat.Created = true
-	end
-end
+-- 		stat.Created = true
+-- 	end
+-- end
 
 ------------------------------------------------------
 -- / DUALSPEC / --
@@ -2201,27 +2201,16 @@ function module:SetGuild()
 		end
 
 		stat.OnClick = function(self, button)
-			if not GuildFrame then GuildFrame_LoadUI() end
 			if button == "LeftButton" then -- toggle Guild Roster
-				if not GuildFrame or not GuildFrame:IsShown() or (GuildRosterFrame and GuildRosterFrame:IsShown()) then
-					ToggleGuildFrame()
-				end
-				if GuildFrame and GuildFrame:IsShown() then
-					GuildFrameTab2:Click()
-				end
+					ToggleFriendsFrame(3)
 			elseif button == "RightButton" then -- toggle Guild Info
-				if not GuildFrame or not GuildFrame:IsShown() or (GuildMainFrame and GuildMainFrame:IsShown()) then
-					ToggleGuildFrame()
-				end
-				if GuildFrame and GuildFrame:IsShown() then
-					GuildFrameTab1:Click()
-				end
-			elseif button == "Button4" then -- toggle guild and officer notes
 				db.Guild.ShowNotes = not db.Guild.ShowNotes
 				tooltip:Update()
-			elseif button == "Button5" then -- toggle mouseclick hints
-				db.Guild.ShowHints = not db.Guild.ShowHints
-				self:UpdateHints()
+			elseif button == "Button4" then -- toggle guild and officer notes
+				if db.Guild.ShowNotes and not db.Guild.ShowNotes
+				then tooltip:Update()
+				else self:UpdateHints()
+				end
 			end
 		end
 
@@ -4213,7 +4202,7 @@ function module:OnEnable()
 	SetInfoTextFrames()
 	EnableStat("Bags")
 	EnableStat("Clock")
- 	EnableStat("Currency")
+ 	-- EnableStat("Currency")
 --[[ 	EnableStat("DualSpec") ]]
 	EnableStat("Durability")
 	EnableStat("FPS")

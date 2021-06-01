@@ -205,11 +205,10 @@ function Fader.Hover_OnLeave(frame)
 	Fader:FadeHandler(frame)
 end
 
---[=[
+
 -- Fader.SpecialHover_OnEnter(frame) -- not being used
---[[
-	Notes.....: Fades the frame when the mouse enters the frame or any child of the frame.
-]]
+
+--	Notes.....: Fades the frame when the mouse enters the frame or any child of the frame.
 function Fader.SpecialHover_OnEnter(frame)
 	frame = frame.Fader and frame or frame:GetParent()
 
@@ -219,9 +218,9 @@ function Fader.SpecialHover_OnEnter(frame)
 end
 
 -- Fader.SpecialHover_OnLeave(frame) -- not being used
---[[
-	Notes.....: Fades out the frame when the mouse leaves the frame or any child of the frame.
-]]
+
+--	Notes.....: Fades out the frame when the mouse leaves the frame or any child of the frame.
+
 function Fader.SpecialHover_OnLeave(frame)
 	frame = frame.Fader and frame or frame:GetParent()
 
@@ -229,12 +228,12 @@ function Fader.SpecialHover_OnLeave(frame)
 		Fader.Hover_OnLeave(frame)
 	end
 end
---]=]
+
 
 -- Fader:CheckMouseHover()
---[[
-	Notes.....: Checks special frames to see if the mouseover of that frame has changed.
-]]
+
+--	Notes.....: Checks special frames to see if the mouseover of that frame has changed.
+
 function Fader:CheckMouseHover()
 	for frame, mouseHover in pairs(self.specialHoverFrames) do
 		local isMouseOver = frame:IsMouseOver()

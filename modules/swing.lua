@@ -554,7 +554,7 @@ function module:Refresh(...)
 	local r, g, b
 	local mu = db.Appearance.BGMultiplier
 	if db.Appearance.Color == "By Class" then
-		-- r, g, b = unpack(oUFmodule.colors.class[class])
+		r, g, b = unpack(oUFmodule.colors.class[class])
 	else
 		r, g, b = db.Appearance.IndividualColor.r, db.Appearance.IndividualColor.g, db.Appearance.IndividualColor.b
 	end

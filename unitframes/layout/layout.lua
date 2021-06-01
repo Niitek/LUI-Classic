@@ -389,7 +389,7 @@ local UnitFrame_OnLeave = function(self)
 	UnitFrame_OnLeave(self)
 	self.Highlight:Hide()
 end
---[[
+
 local menu = function(self)
 	local unit = self.unit:gsub("(.)", string.upper, 1)
 	if _G[unit.."FrameDropDown"] then
@@ -403,7 +403,7 @@ local menu = function(self)
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor")
 	end
 end
-]]
+
 local OverrideHealth = function(self, event, unit, powerType)
 	if self.unit ~= unit then return end
 	local health = self.Health
@@ -2270,8 +2270,6 @@ module.funcs = {
 		checkPowers()
 
 		module:RegisterEvent("UNIT_LEVEL", checkPowers)
-		module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", checkPowers)
-		module:RegisterEvent("PLAYER_TALENT_UPDATE", checkPowers)
 		self.ClassIcons.UpdateTexture = checkPowers
 	end,
 	AltPowerBar = function(self, unit, oufdb)
