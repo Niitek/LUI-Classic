@@ -2301,19 +2301,19 @@ function module:SetFriends()
 			if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
 		end
 
-		--[[ stat.FRIENDLIST_UPDATE = function(self)
+		stat.FRIENDLIST_UPDATE = function(self)
 			for k, v in pairs(friendEntries) do
 				tooltip:del(v)
 				friendEntries[k]=nil
 			end
-			totalFriends, onlineFriends = GetNumFriends()
+			totalFriends, onlineFriends = C_FriendList.GetNumFriends(), C_FriendList.GetNumOnlineFriends()
 			for i = 1, onlineFriends do
-				local name, level, class, zone, connected, status, note = GetFriendInfo(i)
+				local name, level, class, zone, connected, status, note = C_FriendList.GetFriendInfo(i)
 				friendEntries[i] = tooltip:new(tooltip.LocClassNames[class] or "", name or "", level or 0, zone or UNKNOWN, note or "|cffffcc00-", status, "", "", nil, i, name or "")
 			end
 			self:UpdateText()
 			if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
-		end ]]
+		end
 
 		stat.CHAT_MSG_SYSTEM = function(self, msg)
 			if msg:find(friendOnline) or msg:find(friendOffline) then C_FriendList.ShowFriends() end
@@ -2923,26 +2923,26 @@ module.defaults = {
 				a = 1,
 			},
 		},
-		Currency = {
-			Enable = false,
-			X = 180,
-			Y = 0,
-			Display = 0,
-			DisplayLimit = 40,
-			InfoPanel = {
-				Horizontal = "Left",
-				Vertical = "Bottom",
-			},
-			Font = "vibroceb",
-			FontSize = 12,
-			Outline = "NONE",
-			Color = {
-				r = 1,
-				g = 1,
-				b = 1,
-				a = 1,
-			},
-		},
+		-- Currency = {
+		-- 	Enable = false,
+		-- 	X = 180,
+		-- 	Y = 0,
+		-- 	Display = 0,
+		-- 	DisplayLimit = 40,
+		-- 	InfoPanel = {
+		-- 		Horizontal = "Left",
+		-- 		Vertical = "Bottom",
+		-- 	},
+		-- 	Font = "vibroceb",
+		-- 	FontSize = 12,
+		-- 	Outline = "NONE",
+		-- 	Color = {
+		-- 		r = 1,
+		-- 		g = 1,
+		-- 		b = 1,
+		-- 		a = 1,
+		-- 	},
+		-- },
 --[[ 		MoveSpeed = {  
 			Enable = true,
 			X = -590,
@@ -2961,25 +2961,25 @@ module.defaults = {
 				a = 1,
 			},
 		}, ]]  -- added with 3.0 WOTLK
-		DualSpec = {
-			Enable = false,
-			ShowSpentPoints = true,
-			X = 320,
-			Y = 0,
-			InfoPanel = {
-				Horizontal = "Left",
-				Vertical = "Bottom",
-			},
-			Font = "vibroceb",
-			FontSize = 12,
-			Outline = "NONE",
-			Color = {
-				r = 1,
-				g = 1,
-				b = 1,
-				a = 1,
-			},
-		},
+		-- DualSpec = {
+		-- 	Enable = false,
+		-- 	ShowSpentPoints = true,
+		-- 	X = 320,
+		-- 	Y = 0,
+		-- 	InfoPanel = {
+		-- 		Horizontal = "Left",
+		-- 		Vertical = "Bottom",
+		-- 	},
+		-- 	Font = "vibroceb",
+		-- 	FontSize = 12,
+		-- 	Outline = "NONE",
+		-- 	Color = {
+		-- 		r = 1,
+		-- 		g = 1,
+		-- 		b = 1,
+		-- 		a = 1,
+		-- 	},
+		-- },
 		Durability = {
 			Enable = true,
 			X = 350,
@@ -3140,25 +3140,25 @@ module.defaults = {
 				a = 1,
 			},
 		},
-		EquipmentSets = {
-			Enable = false,
-			Text = "Equipped Set: ",
-			X = -225,
-			Y = 0,
-			InfoPanel = {
-				Horizontal = "Right",
-				Vertical = "Bottom",
-			},
-			Font = "vibroceb",
-			FontSize = 12,
-			Outline = "NONE",
-			Color = {
-				r = 1,
-				g = 1,
-				b = 1,
-				a = 1,
-			},
-		},
+		-- EquipmentSets = {
+		-- 	Enable = false,
+		-- 	Text = "Equipped Set: ",
+		-- 	X = -225,
+		-- 	Y = 0,
+		-- 	InfoPanel = {
+		-- 		Horizontal = "Right",
+		-- 		Vertical = "Bottom",
+		-- 	},
+		-- 	Font = "vibroceb",
+		-- 	FontSize = 12,
+		-- 	Outline = "NONE",
+		-- 	Color = {
+		-- 		r = 1,
+		-- 		g = 1,
+		-- 		b = 1,
+		-- 		a = 1,
+		-- 	},
+		-- },
 		LootSpec = {
 			Enable = false,
 			Text = "Loot Spec: ",
