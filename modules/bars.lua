@@ -270,7 +270,7 @@ local function Configure(bar, numButtons, numPerRow)
 			else
 				buttons[i]:SetAttribute("statehidden", nil)
 				buttons[i]:Show()
-				buttons[i]:Update()
+				-- buttons[i]:Update() --tbc update
 			end
 		end
 	end
@@ -813,7 +813,7 @@ function module:SetStanceBar()
 	ShowIf(LUIStanceBar, db.StanceBar.Enable and GetNumShapeshiftForms() > 0)
 end
 
-function module:SetVehicleExit()
+function module:SetVehicleExit()		-- killed for tbc
 	if not LUIVehicleExit then
 		local bar = CreateFrame("Frame", "LUIVehicleExit", UIParent, "SecureHandlerStateTemplate")
 		bar:SetHeight(60)
@@ -829,7 +829,7 @@ function module:SetVehicleExit()
 		veb:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 		veb:SetScript("OnClick", function(self) VehicleExit() end)
 
-		if not UnitInVehicle("player") then bar:Hide() end
+		-- if not UnitInVehicle("player") then bar:Hide() end
 	end
 
 	local scale = db.VehicleExit.Scale
@@ -840,29 +840,29 @@ function module:SetVehicleExit()
 	ShowIf(LUIVehicleExit, db.VehicleExit.Enable)
 end
 
-function module:SetExtraActionBar()
-	local bar = LUIExtraActionBar
-	if not bar then
-		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
-		bar:SetHeight(52)
-		bar:SetWidth(52)
-		bar.content = ExtraActionBarFrame
+-- function module:SetExtraActionBar()
+-- 	local bar = LUIExtraActionBar
+-- 	if not bar then
+-- 		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
+-- 		bar:SetHeight(52)
+-- 		bar:SetWidth(52)
+-- 		bar.content = ExtraActionBarFrame
 
-		bar.content.ignoreFramePositionManager = true
+-- 		bar.content.ignoreFramePositionManager = true
 
-		bar.content:SetParent(bar)
-		bar.content:ClearAllPoints()
-		bar.content:SetPoint("CENTER", bar, "CENTER", 0, 0)
-	end
+-- 		bar.content:SetParent(bar)
+-- 		bar.content:ClearAllPoints()
+-- 		bar.content:SetPoint("CENTER", bar, "CENTER", 0, 0)
+-- 	end
 
-	local scale = db.ExtraActionBar.Scale
-	bar:ClearAllPoints()
-	bar:SetPoint(db.ExtraActionBar.Point, UIParent, db.ExtraActionBar.Point, db.ExtraActionBar.X / scale, db.ExtraActionBar.Y / scale)
-	bar:SetScale(scale)
+-- 	local scale = db.ExtraActionBar.Scale
+-- 	bar:ClearAllPoints()
+-- 	bar:SetPoint(db.ExtraActionBar.Point, UIParent, db.ExtraActionBar.Point, db.ExtraActionBar.X / scale, db.ExtraActionBar.Y / scale)
+-- 	bar:SetScale(scale)
 
-	ShowIf(bar.content.button.style, not db.ExtraActionBar.HideTextures)
-	ShowIf(bar, db.ExtraActionBar.Enable)
-end
+-- 	ShowIf(bar.content.button.style, not db.ExtraActionBar.HideTextures)
+-- 	ShowIf(bar, db.ExtraActionBar.Enable)
+-- end
 
 function module:HideBlizzard()
 	--LUI:Print("Hiding Blizzard frames")
@@ -881,9 +881,9 @@ function module:HideBlizzard()
 		end
 	end)
 
-	PossessBarFrame:SetScale(0.00001)
-	PossessBarFrame:EnableMouse(false)
-	PossessBarFrame:SetAlpha(0)
+	-- PossessBarFrame:SetScale(0.00001)
+	-- PossessBarFrame:EnableMouse(false)
+	-- PossessBarFrame:SetAlpha(0)
 
 	PetActionBarFrame:SetScale(0.00001)
 	PetActionBarFrame:EnableMouse(false)
@@ -1156,32 +1156,32 @@ local function StyleStanceButtons()
 	end
 end
 
-local flyoutButtons = 0
-local function StyleFlyout(self)
-	if not self.FlyoutArrow then return end
+-- local flyoutButtons = 0					-- kille for tbc
+-- local function StyleFlyout(self)
+-- 	if not self.FlyoutArrow then return end
 
-	self.FlyoutBorder:SetAlpha(0)
-	self.FlyoutBorderShadow:SetAlpha(0)
+-- 	self.FlyoutBorder:SetAlpha(0)
+-- 	self.FlyoutBorderShadow:SetAlpha(0)
 
-	SpellFlyoutHorizontalBackground:SetAlpha(0)
-	SpellFlyoutVerticalBackground:SetAlpha(0)
-	SpellFlyoutBackgroundEnd:SetAlpha(0)
+	-- SpellFlyoutHorizontalBackground:SetAlpha(0)
+	-- SpellFlyoutVerticalBackground:SetAlpha(0)
+	-- SpellFlyoutBackgroundEnd:SetAlpha(0)
 
-	for i = 1, GetNumFlyouts() do
-		local _, _, numSlots, isKnown = GetFlyoutInfo(GetFlyoutID(i))
-		if isKnown then
-			flyoutButtons = numSlots
-			break
-		end
-	end
+	-- for i = 1, GetNumFlyouts() do
+	-- 	local _, _, numSlots, isKnown = GetFlyoutInfo(GetFlyoutID(i))
+	-- 	if isKnown then
+	-- 		flyoutButtons = numSlots
+	-- 		break
+	-- 	end
+	-- end
 
-	local arrowDistance
-	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
-		arrowDistance = 5
-	else
-		arrowDistance = 2
-	end
-end
+-- 	local arrowDistance
+-- 	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
+-- 		arrowDistance = 5
+-- 	else
+-- 		arrowDistance = 2
+-- 	end
+-- end
 
 local function StyleFlyoutButton()
 	for i = 1, flyoutButtons do
@@ -1248,18 +1248,18 @@ end
 
 function module:HookActionButton(button)
 	if button then
-		module:SecureHook(button, "Update", StyleButton)
-		module:SecureHook(button, "OnUpdate", Button_OnUpdate)
-		module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
-		module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
+		-- module:SecureHook(button, "Update", StyleButton)   -- killed for tbc
+		-- module:SecureHook(button, "OnUpdate", Button_OnUpdate)
+		-- module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
+		-- module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
 	end
 	--Prevent rehooking.
 	if not module:IsHooked("StanceBar_Update") then
 		module:SecureHook("StanceBar_Update", StyleStanceButtons)
 		module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
 		module:SecureHook("PetActionBar_Update", StylePetButtons)
-		module:SecureHook("ActionButton_UpdateFlyout", StyleFlyout)
-		SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
+		-- module:SecureHook("ActionButton_UpdateFlyout", StyleFlyout)-- killed for tbc
+		-- SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
 	end
 end
 
@@ -1273,10 +1273,10 @@ end
 function module:SetLibKeyBound()
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_ENABLED")
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_DISABLED")
-	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
+	-- LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")		-- killed for tbc
 end
 
-function module:SetBars()
+function module:SetBars() -- killed for tbc
 	if not (IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Dominos") or IsAddOnLoaded("Macaroon")) and db.General.Enable then
 		if not db.StatesLoaded then LoadStates(g_defaultStates) end
 
@@ -1293,15 +1293,14 @@ function module:SetBars()
 
 		module:SetPetBar()
 		module:SetStanceBar()
-		module:SetVehicleExit()
-		module:SetExtraActionBar()
+		module:SetVehicleExit()  -- killed for tbc
+		-- module:SetExtraActionBar()
 
 		module:HideBlizzard()
 		module:HookActionButton()
 
 		-- because of an ugly bug...
 		module:SecureHook(CharacterFrame, "Show", function() TokenFrame_Update() end)
-		module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
 	else
 		g_isBarAddOnLoaded = true
@@ -2060,10 +2059,6 @@ function module:OnInitialize()
 
 end
 
-function module:PLAYER_SPECIALIZATION_CHANGED()
-	module:SetStanceBar()
-end
-
 function module:OnEnable()
 	module:SetBars()
 
@@ -2079,8 +2074,4 @@ function module:OnEnable()
 		module:AutoAdjustBT4("Left2")
 		LUI.db.global.luiconfig[ProfileName].Versions.bars = 2.5
 	end
-end
-
-function module:OnDisable()
-	module:UnRegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 end
