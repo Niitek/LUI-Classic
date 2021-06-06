@@ -1244,10 +1244,9 @@ local GF_Colors = {
 -- Localized functions
 local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 
-local BNGetFriendInfo, BNGetGameAccountInfo, BNGetNumFriends, BNFeaturesEnabled, BNConnected = BNGetFriendInfo, BNGetGameAccountInfo, BNGetNumFriends, BNFeaturesEnabled, BNConnected
-local GetNumGroupMembers, GetNumSubgroupMembers, UnitInRaid, UnitInParty, InviteUnit = GetNumGroupMembers, GetNumSubgroupMembers, UnitInRaid, UnitInParty, InviteUnit
-local CanEditMOTD, GetGuildRosterMOTD, CanEditPublicNote, CanEditOfficerNote = CanEditMOTD, GetGuildRosterMOTD, CanEditPublicNote, CanEditOfficerNote
-local GetQuestDifficultyColor, RemoveFriend, SetGuildRosterSelection, SetItemRef = GetQuestDifficultyColor, RemoveFriend, SetGuildRosterSelection, SetItemRef
+local GetNumGroupMembers, GetNumSubgroupMembers, UnitInRaid, UnitInParty = GetNumGroupMembers, GetNumSubgroupMembers, UnitInRaid, UnitInParty
+local CanEditMOTD, GetGuildRosterMOTD, CanEditPublicNote = CanEditMOTD, GetGuildRosterMOTD, CanEditPublicNote
+local GetQuestDifficultyColor, SetGuildRosterSelection, SetItemRef = GetQuestDifficultyColor, SetGuildRosterSelection, SetItemRef
 local unpack, next, sort, tonumber, format, floor, min, max, wipe, select = unpack, next, sort, tonumber, format, floor, min, max, wipe, select
 
 function module:SetGF()
@@ -1421,24 +1420,33 @@ function module:SetGF()
 			rank and button.rank:GetStringWidth() or -gap
 		end
 
-				--takes table, second arg for recursion. Prints an entire table to default chat.
-		function LUI:PrintFullTable(tbl,msg, recurse)
-			if type(tbl) ~= "table" then return LUI:Print("Tried to Print a nil table.") end
-			if not recurse then LUI:Print("-------------------------") end
-			msg = msg or ""
-			for k,v in pairs(tbl) do
-				if type(v) == "table" then
-					LUI:Print(msg,k,v)
-					LUI:PrintFullTable(v,msg.."-- ", true)
-				else LUI:Print(msg,k,v) end
-			end
-			if not recurse then LUI:Print("-------------------------") end
-		end
+		-- 		--takes table, second arg for recursion. Prints an entire table to default chat.
+		-- function LUI:PrintFullTable(tbl,msg, recurse)
+		-- 	if type(tbl) ~= "table" then return LUI:Print("Tried to Print a nil table.") end
+		-- 	if not recurse then LUI:Print("-------------------------") end
+		-- 	msg = msg or ""
+		-- 	for k,v in pairs(tbl) do
+		-- 		if type(v) == "table" then
+		-- 			LUI:Print(msg,k,v)
+		-- 			LUI:PrintFullTable(v,msg.."-- ", true)
+		-- 		else LUI:Print(msg,k,v) end
+		-- 	end
+		-- 	if not recurse then LUI:Print("-------------------------") end
+		-- end
 
 		local function SetToastData(index, inGroup, offset)
 			local toast, bc, color = toasts[index], nil, nil
-			--presenceID is the BNAccountID, toonID refers to BNGameAccountID, name preserved for compatibility sake. Clean code in V4.
-			local presenceID, givenName, battletag, isBattletag, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
+			-- local accountInfo = BNGetFriendInfo(index + offset)
+			-- local gameInfo = BNGetGameAccountInfo
+			-- local presenceID, givenName, battleTag = accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag
+			-- local client, wowProjectID = gameInfo.clientProgram, gameInfo.wowProjectID or 0
+			-- local isOnline, isAFK, isDND = gameInfo.isOnline, accountInfo.isAFK, accountInfo.isDND
+			-- local broadcast, notes = accountInfo.customMessage, accountInfo.note
+			-- local toonName, faction, race, class = gameInfo.characterName or "", gameInfo.factionName or "", gameInfo.raceName or "", gameInfo.className or ""
+			-- local realm, zone, level, gameText = gameInfo.realmName or "", gameInfo.areaName or "", gameInfo.characterLevel or "", gameInfo.richPresence or ""
+
+			-- presenceID is the BNAccountID, toonID refers to BNGameAccountID, name preserved for compatibility sake. Clean code in V4.
+			local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
 			local _, _, _, realm, _, faction, race, class, _, zone, level, gameText = BNGetGameAccountInfo(toonID or 0)
 
 			if faction == 'Alliance' then faction = 1
@@ -1459,6 +1467,8 @@ function module:SetGF()
 			toast.realID = givenName
 			toast.indexOffset = offset
 			toast.realIndex = index + offset
+			toast.accountInfo = accountInfo
+			toast.gameInfo = gameInfo
 
 			SetStatusLayout(toast.status, toast.name)
 
@@ -1470,8 +1480,7 @@ function module:SetGF()
 				zone = (zone == nil or zone == "") and UNKNOWN or zone
 				toast.zone:SetPoint("LEFT", toast.faction, "RIGHT", textOffset, 0)
 				toast.zone:SetTextColor(GetZoneColor(zone))
-				toast.sameRealm = realm == myPlayerRealm
-
+				toast.sameRealm = (realm == myPlayerRealm)
 				if not toast.sameRealm then
 					local r,g,b = unpack(GF_Colors.Realm)
 					zone = ("%1$s |cff%3$.2x%4$.2x%5$.2x- %2$s"):format(zone, realm, r*255, g*255, b*255)
@@ -1649,7 +1658,7 @@ function module:SetGF()
 		})
 
 		-- Frames
-		slider = CreateFrame("Slider", nil, stat, BackdropTemplateMixin and "BackdropTemplate")
+		slider = CreateFrame("Slider", nil, stat, "BackdropTemplate")
 		slider:SetWidth(16)
 		slider:SetThumbTexture([[Interface\Buttons\UI-SliderBar-Button-Horizontal]])
 		slider:SetBackdrop({
@@ -2001,7 +2010,7 @@ function module:SetGF()
 				if b.presenceID then
 					StaticPopup_Show("CONFIRM_REMOVE_FRIEND", b.realID, nil, b.presenceID)
 				else
-					RemoveFriend(b.unit)
+					C_FriendList.RemoveFriend(b.unit)
 				end
 			elseif IsAltKeyDown() then -- invite unit
 				if b.presenceID then
@@ -2009,7 +2018,7 @@ function module:SetGF()
 					--function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 					FriendsFrame_InviteOrRequestToJoin(b.gameInfo.playerGuid, b.gameInfo.gameAccountID)
 				else
-					InviteUnit(b.unit)
+					C_PartyInfo.InviteUnit(b.unit)
 				end
 			elseif IsControlKeyDown() then -- edit note
 				if not stat.IsGuild then
@@ -2019,7 +2028,7 @@ function module:SetGF()
 					else
 						StaticPopup_Show("SET_FRIENDNOTE", b.unit)
 					end
-				elseif button == "LeftButton" and CanEditPublicNote() or button ~= "LeftButton" and CanEditOfficerNote() then
+				elseif button == "LeftButton" and CanEditPublicNote() or button ~= "LeftButton" and  C_GuildInfo.CanEditOfficerNote() then
 					SetGuildRosterSelection(b.realIndex)
 					StaticPopup_Show(button == "LeftButton" and "SET_GUILDPLAYERNOTE" or "SET_GUILDOFFICERNOTE")
 				end
@@ -2052,7 +2061,7 @@ function module:SetGF()
 				end
 				if (not self.IsGuild or CanEditPublicNote()) then GameTooltip:AddLine("|cffff8020Ctrl+Click|r to edit note.", .2, 1, .2) end
 				if self.IsGuild then
-					if CanEditOfficerNote() then GameTooltip:AddLine("|cffff8020Ctrl+RightClick|r to edit officer note.", .2, 1, .2) end
+					if  C_GuildInfo.CanEditOfficerNote() then GameTooltip:AddLine("|cffff8020Ctrl+RightClick|r to edit officer note.", .2, 1, .2) end
 				else
 					GameTooltip:AddLine("|cffff8020MiddleClick|r to remove friend.", .2, 1, .2)
 				end
@@ -2074,16 +2083,16 @@ function module:SetGF()
 		end
 
 		-- Hooks
-		local function guildRoster()
-			if stat.Guild then
-				stat.Guild.dt = 0
-			end
-		end
-		local function ShowFriends()
-			if stat.Friends then
-				stat.Friends.dt = 0
-			end
-		end
+		-- local function guildRoster()
+		-- 	if stat.Guild then
+		-- 		stat.Guild.dt = 0
+		-- 	end
+		-- end
+		-- local function ShowFriends()
+		-- 	if stat.Friends then
+		-- 		stat.Friends.dt = 0
+		-- 	end
+		-- end
 
 		-- Script functions
 		stat.OnEnable = function(self)
@@ -2092,15 +2101,18 @@ function module:SetGF()
 			for eng, loc in pairs(LOCALIZED_CLASS_NAMES_MALE)   do stat.LocClassNames[loc] = eng end
 			for eng, loc in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do stat.LocClassNames[loc] = eng end
 
-			module:SecureHook("GuildRoster", guildRoster)
+			module:SecureHook(C_GuildInfo, "GuildRoster", function() if stat.Guild then stat.Guild.dt = 0 end end)
+			-- module:SecureHook("GuildRoster", guildRoster)
 			module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
-			--[[ module:SecureHook("ShowFriends", showFriends) ]]
+			-- module:SecureHook("ShowFriends", showFriends)
 		end
 
 		stat.OnDisable = function(self)
-			module:Unhook("GuildRoster")
-			module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
-			--[[ module:Unhook("ShowFriends") ]]
+			module:Unhook(C_GuildInfo, "GuildRoster")
+			module:Unhook(C_FriendList, "ShowFriends")
+			-- module:Unhook("GuildRoster")
+			-- module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
+			-- module:Unhook("ShowFriends")
 		end
 
 		stat.OnLeave = function(self)
@@ -2180,12 +2192,12 @@ function module:SetGuild()
 
 		stat.PLAYER_GUILD_UPDATE = function(self, unit)
 			if unit and unit ~= "player" then return end
-			if IsInGuild() then GuildRoster() end
+			if IsInGuild() then C_GuildInfo.GuildRoster() end
 		end
 
 		-- Script functions
 		stat.OnEnable = function(self)
-			if IsInGuild() then GuildRoster() end
+			if IsInGuild() then C_GuildInfo.GuildRoster() end
 			self:UpdateText()
 		end
 
@@ -2193,7 +2205,7 @@ function module:SetGuild()
 			self.dt = self.dt + deltaTime
 			if self.dt > 15 then
 				if IsInGuild() and GetNumGuildMembers() then
-					GuildRoster()
+					C_GuildInfo.GuildRoster()
 				else
 					self.dt = 0
 				end
@@ -2216,7 +2228,7 @@ function module:SetGuild()
 
 		stat.OnEnter = function(self)
 			if CombatTips() then
-				if IsInGuild() then GuildRoster() end
+				if IsInGuild() then C_GuildInfo.GuildRoster() end
 				tooltip:Anchor(self, true)
 			end
 		end
@@ -2229,7 +2241,7 @@ function module:SetGuild()
 end
 
 -- Localized functions
-local GetNumFriends, BNGetNumFriends, GetFriendInfo, BNSetCustomMessage = GetNumFriends, BNGetNumFriends, GetFriendInfo, BNSetCustomMessage
+local GetNumFriends, BNGetNumFriends, GetFriendInfo, BNSetCustomMessage = C_FriendList.GetNumFriends, BNGetNumFriends, C_FriendList.GetFriendInfo, BNSetCustomMessage
 local gsub, format = gsub, format
 
 function module:SetFriends()
@@ -2301,19 +2313,19 @@ function module:SetFriends()
 			if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
 		end
 
-		stat.FRIENDLIST_UPDATE = function(self)
-			for k, v in pairs(friendEntries) do
-				tooltip:del(v)
-				friendEntries[k]=nil
-			end
-			totalFriends, onlineFriends = C_FriendList.GetNumFriends(), C_FriendList.GetNumOnlineFriends()
-			for i = 1, onlineFriends do
-				local name, level, class, zone, connected, status, note = C_FriendList.GetFriendInfo(i)
-				friendEntries[i] = tooltip:new(tooltip.LocClassNames[class] or "", name or "", level or 0, zone or UNKNOWN, note or "|cffffcc00-", status, "", "", nil, i, name or "")
-			end
-			self:UpdateText()
-			if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
-		end
+		-- stat.FRIENDLIST_UPDATE = function(self)
+		-- 	for k, v in pairs(friendEntries) do
+		-- 		tooltip:del(v)
+		-- 		friendEntries[k]=nil
+		-- 	end
+		-- 	totalFriends, onlineFriends = C_FriendList.GetNumFriends(), C_FriendList.GetNumOnlineFriends()
+		-- 	for i = 1, onlineFriends do
+		-- 		local name, level, class, zone, connected, status, note = C_FriendList.GetFriendInfoByIndex(1)
+		-- 		friendEntries[i] = tooltip:new(tooltip.LocClassNames[class] or "", name or "", level or 0, zone or UNKNOWN, note or "|cffffcc00-", status, "", "", nil, i, name or "")
+		-- 	end
+		-- 	self:UpdateText()
+		-- 	if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
+		-- end
 
 		stat.CHAT_MSG_SYSTEM = function(self, msg)
 			if msg:find(friendOnline) or msg:find(friendOffline) then C_FriendList.ShowFriends() end
@@ -3785,7 +3797,7 @@ function module:LoadOptions()
 					set = function(info, value)
 						db.Friends.ShowTotal = value
 						InfoStats.Friends:UpdateText()
-						C_FriendList.ShowFriends()
+						ShowFriends()
 					end,
 					order = 3,
 				},
@@ -3945,7 +3957,7 @@ function module:LoadOptions()
 						InfoStats.Guild:UpdateText()
 						GuildRoster()
 					end,
-					order = 4,
+					order = 3,
 				},
 				ShowHints = {
 					name = "Show Hints",
@@ -3963,17 +3975,17 @@ function module:LoadOptions()
 					disabled = StatDisabled,
 					get = function() return db.Guild.ShowNotes end,
 					set = function(info, value) db.Guild.ShowNotes = value end,
+					order = 4,
+				},
+				ShowCLassColor = {
+					name = "Class Colors",
+					desc = "Whether you want to have names colored by class.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Guild.ShowCLassColor end,
+					set = function(info, value) db.Guild.ShowClassColor = value end,
 					order = 5,
 				},
-				-- ShowCLassColor = {
-				-- 	name = "Class Colors",
-				-- 	desc = "Whether you want to have names colored by class.",
-				-- 	type = "toggle",
-				-- 	disabled = StatDisabled,
-				-- 	get = function() return db.Guild.ShowCLassColor end,
-				-- 	set = function(info, value) db.Guild.ShowClassColor = value end,
-				-- 	order = 5,
-				-- },
 				Position = PositionOptions(6),
 				Font = FontOptions(7),
 				Reset = ResetOption(8),

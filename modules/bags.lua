@@ -946,8 +946,8 @@ function module:Layout(bagType)
 	end
 
 	--adjust the size of the frames now.
-	frame:SetScale(db[bagType].Scale)
-	bagsFrame:SetScale(db[bagType].BagScale)
+	-- frame:SetScale(db[bagType].Scale)
+	-- bagsFrame:SetScale(db[bagType].BagScale)
 
 	isCreated[bagType] = true
 end
@@ -1227,8 +1227,8 @@ function module:LoadOptions()
 				Spacing = LUI:NewSlider("Bag Spacing", "This sets the distance between items.",
 					7, db.Bags, "Spacing", dbd.Bags, 1, 15, 1, BagOpt),
 				Scale = LUI:NewScale("Bags Frame",8, db.Bags, "Scale", dbd.Bags, BagOpt),
-				BagScale = LUI:NewScale("Bags BagBar",9, db.Bags, "BagScale", dbd.Bags, BagOpt),
-				BagFrame = LUI:NewToggle("Show Bag Bar", nil, 10, db.Bags, "BagFrame", dbd.Bags, BagOpt),
+				-- BagScale = LUI:NewScale("Bags BagBar",9, db.Bags, "BagScale", dbd.Bags, BagOpt),
+				-- BagFrame = LUI:NewToggle("Show Bag Bar", nil, 10, db.Bags, "BagFrame", dbd.Bags, BagOpt),
 				ItemQuality = LUI:NewToggle("Show Item Quality", nil, 11, db.Bags, "ItemQuality", dbd.Bags, ReloadBoth),
 				ShowNew = LUI:NewToggle("Show New Item Animation", nil, 12, db.Bags, "ShowNew", dbd.Bags, ReloadBoth),
 				ShowQuest = LUI:NewToggle("Show Quest Highlights", nil, 13, db.Bags, "ShowQuest", dbd.Bags, ReloadBoth),
@@ -1253,8 +1253,8 @@ function module:LoadOptions()
 				Spacing = LUI:NewSlider("Bank Spacing", "This sets the distance between items.", 5,
 					db.Bank, "Spacing", dbd.Bank, 1, 15, 1, BankOpt, nil, DisabledCopy),
 				Scale = LUI:NewScale("Bank Frame",6, db.Bank, "Scale", dbd.Bank, BankOpt, nil, DisabledCopy),
-				BagScale = LUI:NewScale("Bank BagBar",7, db.Bank, "BagScale", dbd.Bank, BankOpt, nil, DisabledCopy),
-				BagFrame = LUI:NewToggle("Show Bag Bar", nil, 8, db.Bank, "BagFrame", dbd.Bank, BankOpt, nil, DisabledCopy),
+				-- BagScale = LUI:NewScale("Bank BagBar",7, db.Bank, "BagScale", dbd.Bank, BankOpt, nil, DisabledCopy),
+				-- BagFrame = LUI:NewToggle("Show Bag Bar", nil, 8, db.Bank, "BagFrame", dbd.Bank, BankOpt, nil, DisabledCopy),
 			},
 		},
 	}

@@ -116,7 +116,7 @@ function module:CreateXpRepOptionsPart(barType, order)
 		toggleFunc = function()
 			if not oUF_LUI_player.XP then module.funcs.Experience(oUF_LUI_player, oUF_LUI_player.__unit, xprepdb) end
 			if self.db.XP_Rep.Experience.Enable and UnitLevel("player") ~= MAX_PLAYER_LEVEL then
-				oUF_LUI_player.Experience:ForceUpdate()
+				-- oUF_LUI_player.Experience:ForceUpdate()
 				oUF_LUI_player.XP:Show()
 				if oUF_LUI_player.Rep then oUF_LUI_player.Rep:Hide() end
 			else

@@ -893,18 +893,18 @@ function module:HideBlizzard()
 	StanceBarFrame:EnableMouse(false)
 	StanceBarFrame:SetAlpha(0)
 
-	-- local FramesToHide = {
-	-- 	MainMenuBarArtFrame,
-	-- 	BonusActionBarFrame,
-	-- 	PossessBarFrame,
-	-- }
+	 local FramesToHide = {
+		MainMenuBarArtFrame,
+		BonusActionBarFrame,
+		PossessBarFrame,
+	}
 
-	-- for _, frame in pairs(FramesToHide) do
-	-- 	if not module:IsHooked(frame, "Show") then
-	-- 		module:RawHook(frame, "Show", LUI.dummy, true)
-	-- 	end
-	-- 	frame:Hide()
-	-- end
+	for _, frame in pairs(FramesToHide) do
+		if not module:IsHooked(frame, "Show") then
+			module:RawHook(frame, "Show", LUI.dummy, true)
+		end
+		frame:Hide()
+	end
 
 	module:SecureHook("TalentFrame_LoadUI", function()
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
@@ -1273,7 +1273,7 @@ end
 function module:SetLibKeyBound()
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_ENABLED")
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_DISABLED")
-	--LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
+	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
 end
 
 function module:SetBars()
