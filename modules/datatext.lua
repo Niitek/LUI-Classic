@@ -306,21 +306,16 @@ function module:SetClock()
 		local invitesPending = false
 
 		-- Event functions
-		stat.Events = {--[[ "CALENDAR_UPDATE_PENDING_INVITES",  ]] "PLAYER_ENTERING_WORLD"} -- classic test
+		stat.Events = {"PLAYER_ENTERING_WORLD"} -- classic test
 		-- , "UPDATE_24HOUR", "UPDATE_LOCALTIME"
 
-		--[[ stat.CALENDAR_UPDATE_PENDING_INVITES = function(self) -- A change to number of pending invites for calendar events occurred
-			invitesPending = GameTimeFrame and (GameTimeFrame.pendingCalendarInvites > 0) or false
-		end ]] -- classic test
-
-
-		--[[ stat.GUILD_PARTY_STATE_UPDATED = function(self) -- Number of guildmates in group changed
+		stat.GUILD_PARTY_STATE_UPDATED = function(self) -- Number of guildmates in group changed
 			if InGuildParty() then
 				guildParty = " |cff66c7ffG"
 			else
 				guildParty = ""
 			end 
-		end]] -- classic test
+		end 
 
 		stat.PLAYER_DIFFICULTY_CHANGED = function(self) -- Instance difficulty changed
 			local inInstance, instanceType = IsInInstance()
@@ -1223,24 +1218,28 @@ end
 --------------------------------------------------------------------
 -- /GUILD and FRIENDS/ --
 --------------------------------------------------------------------
+-- function ShowClassColor()
+	local CLASS = select(2, UnitClass("player"))
+	local ccolors = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[CLASS] or RAID_CLASS_COLORS[CLASS]
 
-local GF_Colors = {
-	Note = {0.14, 0.76, 0.15},
-	OfficerNote = {1, 0.56, 0.25},
-	MotD = {1, 0.8, 0},
-	Broadcast = {1, 0.1, 0.1},
-	Title = {1, 1, 1},
-	Rank = {0.1, 0.9, 1},
-	Realm = {1, 0.8, 0},
-	Status = {0.7, 0.7, 0.7},
-	OrderA = {1, 1, 1, 0.1},
-	ContestedZone = {1, 1, 0},
-	SanctuaryZone = {0, 1, 1},
-	FriendlyZone = {0, 1, 0},
-	EnemyZone = {1, 0, 0},
-	RemoteChatZone = {0, 1, 1},
-}
-
+	local GF_Colors = {
+		Class = {ccolors.r, ccolors.g, ccolors.b},
+		Note = {0.14, 0.76, 0.15},
+		OfficerNote = {1, 0.56, 0.25},
+		MotD = {1, 0.8, 0},
+		Broadcast = {1, 0.1, 0.1},
+		Title = {1, 1, 1},
+		Rank = {0.1, 0.9, 1},
+		Realm = {1, 0.8, 0},
+		Status = {0.7, 0.7, 0.7},
+		OrderA = {1, 1, 1, 0.1},
+		ContestedZone = {1, 1, 0},
+		SanctuaryZone = {0, 1, 1},
+		FriendlyZone = {0, 1, 0},
+		EnemyZone = {1, 0, 0},
+		RemoteChatZone = {0, 1, 1},
+	}
+-- end
 -- Localized functions
 local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 
@@ -1340,7 +1339,7 @@ function module:SetGF()
 
 		local function GetZoneColor(zone)
 			return unpack(GF_Colors[
-				mobileZones:find(zone..",") and ("RemoteChatZone") or
+				-- mobileZones:find(zone..",") and ("RemoteChatZone") or
 				hordeZones:find(zone..",") and (horde and "FriendlyZone" or "EnemyZone") or
 				allianceZones:find(zone..",") and (horde and "EnemyZone" or "FriendlyZone") or
 				sanctuaryZones:find(zone..",") and ("SanctuaryZone") or ("ContestedZone")
@@ -1436,18 +1435,18 @@ function module:SetGF()
 
 		local function SetToastData(index, inGroup, offset)
 			local toast, bc, color = toasts[index], nil, nil
-			local accountInfo = BNGetFriendInfo(index + offset)
-			local gameInfo = BNGetGameAccountInfo(toonID or 0)
-			local presenceID, givenName, battleTag = accountInfo.bnetIDAccount , accountInfo.accountName, accountInfo.battleTag
-			local client, wowProjectID = gameInfo.client, gameInfo.wowProjectID or 0
-			local isOnline, isAFK, isDND = gameInfo.isOnline, accountInfo.isAFK, accountInfo.isDND
-			local broadcast, notes = accountInfo.messageText, accountInfo.note
-			local toonName, faction, race, class = gameInfo.characterName or "", gameInfo.factionName or "", gameInfo.raceName or "", gameInfo.className or ""
-			local realm, zone, level, gameText = gameInfo.realmName or "", gameInfo.areaName or "", gameInfo.characterLevel or "", gameInfo.richPresence or ""
+			-- local accountInfo = BNGetFriendInfo(index + offset)
+			-- local gameInfo = BNGetGameAccountInfo(toonID or 0)
+			-- local presenceID, givenName, battleTag = accountInfo.bnetIDAccount , accountInfo.accountName, accountInfo.battleTag
+			-- local client, wowProjectID = gameInfo.client, gameInfo.wowProjectID or 0
+			-- local isOnline, isAFK, isDND = gameInfo.isOnline, accountInfo.isAFK, accountInfo.isDND
+			-- local broadcast, notes = accountInfo.messageText, accountInfo.note
+			-- local toonName, faction, race, class = gameInfo.characterName or "", gameInfo.factionName or "", gameInfo.raceName or "", gameInfo.className or ""
+			-- local realm, zone, level, gameText = gameInfo.realmName or "", gameInfo.areaName or "", gameInfo.characterLevel or "", gameInfo.richPresence or ""
 
 			-- presenceID is the BNAccountID, toonID refers to BNGameAccountID, name preserved for compatibility sake. Clean code in V4.
-			-- local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
-			-- local _, _, _, realm, _, faction, race, class, _, zone, level, gameText = BNGetGameAccountInfo(toonID or 0)
+			local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
+			local realm, faction, race, class, zone, level, gameText = BNGetGameAccountInfo(toonID or 0)
 
 			if faction == 'Alliance' then faction = 1
 			else faction = 0
@@ -1496,10 +1495,11 @@ function module:SetGF()
 			else
 				toast.class:SetTexture(BNet_GetClientTexture(client))
 				toast.class:SetTexCoord(0.2, 0.8, 0.2, 0.8)
-				toast.name:SetTextColor(0.8, 0.8, 0.8)
+				toast.name:SetTextColor(0.1, 0.8, 0.8)
 				toast.faction:SetTexture("")
 				zone = gameText
 				toast.zone:SetPoint("LEFT", toast.name, "RIGHT", gap, 0)
+				-- toast.zone:SetTextColor(GetZoneColor(zone))
 				toast.zone:SetTextColor(1, 0.77, 0)
 			end
 
@@ -1643,13 +1643,12 @@ function module:SetGF()
 					sep:SetPoint("BOTTOMRIGHT", motd, "BOTTOMRIGHT", 0, 0)
 				else
 					btn:SetHeight(btnHeight)
-					btn.class = CreateTex(btn)
-					btn.status = CreateTex(btn, btn.class, textOffset)
+					-- btn.class = CreateTex(btn)
+					btn.status = CreateTex(btn)
 					btn.status:SetTexCoord(.1, .9, .1, .9)
-
-					btn.name = CreateFS(btn, "LEFT", btn.class, textOffset)
+					btn.name = CreateFS(btn, "LEFT", btn.status, textOffset)
 					btn.level = CreateFS(btn, "CENTER", btn.name)
-					btn.zone  = CreateFS(btn, "LEFT", btn.level)
+					btn.zone  = CreateFS(btn, "LEFT", btn.level, gap)
 					btn.note = CreateFS(btn, "CENTER", btn.zone, gap, GF_Colors.Note)
 					btn.rank  = CreateFS(btn, "RIGHT",  btn.note, gap, GF_Colors.Rank)
 				end
@@ -2083,16 +2082,16 @@ function module:SetGF()
 		end
 
 		-- Hooks
-		-- local function guildRoster()
-		-- 	if stat.Guild then
-		-- 		stat.Guild.dt = 0
-		-- 	end
-		-- end
-		-- local function ShowFriends()
-		-- 	if stat.Friends then
-		-- 		stat.Friends.dt = 0
-		-- 	end
-		-- end
+		local function guildRoster()
+			if stat.Guild then
+				stat.Guild.dt = 0
+			end
+		end
+		local function ShowFriends()
+			if stat.Friends then
+				stat.Friends.dt = 0
+			end
+		end
 
 		-- Script functions
 		stat.OnEnable = function(self)
@@ -2101,17 +2100,17 @@ function module:SetGF()
 			for eng, loc in pairs(LOCALIZED_CLASS_NAMES_MALE)   do stat.LocClassNames[loc] = eng end
 			for eng, loc in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do stat.LocClassNames[loc] = eng end
 
-			module:SecureHook(C_GuildInfo, "GuildRoster", function() if stat.Guild then stat.Guild.dt = 0 end end)
-			-- module:SecureHook("GuildRoster", guildRoster)
-			module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
-			-- module:SecureHook("ShowFriends", showFriends)
+			-- module:SecureHook(C_GuildInfo, "GuildRoster", function() if stat.Guild then stat.Guild.dt = 0 end end)
+			module:SecureHook("GuildRoster", guildRoster)
+			-- module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
+			module:SecureHook("ShowFriends", showFriends)
 		end
 
 		stat.OnDisable = function(self)
-			module:Unhook(C_GuildInfo, "GuildRoster")
+			-- module:Unhook(C_GuildInfo, "GuildRoster")
 			module:Unhook(C_FriendList, "ShowFriends")
-			-- module:Unhook("GuildRoster")
-			-- module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
+			module:Unhook("GuildRoster")
+			module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
 			-- module:Unhook("ShowFriends")
 		end
 
@@ -2192,12 +2191,12 @@ function module:SetGuild()
 
 		stat.PLAYER_GUILD_UPDATE = function(self, unit)
 			if unit and unit ~= "player" then return end
-			if IsInGuild() then C_GuildInfo.GuildRoster() end
+			if IsInGuild() then GuildRoster() end
 		end
 
 		-- Script functions
 		stat.OnEnable = function(self)
-			if IsInGuild() then C_GuildInfo.GuildRoster() end
+			if IsInGuild() then GuildRoster() end
 			self:UpdateText()
 		end
 
@@ -2205,7 +2204,7 @@ function module:SetGuild()
 			self.dt = self.dt + deltaTime
 			if self.dt > 15 then
 				if IsInGuild() and GetNumGuildMembers() then
-					C_GuildInfo.GuildRoster()
+					GuildRoster()
 				else
 					self.dt = 0
 				end
@@ -2310,7 +2309,7 @@ function module:SetFriends()
 				friendEntries[i] = tooltip:new(class, name, level, zone, note, status, "", "", nil, i, name or "")
 			end
 			self:UpdateText()
-			if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
+			-- if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
 		end
 
 		-- stat.FRIENDLIST_UPDATE = function(self)

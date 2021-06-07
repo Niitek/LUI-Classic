@@ -992,18 +992,18 @@ module.ApplySettings = function(unit)
 			end
 
 			-- alt power
-			if unit == "Player" or unit == "Pet" then
-				if module.db.Player.Bars.AltPower.Enable then
-					module.funcs.AltPowerBar(frame, frame.__unit, module.db[unit])
-					frame:EnableElement("AltPowerBar")
-					frame.AltPowerBar.SetPosition()
-				else
-					if frame.AltPowerBar then
-						frame:DisableElement("AltPowerBar")
-						frame.AltPowerBar.SetPosition()
-					end
-				end
-			end
+			-- if unit == "Player" or unit == "Pet" then
+			-- 	if module.db.Player.Bars.AltPower.Enable then
+			-- 		module.funcs.AltPowerBar(frame, frame.__unit, module.db[unit])
+			-- 		frame:EnableElement("AltPowerBar")
+			-- 		frame.AltPowerBar.SetPosition()
+			-- 	else
+			-- 		if frame.AltPowerBar then
+			-- 			frame:DisableElement("AltPowerBar")
+			-- 			frame.AltPowerBar.SetPosition()
+			-- 		end
+			-- 	end
+			-- end
 
 			-- auras
 			if module.db[unit].Aura then
