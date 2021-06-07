@@ -1195,51 +1195,51 @@ local DruidManaOverride = function(self, event, unit)
 	end
 end
 
-local PostUpdateAltPower = function(altpowerbar, min, cur, max)
-	local pClass, pToken = UnitClass("player")
-	local color = module.colors.class[pToken] or {0.5, 0.5, 0.5}
+-- local PostUpdateAltPower = function(altpowerbar, min, cur, max)
+-- 	local pClass, pToken = UnitClass("player")
+-- 	local color = module.colors.class[pToken] or {0.5, 0.5, 0.5}
 
-	local tex, r, g, b = GetUnitPowerBarTextureInfo("player", 3)
+-- 	local tex, r, g, b = GetUnitPowerBarTextureInfo("player", 3)
 
-	if not tex then return end
+-- 	if not tex then return end
 
-	if altpowerbar.color == "By Class" then
-		altpowerbar:SetStatusBarColor(unpack(color))
-	elseif altpowerbar.color == "Individual" then
-		altpowerbar:SetStatusBarColor(altpowerbar.colorIndividual.r, altpowerbar.colorIndividual.g, altpowerbar.colorIndividual.b)
-	else
-		altpowerbar:SetStatusBarColor(r, g, b)
-	end
+-- 	if altpowerbar.color == "By Class" then
+-- 		altpowerbar:SetStatusBarColor(unpack(color))
+-- 	elseif altpowerbar.color == "Individual" then
+-- 		altpowerbar:SetStatusBarColor(altpowerbar.colorIndividual.r, altpowerbar.colorIndividual.g, altpowerbar.colorIndividual.b)
+-- 	else
+-- 		altpowerbar:SetStatusBarColor(r, g, b)
+-- 	end
 
-	local r_, g_, b_ = altpowerbar:GetStatusBarColor()
-	local mu = altpowerbar.bg.multiplier or 1
-	altpowerbar.bg:SetVertexColor(r_*mu, g_*mu, b_*mu)
+-- 	local r_, g_, b_ = altpowerbar:GetStatusBarColor()
+-- 	local mu = altpowerbar.bg.multiplier or 1
+-- 	altpowerbar.bg:SetVertexColor(r_*mu, g_*mu, b_*mu)
 
-	if altpowerbar.Text then
-		if altpowerbar.Text.Enable then
-			if altpowerbar.Text.ShowAlways == false and (cur == max or cur == min) then
-				altpowerbar.Text:SetText()
-			elseif altpowerbar.Text.Format == "Absolut" then
-				altpowerbar.Text:SetFormattedText("%d/%d", cur, max)
-			elseif altpowerbar.Text.Format == "Percent" then
-				altpowerbar.Text:SetFormattedText("%.1f%%", 100 * (cur / max))
-			elseif altpowerbar.Text.Format == "Standard" then
-				altpowerbar.Text:SetFormattedText("%d", cur)
-			end
+-- 	if altpowerbar.Text then
+-- 		if altpowerbar.Text.Enable then
+-- 			if altpowerbar.Text.ShowAlways == false and (cur == max or cur == min) then
+-- 				altpowerbar.Text:SetText()
+-- 			elseif altpowerbar.Text.Format == "Absolut" then
+-- 				altpowerbar.Text:SetFormattedText("%d/%d", cur, max)
+-- 			elseif altpowerbar.Text.Format == "Percent" then
+-- 				altpowerbar.Text:SetFormattedText("%.1f%%", 100 * (cur / max))
+-- 			elseif altpowerbar.Text.Format == "Standard" then
+-- 				altpowerbar.Text:SetFormattedText("%d", cur)
+-- 			end
 
-			if altpowerbar.Text.color == "By Class" then
-				altpowerbar.Text:SetTextColor(unpack(color))
-			elseif altpowerbar.Text.color == "Individual" then
-				altpowerbar.Text:SetTextColor(altpowerbar.Text.colorIndividual.r, altpowerbar.Text.colorIndividual.g, altpowerbar.Text.colorIndividual.b)
-			else
-				altpowerbar.Text:SetTextColor(r, g, b)
-			end
+-- 			if altpowerbar.Text.color == "By Class" then
+-- 				altpowerbar.Text:SetTextColor(unpack(color))
+-- 			elseif altpowerbar.Text.color == "Individual" then
+-- 				altpowerbar.Text:SetTextColor(altpowerbar.Text.colorIndividual.r, altpowerbar.Text.colorIndividual.g, altpowerbar.Text.colorIndividual.b)
+-- 			else
+-- 				altpowerbar.Text:SetTextColor(r, g, b)
+-- 			end
 
-		else
-			altpowerbar.Text:SetText()
-		end
-	end
-end
+-- 		else
+-- 			altpowerbar.Text:SetText()
+-- 		end
+-- 	end
+-- end
 
 local PostUpdateDruidMana = function(druidmana, unit, min, max)
 	local _, class = UnitClass(unit)
@@ -2272,79 +2272,79 @@ module.funcs = {
 		module:RegisterEvent("UNIT_LEVEL", checkPowers)
 		self.ClassIcons.UpdateTexture = checkPowers
 	end,
-	AltPowerBar = function(self, unit, oufdb)
-		if not self.AltPowerBar then
-			self.AltPowerBar = CreateFrame("StatusBar", nil, self)
-			if unit == "pet" then self.AltPowerBar:SetParent(oUF_LUI_player) end
+	-- AltPowerBar = function(self, unit, oufdb)
+	-- 	if not self.AltPowerBar then
+	-- 		self.AltPowerBar = CreateFrame("StatusBar", nil, self)
+	-- 		if unit == "pet" then self.AltPowerBar:SetParent(oUF_LUI_player) end
 
-			self.AltPowerBar.bg = self.AltPowerBar:CreateTexture(nil, "BORDER")
-			self.AltPowerBar.bg:SetAllPoints(self.AltPowerBar)
+	-- 		self.AltPowerBar.bg = self.AltPowerBar:CreateTexture(nil, "BORDER")
+	-- 		self.AltPowerBar.bg:SetAllPoints(self.AltPowerBar)
 
-			self.AltPowerBar.SetPosition = function()
-				if not module.db.Player.Bars.AltPower.OverPower then return end
+	-- 		self.AltPowerBar.SetPosition = function()
+	-- 			if not module.db.Player.Bars.AltPower.OverPower then return end
 
-				if oUF_LUI_player.AltPowerBar:IsShown() or (oUF_LUI_pet and oUF_LUI_pet.AltPowerBar and oUF_LUI_pet.AltPowerBar:IsShown()) then
-					oUF_LUI_player.Power:SetHeight(module.db.Player.Bars.Power.Height/2 - 1)
-					oUF_LUI_player.AltPowerBar:SetHeight(module.db.Player.Bars.Power.Height/2 - 1)
-				else
-					oUF_LUI_player.Power:SetHeight(module.db.Player.Bars.Power.Height)
-					oUF_LUI_player.AltPowerBar:SetHeight(module.db.Player.Bars.AltPower.Height)
-				end
-			end
+	-- 			if oUF_LUI_player.AltPowerBar:IsShown() or (oUF_LUI_pet and oUF_LUI_pet.AltPowerBar and oUF_LUI_pet.AltPowerBar:IsShown()) then
+	-- 				oUF_LUI_player.Power:SetHeight(module.db.Player.Bars.Power.Height/2 - 1)
+	-- 				oUF_LUI_player.AltPowerBar:SetHeight(module.db.Player.Bars.Power.Height/2 - 1)
+	-- 			else
+	-- 				oUF_LUI_player.Power:SetHeight(module.db.Player.Bars.Power.Height)
+	-- 				oUF_LUI_player.AltPowerBar:SetHeight(module.db.Player.Bars.AltPower.Height)
+	-- 			end
+	-- 		end
 
-			self.AltPowerBar:SetScript("OnShow", function()
-				self.AltPowerBar.SetPosition()
-				self.AltPowerBar:ForceUpdate()
-			end)
-			self.AltPowerBar:SetScript("OnHide", self.AltPowerBar.SetPosition)
+	-- 		self.AltPowerBar:SetScript("OnShow", function()
+	-- 			self.AltPowerBar.SetPosition()
+	-- 			self.AltPowerBar:ForceUpdate()
+	-- 		end)
+	-- 		self.AltPowerBar:SetScript("OnHide", self.AltPowerBar.SetPosition)
 
-			self.AltPowerBar.Text = SetFontString(self.AltPowerBar, Media:Fetch("font", module.db.Player.Texts.AltPower.Font), module.db.Player.Texts.AltPower.Size, module.db.Player.Texts.AltPower.Outline)
-		end
+	-- 		self.AltPowerBar.Text = SetFontString(self.AltPowerBar, Media:Fetch("font", module.db.Player.Texts.AltPower.Font), module.db.Player.Texts.AltPower.Size, module.db.Player.Texts.AltPower.Outline)
+	-- 	end
 
-		self.AltPowerBar:ClearAllPoints()
-		if unit == "player" then
-			if module.db.Player.Bars.AltPower.OverPower then
-				self.AltPowerBar:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -2)
-				self.AltPowerBar:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -2)
-			else
-				self.AltPowerBar:SetPoint("TOPLEFT", self, "TOPLEFT", module.db.Player.Bars.AltPower.X, module.db.Player.Bars.AltPower.Y)
-			end
-		else
-			self.AltPowerBar:SetPoint("TOPLEFT", oUF_LUI_player.AltPowerBar, "TOPLEFT", 0, 0)
-			self.AltPowerBar:SetPoint("BOTTOMRIGHT", oUF_LUI_player.AltPowerBar, "BOTTOMRIGHT", 0, 0)
-		end
+	-- 	self.AltPowerBar:ClearAllPoints()
+	-- 	if unit == "player" then
+	-- 		if module.db.Player.Bars.AltPower.OverPower then
+	-- 			self.AltPowerBar:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -2)
+	-- 			self.AltPowerBar:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -2)
+	-- 		else
+	-- 			self.AltPowerBar:SetPoint("TOPLEFT", self, "TOPLEFT", module.db.Player.Bars.AltPower.X, module.db.Player.Bars.AltPower.Y)
+	-- 		end
+	-- 	else
+	-- 		self.AltPowerBar:SetPoint("TOPLEFT", oUF_LUI_player.AltPowerBar, "TOPLEFT", 0, 0)
+	-- 		self.AltPowerBar:SetPoint("BOTTOMRIGHT", oUF_LUI_player.AltPowerBar, "BOTTOMRIGHT", 0, 0)
+	-- 	end
 
-		self.AltPowerBar:SetHeight(module.db.Player.Bars.AltPower.Height)
-		self.AltPowerBar:SetWidth(module.db.Player.Bars.AltPower.Width)
-		self.AltPowerBar:SetStatusBarTexture(Media:Fetch("statusbar", module.db.Player.Bars.AltPower.Texture))
+	-- 	self.AltPowerBar:SetHeight(module.db.Player.Bars.AltPower.Height)
+	-- 	self.AltPowerBar:SetWidth(module.db.Player.Bars.AltPower.Width)
+	-- 	self.AltPowerBar:SetStatusBarTexture(Media:Fetch("statusbar", module.db.Player.Bars.AltPower.Texture))
 
-		self.AltPowerBar.bg:SetTexture(Media:Fetch("statusbar", module.db.Player.Bars.AltPower.TextureBG))
-		self.AltPowerBar.bg:SetAlpha(module.db.Player.Bars.AltPower.BGAlpha)
-		self.AltPowerBar.bg.multiplier = module.db.Player.Bars.AltPower.BGMultiplier
+	-- 	self.AltPowerBar.bg:SetTexture(Media:Fetch("statusbar", module.db.Player.Bars.AltPower.TextureBG))
+	-- 	self.AltPowerBar.bg:SetAlpha(module.db.Player.Bars.AltPower.BGAlpha)
+	-- 	self.AltPowerBar.bg.multiplier = module.db.Player.Bars.AltPower.BGMultiplier
 
-		self.AltPowerBar.Smooth = module.db.Player.Bars.AltPower.Smooth
-		self.AltPowerBar.color = module.db.Player.Bars.AltPower.Color
-		self.AltPowerBar.colorIndividual = module.db.Player.Bars.AltPower.IndividualColor
+	-- 	self.AltPowerBar.Smooth = module.db.Player.Bars.AltPower.Smooth
+	-- 	self.AltPowerBar.color = module.db.Player.Bars.AltPower.Color
+	-- 	self.AltPowerBar.colorIndividual = module.db.Player.Bars.AltPower.IndividualColor
 		
-		self.AltPowerBar.Text:SetFont(Media:Fetch("font", module.db.Player.Texts.AltPower.Font), module.db.Player.Texts.AltPower.Size, module.db.Player.Texts.AltPower.Outline)
-		self.AltPowerBar.Text:ClearAllPoints()
-		self.AltPowerBar.Text:SetPoint("CENTER", self.AltPowerBar, "CENTER", module.db.Player.Texts.AltPower.X, module.db.Player.Texts.AltPower.Y)
+	-- 	self.AltPowerBar.Text:SetFont(Media:Fetch("font", module.db.Player.Texts.AltPower.Font), module.db.Player.Texts.AltPower.Size, module.db.Player.Texts.AltPower.Outline)
+	-- 	self.AltPowerBar.Text:ClearAllPoints()
+	-- 	self.AltPowerBar.Text:SetPoint("CENTER", self.AltPowerBar, "CENTER", module.db.Player.Texts.AltPower.X, module.db.Player.Texts.AltPower.Y)
 
-		self.AltPowerBar.Text.Enable = module.db.Player.Texts.AltPower.Enable
-		self.AltPowerBar.Text.Format = module.db.Player.Texts.AltPower.Format
-		self.AltPowerBar.Text.color = module.db.Player.Texts.AltPower.Color
-		self.AltPowerBar.Text.colorIndividual = module.db.Player.Texts.AltPower.IndividualColor
+	-- 	self.AltPowerBar.Text.Enable = module.db.Player.Texts.AltPower.Enable
+	-- 	self.AltPowerBar.Text.Format = module.db.Player.Texts.AltPower.Format
+	-- 	self.AltPowerBar.Text.color = module.db.Player.Texts.AltPower.Color
+	-- 	self.AltPowerBar.Text.colorIndividual = module.db.Player.Texts.AltPower.IndividualColor
 
-		if module.db.Player.Texts.AltPower.Enable then
-			self.AltPowerBar.Text:Show()
-		else
-			self.AltPowerBar.Text:Hide()
-		end
+	-- 	if module.db.Player.Texts.AltPower.Enable then
+	-- 		self.AltPowerBar.Text:Show()
+	-- 	else
+	-- 		self.AltPowerBar.Text:Hide()
+	-- 	end
 
-		self.AltPowerBar.PostUpdate = PostUpdateAltPower
+	-- 	self.AltPowerBar.PostUpdate = PostUpdateAltPower
 
-		self.AltPowerBar.SetPosition()
-	end,
+	-- 	self.AltPowerBar.SetPosition()
+	-- end,
 	DruidMana = function(self, unit, oufdb)
 		if not self.DruidMana then
 			local DruidMana = CreateFrame("StatusBar", nil, self)
@@ -3099,21 +3099,21 @@ local SetStyle = function(self, unit, isSingle)
 			end
 		elseif class == "DRUID" then
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
-			if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
-		elseif class == "PALADIN" then
-			if oufdb.Bars.HolyPower.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
-		elseif class == "MONK" then
-			if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+			-- if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+		-- elseif class == "PALADIN" then
+		-- 	if oufdb.Bars.HolyPower.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+		-- elseif class == "MONK" then
+		-- 	if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "ROGUE" then
 			if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "SHAMAN" then
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
-		elseif class == "MAGE" then
-			if oufdb.Bars.ArcaneCharges.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
-		elseif class == "WARLOCK" then 
-			if oufdb.Bars.WarlockBar.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
-		elseif class == "PRIEST" then 
-			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
+		-- elseif class == "MAGE" then
+		-- 	if oufdb.Bars.ArcaneCharges.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+		-- elseif class == "WARLOCK" then 
+		-- 	if oufdb.Bars.WarlockBar.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+		-- elseif class == "PRIEST" then 
+		-- 	if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 		end
 	end
 	
@@ -3132,9 +3132,9 @@ local SetStyle = function(self, unit, isSingle)
 	
 	if oufdb.Portrait.Enable then module.funcs.Portrait(self, unit, oufdb) end
 
-	if unit == "player" or unit == "pet" then
-		if module.db.Player.Bars.AltPower.Enable then module.funcs.AltPowerBar(self, unit, oufdb) end
-	end
+	-- if unit == "player" or unit == "pet" then
+	-- 	if module.db.Player.Bars.AltPower.Enable then module.funcs.AltPowerBar(self, unit, oufdb) end
+	-- end
 
 	if oufdb.Aura then
 		if oufdb.Aura.Buffs.Enable then module.funcs.Buffs(self, unit, oufdb) end

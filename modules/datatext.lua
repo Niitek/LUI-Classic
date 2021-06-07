@@ -1436,18 +1436,18 @@ function module:SetGF()
 
 		local function SetToastData(index, inGroup, offset)
 			local toast, bc, color = toasts[index], nil, nil
-			-- local accountInfo = BNGetFriendInfo(index + offset)
-			-- local gameInfo = BNGetGameAccountInfo
-			-- local presenceID, givenName, battleTag = accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag
-			-- local client, wowProjectID = gameInfo.clientProgram, gameInfo.wowProjectID or 0
-			-- local isOnline, isAFK, isDND = gameInfo.isOnline, accountInfo.isAFK, accountInfo.isDND
-			-- local broadcast, notes = accountInfo.customMessage, accountInfo.note
-			-- local toonName, faction, race, class = gameInfo.characterName or "", gameInfo.factionName or "", gameInfo.raceName or "", gameInfo.className or ""
-			-- local realm, zone, level, gameText = gameInfo.realmName or "", gameInfo.areaName or "", gameInfo.characterLevel or "", gameInfo.richPresence or ""
+			local accountInfo = BNGetFriendInfo(index + offset)
+			local gameInfo = BNGetGameAccountInfo(toonID or 0)
+			local presenceID, givenName, battleTag = accountInfo.bnetIDAccount , accountInfo.accountName, accountInfo.battleTag
+			local client, wowProjectID = gameInfo.client, gameInfo.wowProjectID or 0
+			local isOnline, isAFK, isDND = gameInfo.isOnline, accountInfo.isAFK, accountInfo.isDND
+			local broadcast, notes = accountInfo.messageText, accountInfo.note
+			local toonName, faction, race, class = gameInfo.characterName or "", gameInfo.factionName or "", gameInfo.raceName or "", gameInfo.className or ""
+			local realm, zone, level, gameText = gameInfo.realmName or "", gameInfo.areaName or "", gameInfo.characterLevel or "", gameInfo.richPresence or ""
 
 			-- presenceID is the BNAccountID, toonID refers to BNGameAccountID, name preserved for compatibility sake. Clean code in V4.
-			local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
-			local _, _, _, realm, _, faction, race, class, _, zone, level, gameText = BNGetGameAccountInfo(toonID or 0)
+			-- local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
+			-- local _, _, _, realm, _, faction, race, class, _, zone, level, gameText = BNGetGameAccountInfo(toonID or 0)
 
 			if faction == 'Alliance' then faction = 1
 			else faction = 0

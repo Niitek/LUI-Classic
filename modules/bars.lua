@@ -813,7 +813,7 @@ function module:SetStanceBar()
 	ShowIf(LUIStanceBar, db.StanceBar.Enable and GetNumShapeshiftForms() > 0)
 end
 
-function module:SetVehicleExit()		-- killed for tbc
+function module:SetVehicleExit()
 	if not LUIVehicleExit then
 		local bar = CreateFrame("Frame", "LUIVehicleExit", UIParent, "SecureHandlerStateTemplate")
 		bar:SetHeight(60)
@@ -829,7 +829,7 @@ function module:SetVehicleExit()		-- killed for tbc
 		veb:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 		veb:SetScript("OnClick", function(self) VehicleExit() end)
 
-		-- if not UnitInVehicle("player") then bar:Hide() end
+		-- if not UnitInVehicle("player") then bar:Hide() end --killed for tbc
 	end
 
 	local scale = db.VehicleExit.Scale
@@ -840,29 +840,29 @@ function module:SetVehicleExit()		-- killed for tbc
 	ShowIf(LUIVehicleExit, db.VehicleExit.Enable)
 end
 
--- function module:SetExtraActionBar()
--- 	local bar = LUIExtraActionBar
--- 	if not bar then
--- 		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
--- 		bar:SetHeight(52)
--- 		bar:SetWidth(52)
--- 		bar.content = ExtraActionBarFrame
+function module:SetExtraActionBar()
+	local bar = LUIExtraActionBar
+	if not bar then
+		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
+		bar:SetHeight(52)
+		bar:SetWidth(52)
+		bar.content = ExtraActionBarFrame
 
--- 		bar.content.ignoreFramePositionManager = true
+		bar.content.ignoreFramePositionManager = true
 
--- 		bar.content:SetParent(bar)
--- 		bar.content:ClearAllPoints()
--- 		bar.content:SetPoint("CENTER", bar, "CENTER", 0, 0)
--- 	end
+		bar.content:SetParent(bar)
+		bar.content:ClearAllPoints()
+		bar.content:SetPoint("CENTER", bar, "CENTER", 0, 0)
+	end
 
--- 	local scale = db.ExtraActionBar.Scale
--- 	bar:ClearAllPoints()
--- 	bar:SetPoint(db.ExtraActionBar.Point, UIParent, db.ExtraActionBar.Point, db.ExtraActionBar.X / scale, db.ExtraActionBar.Y / scale)
--- 	bar:SetScale(scale)
+	local scale = db.ExtraActionBar.Scale
+	bar:ClearAllPoints()
+	bar:SetPoint(db.ExtraActionBar.Point, UIParent, db.ExtraActionBar.Point, db.ExtraActionBar.X / scale, db.ExtraActionBar.Y / scale)
+	bar:SetScale(scale)
 
--- 	ShowIf(bar.content.button.style, not db.ExtraActionBar.HideTextures)
--- 	ShowIf(bar, db.ExtraActionBar.Enable)
--- end
+	ShowIf(bar.content.button.style, not db.ExtraActionBar.HideTextures)
+	ShowIf(bar, db.ExtraActionBar.Enable)
+end
 
 function module:HideBlizzard()
 	--LUI:Print("Hiding Blizzard frames")

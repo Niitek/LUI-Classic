@@ -53,7 +53,7 @@ local barColors = {
 local barKeys = {
 	Runes = "Runes",
 	HolyPower = "ClassIcons",
-	AltPower = "AltPowerBar",
+	-- AltPower = "AltPowerBar",
 	DruidMana = "DruidMana",
 	WarlockBar = "ClassIcons",
 	ArcaneCharges = "ClassIcons",
@@ -63,7 +63,7 @@ local barKeys = {
 local barNames = {
 	Runes = "Runes",
 	HolyPower = "Holy Power",
-	AltPower = "Alternate Power",
+	-- AltPower = "Alternate Power",
 	DruidMana = "Druid Mana",
 	ArcaneCharges = "Arcane Charges",
 	WarlockBar = "Warlock Bars",
@@ -619,14 +619,14 @@ function module:CreatePlayerBarTextOptions(barType, order)
 	local barName = barNames[barType]
 	local barKey = barKeys[barType]
 
-	local textformats = barType == "AltPower" and {
-		Absolut = "Absolut",
-		Percent = "Percent",
-		Standard = "Standard"
-	} or {
-		Absolut = "Absolut",
-		Standard = "Standard"
-	}
+	-- local textformats = barType == "AltPower" and {
+	-- 	Absolut = "Absolut",
+	-- 	Percent = "Percent",
+	-- 	Standard = "Standard"
+	-- } or {
+	-- 	Absolut = "Absolut",
+	-- 	Standard = "Standard"
+	-- }
 
 	local disabledFunc = function() return not self.db.Player.Texts[barType].Enable end
 
@@ -650,8 +650,8 @@ function module:CreatePlayerBarTextOptions(barType, order)
 		X = self:NewInputNumber("X Value", "Choose the X Value for your "..barName.." Bar Text.", 7, applySettings, nil, disabledFunc),
 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your "..barName.." Bar Text.", 8, applySettings, nil, disabledFunc),
 		empty3 = self:NewDesc(" ", 9),
-		Format = (barType == "AltPower") and self:NewSelect("Format", "Choose the Format for the "..barType.." Bar Text.", 10, textformats, nil, applySettings, nil, disabledFunc) or nil,
-		Color = (barType == "AltPower") and self:NewSelect("Color", "Choose the Color Option for the "..barType.." Bar Text.", 11, {["By Class"] = "By Class", ["Individual"] = "Individual"}, nil, applySettings, nil, disabledFunc) or nil,
+		Format = --[[ (barType == "AltPower") and  ]]self:NewSelect("Format", "Choose the Format for the "..barType.." Bar Text.", 10, textformats, nil, applySettings, nil, disabledFunc) or nil,
+		Color = --[[ (barType == "AltPower") and  ]]self:NewSelect("Color", "Choose the Color Option for the "..barType.." Bar Text.", 11, {["By Class"] = "By Class", ["Individual"] = "Individual"}, nil, applySettings, nil, disabledFunc) or nil,
 		IndividualColor = (barType == "AltPower") and self:NewColorNoAlpha("", barType.." Bar Text", 12, applySettings, nil, disabledFunc) or nil,
 	})
 
@@ -688,7 +688,7 @@ function module:CreateDruidManaTimerOptions(order)
 
 	local applySettings = function()
 		module.funcs.DruidMana(oUF_LUI_player, oUF_LUI_player.__unit, self.db.Player)
-		if oUF_LUI_player.AltPowerBar then oUF_LUI_player.AltPowerBar.SetPosition() end
+		-- if oUF_LUI_player.AltPowerBar then oUF_LUI_player.AltPowerBar.SetPosition() end
 		oUF_LUI_player.DruidMana.SetPosition()
 		oUF_LUI_player:UpdateAllElements()
 	end
@@ -1070,7 +1070,7 @@ function module:CreateUnitOptions(unit, order)
 		header1 = self:NewHeader(unit, 1),
 		General = self:NewGroup("General", 2, "tab", generalGet, generalSet, {
 			General = self:NewGroup("General", 1, {
-				Enable = (unit ~= "Player" and unit ~= "Target") and self:NewToggle("Enable", "Whether you want to show "..unit.." Frame(s) or not.\n\nDefault: "..(self.defaults[unit].Enable and "Enabled" or "Disabled"), 1, false, "full") or nil,
+				Enable = --[[ (unit ~= "Player" and unit ~= "Target") and ]] self:NewToggle("Enable", "Whether you want to show "..unit.." Frame(s) or not.\n\nDefault: "..(self.defaults[unit].Enable and "Enabled" or "Disabled"), 1, false, "full") or nil,
 				UseBlizzard = (unit == "Party" or unit == "Boss" or unit == "Arena" or unit == "Raid") and self:NewToggle("Use Blizzard "..unit.." Frames", "Whether you want to use Blizzard "..unit.." Frames or not.", 2, false, "full", function() return self.db[unit].Enable end) or nil,
 				ShowPlayer = (unit == "Party") and self:NewToggle("Show Player", "Whether you want to show yourself within the Party Frames or not.", 3, false, nil, disabledFunc) or nil,
 				ShowInRaid = (unit == "Party") and self:NewToggle("Show in Raid", "Whether you want to show the Party Frames in Raid or not.", 4, false, nil, disabledFunc) or nil,
@@ -1127,7 +1127,7 @@ function module:CreateUnitOptions(unit, order)
 			HealPrediction = self.db[unit].Bars.HealPrediction and self:CreateHealPredictionOptions(unit, 4) or nil,
 			TotalAbsorb = self.db[unit].Bars.TotalAbsorb and self:CreateTotalAbsorbOptions(unit, 5) or nil,
 			DruidMana = ((class == "DRUID" or class == "PRIEST" or class == "SHAMAN") and unit == "Player") and self:CreatePlayerBarOverlappingOptions("DruidMana", 11) or nil,
-			AltPower = (unit == "Player") and self:CreatePlayerBarOverlappingOptions("AltPower", 12) or nil,
+			-- AltPower = (unit == "Player") and self:CreatePlayerBarOverlappingOptions("AltPower", 12) or nil,
 			Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
 			HolyPower = (class == "PALADIN" and unit == "Player") and self:CreatePlayerBarOptions("HolyPower", 15) or nil,
 			WarlockBar = (class == "WARLOCK" and unit == "Player") and self:CreatePlayerBarOptions("WarlockBar", 16) or nil,
@@ -1147,7 +1147,7 @@ function module:CreateUnitOptions(unit, order)
 			DruidMana = (unit == "Player" and (class == "DRUID" or class == "SHAMAN" or class == "PRIEST")) and self:CreateDruidManaTimerOptions(9) or nil,
 			WarlockBar = (unit == "Player" and class == "WARLOCK") and self:CreatePlayerBarTextOptions("WarlockBar", 9) or nil,
 			PvP = (unit == "Player") and self:CreatePvpTimerOptions(10) or nil,
-			AltPower = (unit == "Player") and self:CreatePlayerBarTextOptions("AltPower", 12) or nil,
+			-- AltPower = (unit == "Player") and self:CreatePlayerBarTextOptions("AltPower", 12) or nil,
 		}),
 		Castbar = (self.defaults[unit].Castbar) and self:CreateCastbarOptions(unit, 5) or nil,
 		Aura = (self.defaults[unit].Aura) and self:NewGroup("Auras", 6, "tab", nil, disabledFunc, {

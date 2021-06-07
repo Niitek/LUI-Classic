@@ -115,6 +115,7 @@ local function ElementEnable(self)
 	self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
 	self:RegisterEvent('UNIT_DISPLAYPOWER', Path)
 	self:RegisterEvent('UNIT_MAXPOWER', Path)
+	self:RegisterEvent('UPDATE_SHAPESHIFT_FORM')
 
 	self.DruidMana:Show()
 
@@ -176,6 +177,7 @@ local Enable = function(self, unit)
 		druidmana.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent('UNIT_DISPLAYPOWER', VisibilityPath)
+		self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', VisibilityPath)
 
 		if(druidmana:IsObjectType'StatusBar' and not druidmana:GetStatusBarTexture()) then
 			druidmana:SetStatusBarTexture[[Interface\TargetingFrame\UI-StatusBar]]

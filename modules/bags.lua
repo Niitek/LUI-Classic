@@ -204,7 +204,7 @@ end
 
 function module:SlotUpdate(item)
 
-	local texture, count, locked, quality = GetContainerItemInfo(item.bag, item.slot)
+	local texture, count, locked, itemQuality = GetContainerItemInfo(item.bag, item.slot)
 	local clink = GetContainerItemLink(item.bag, item.slot)
 	local color = db.Colors.Border
 
@@ -278,21 +278,21 @@ function module:SlotUpdate(item)
 	end
 
 	if (itemLink) then
-		local name, _, rarity, _, _, iType = GetItemInfo(itemLink)
-		item.name, item.rarity = name, rarity
+		local name, _, itemQuality, _, _, iType = GetItemInfo(itemLink)
+		item.name, item.itemQuality = name, itemQuality
 		-- color slot according to item quality
-		if db.Bags.ItemQuality and not item.frame.lock and rarity and rarity > 1 then
-			item.frame:SetBackdropBorderColor(GetItemQualityColor(rarity))
+		if db.Bags.Rarity and not item.frame.lock and itemQuality > 1 then
+			item.frame:SetTexture(ITEM_QUALITY_COLORS)
 		end
 	else
-		item.name, item.rarity = nil, nil
+		item.name, item.itemQuality = nil, nil
 	end
 
 	SetItemButtonTexture(item.frame, texture)
 	SetItemButtonCount(item.frame, count)
 	SetItemButtonDesaturated(item.frame, locked, 0.5, 0.5, 0.5)
 	if db.Bags.ShowOverlay and itemLink then
-		SetItemButtonOverlay(item.frame, itemLink, quality, isBound)
+		SetItemButtonOverlay(item.frame, itemLink, itemQuality, isBound)
 	else
 		item.frame.IconOverlay:Hide()
 		if item.frame.IconOverlay2 then
@@ -512,7 +512,7 @@ end
 
 function module:CreateBagFrame(bagType)
 	local frameName = "LUI"..bagType -- LUIBags, LUIBank
-	local frame = CreateFrame("Frame", frameName, UIParent, BackdropTemplateMixin and "BackdropTemplate")
+	local frame = CreateFrame("Frame", frameName, UIParent, "BackdropTemplate")
 	frame:EnableMouse(1)
 	frame:SetMovable(1)
 	frame:SetToplevel(1)
@@ -529,14 +529,14 @@ function module:CreateBagFrame(bagType)
 	frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
 
 	-- Bag Frame
-	local bagsFrame = CreateFrame("Frame", frameName.."_BagsFrame", frame, BackdropTemplateMixin and "BackdropTemplate")
+	local bagsFrame = CreateFrame("Frame", frameName.."_BagsFrame", frame, "BackdropTemplate")
 	bagsFrame:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, LUI:Scale(2))
 	bagsFrame:SetFrameStrata("HIGH")
 	frame.BagsFrame = bagsFrame
-	-- frame:EnableMouse(0)
+	frame:EnableMouse(0)
 
 	-- Sort Button
-	local sortBtn = CreateFrame("Button", frameName.."_SortButton", frame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local sortBtn = CreateFrame("Button", frameName.."_SortButton", frame, "UIPanelButtonTemplate", "BackdropTemplate")
 	sortBtn:SetText("Stack & Sort");
 	sortBtn:SetWidth(LUI:Scale(sortBtn:GetTextWidth()+20))
 	sortBtn:SetHeight(LUI:Scale(sortBtn:GetTextHeight()+10))
@@ -601,7 +601,7 @@ function module:SetBags()
 	LUIBags:SetScript("OnHide", LUIBags_OnHide)
 
 	-- Search Editbox
-	local editbox = CreateFrame("EditBox", nil, LUIBags, BackdropTemplateMixin and "BackdropTemplate")
+	local editbox = CreateFrame("EditBox", nil, LUIBags, "BackdropTemplate")
 	editbox:Hide()
 	editbox:SetAutoFocus(true)
 	editbox:SetHeight(LUI:Scale(32))
@@ -679,7 +679,7 @@ function module:SetBags()
 		self:GetParent().editbox:HighlightText()
 	end
 
-	local button = CreateFrame("Button", nil, LUIBags, BackdropTemplateMixin and "BackdropTemplate")
+	local button = CreateFrame("Button", nil, LUIBags, "BackdropTemplate")
 	button:EnableMouse(1)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetAllPoints(search)
@@ -690,7 +690,7 @@ function module:SetBags()
 			if self:GetParent().editbox:IsShown() then
 				self:GetParent().editbox:Hide()
 				self:GetParent().editbox:ClearFocus()
-				-- self:GetParent().detail:Show()
+				self:GetParent().detail:Show()
 				self:GetParent().gold:Show()
 				-- self:GetParent().currency:Show()
 				self:GetParent().search:Show()
@@ -773,7 +773,6 @@ function module:Layout(bagType)
 		local fColor = { color.r *1.5, color.g *1.5, color.b *1.5, color.a}
 		local fbgColor = { bgcolor.r /2, bgcolor.g /2, bgcolor.b /2, bgcolor.a}
 		if db.Colors.BlackFrameBG then
-			Mixin(item.frame, BackdropTemplateMixin)
 			frame:SetBackdropColor(0.1, 0.1, 0.1, 1)
 			frame:SetBackdropBorderColor(0.3, 0.3 ,0.3 ,1)
 		else
@@ -788,7 +787,6 @@ function module:Layout(bagType)
 			edgeFile = borderTex, edgeSize = 5,
 			insets = { left = 3, right = 3, top = 3, bottom = 3 }
 		})
-		Mixin(bagsFrame, BackdropTemplateMixin)
 		bagsFrame:SetBackdropColor(unpack(background_color))
 		bagsFrame:SetBackdropBorderColor(unpack(border_color))
 
@@ -914,14 +912,12 @@ function module:Layout(bagType)
 					item.frame:SetPushedTexture("")
 					item.frame:SetNormalTexture("")
 					item.frame:Show()
-						Mixin(item.frame, BackdropTemplateMixin)
 					item.frame:SetBackdrop( {
 						bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 						edgeFile = borderTex,
 						tile = false, tileSize = 0, edgeSize = 15,
 						insets = { left = 5, right = 5, top = 5, bottom = 5 }
 					})
-					Mixin(item.frame, BackdropTemplateMixin)
 					item.frame:SetBackdropColor(unpack(background_color))
 					item.frame:SetBackdropBorderColor(unpack(border_color))
 
@@ -946,8 +942,8 @@ function module:Layout(bagType)
 	end
 
 	--adjust the size of the frames now.
-	-- frame:SetScale(db[bagType].Scale)
-	-- bagsFrame:SetScale(db[bagType].BagScale)
+	frame:SetScale(db[bagType].Scale)
+	bagsFrame:SetScale(db[bagType].BagScale)
 
 	isCreated[bagType] = true
 end
@@ -1126,7 +1122,7 @@ module.defaults = {
 			Scale = 1,
 			BagScale = 1,
 			BagFrame = true,
-			ItemQuality = true,
+			Rarity = true,
 			ShowNew = false,
 			ShowQuest = true,
 			ShowOverlay = true,
@@ -1227,9 +1223,9 @@ function module:LoadOptions()
 				Spacing = LUI:NewSlider("Bag Spacing", "This sets the distance between items.",
 					7, db.Bags, "Spacing", dbd.Bags, 1, 15, 1, BagOpt),
 				Scale = LUI:NewScale("Bags Frame",8, db.Bags, "Scale", dbd.Bags, BagOpt),
-				-- BagScale = LUI:NewScale("Bags BagBar",9, db.Bags, "BagScale", dbd.Bags, BagOpt),
-				-- BagFrame = LUI:NewToggle("Show Bag Bar", nil, 10, db.Bags, "BagFrame", dbd.Bags, BagOpt),
-				ItemQuality = LUI:NewToggle("Show Item Quality", nil, 11, db.Bags, "ItemQuality", dbd.Bags, ReloadBoth),
+				BagScale = LUI:NewScale("Bags BagBar",9, db.Bags, "BagScale", dbd.Bags, BagOpt),
+				BagFrame = LUI:NewToggle("Show Bag Bar", nil, 10, db.Bags, "BagFrame", dbd.Bags, BagOpt),
+				Rarity = LUI:NewToggle("Show Item Quality", nil, 11, db.Bags, "ItemQuality", dbd.Bags, ReloadBoth),
 				ShowNew = LUI:NewToggle("Show New Item Animation", nil, 12, db.Bags, "ShowNew", dbd.Bags, ReloadBoth),
 				ShowQuest = LUI:NewToggle("Show Quest Highlights", nil, 13, db.Bags, "ShowQuest", dbd.Bags, ReloadBoth),
 				ShowOverlay = LUI:NewToggle("Show Overlays", nil, 14, db.Bags, "ShowOverlay", dbd.Bags, ReloadBoth),
@@ -1253,8 +1249,8 @@ function module:LoadOptions()
 				Spacing = LUI:NewSlider("Bank Spacing", "This sets the distance between items.", 5,
 					db.Bank, "Spacing", dbd.Bank, 1, 15, 1, BankOpt, nil, DisabledCopy),
 				Scale = LUI:NewScale("Bank Frame",6, db.Bank, "Scale", dbd.Bank, BankOpt, nil, DisabledCopy),
-				-- BagScale = LUI:NewScale("Bank BagBar",7, db.Bank, "BagScale", dbd.Bank, BankOpt, nil, DisabledCopy),
-				-- BagFrame = LUI:NewToggle("Show Bag Bar", nil, 8, db.Bank, "BagFrame", dbd.Bank, BankOpt, nil, DisabledCopy),
+				BagScale = LUI:NewScale("Bank BagBar",7, db.Bank, "BagScale", dbd.Bank, BankOpt, nil, DisabledCopy),
+				BagFrame = LUI:NewToggle("Show Bag Bar", nil, 8, db.Bank, "BagFrame", dbd.Bank, BankOpt, nil, DisabledCopy),
 			},
 		},
 	}
@@ -1371,9 +1367,9 @@ function module:PrepareSort(frame)
 					return;
 				end
 
-				local name, _, rarity, itemLevel, requiredLevel, itemType, itemSubType, stackCount, equipLocation, _, sellPrice = GetItemInfo(itemId);
+				local name, _, itemQuality, itemLevel, requiredLevel, itemType, itemSubType, stackCount, equipLocation, _, sellPrice = GetItemInfo(itemId);
 
-				local sortString = rarity .. itemType .. itemSubType .. requiredLevel .. itemLevel .. name .. itemId;
+				local sortString = itemQuality .. itemType .. itemSubType .. requiredLevel .. itemLevel .. name .. itemId;
 
 				local itemFamily = GetItemFamily(itemId);
 
