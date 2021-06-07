@@ -137,7 +137,7 @@ local function Visibility(self, event, unit)
 	local s = nil
 
 	for i = 1, GetShapeshiftForm() do
-		if select(0, GetShapeshiftFormID(i)) then
+		if select(10, GetShapeshiftFormID(i)) then
 			if(UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX) ~= 0) then
 				if(isBetaClient) then
 					if(druidmana.displayPairs[playerClass]) then
