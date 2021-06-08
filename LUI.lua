@@ -810,11 +810,11 @@ local function getOptions()
 							args = {
 								IntroImage = {
 									order = 1,
-									image = [[Interface\\AddOns\\LUI\\media\\textures\\logobc]],
+									image = [[Interface\AddOns\LUI\media\textures\logobc.tga]],
 									imageWidth = 512,
 									width = "full",
-									imageHeight = 128,
-									imageCoords = { 0, 1, 0, 1 },
+									imageHeight = 225,
+									imageCoords = { 0, 1, 0, .9 },
 									type = "description",
 									name = " ",
 								},
