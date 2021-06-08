@@ -828,7 +828,7 @@ local function getOptions()
 									order = 3,
 									width = "full",
 									type = "description",
-									name = L["Welcome to LUI v3"].."\n\n"..L["Please read the FAQ"].."\n\n\n",
+									name = L["Welcome to LUI v3 for The Burning Crusade Classic"].."\n\n"..L["Please read the FAQ"].."\n\n\n",
 								},
 								VerText = {
 									order = 4,
@@ -1308,7 +1308,7 @@ local function getOptions()
 									width = "full",
 									type = "description",
 									fontSize = "medium",
-									name = "Current V3 Devs: |cffe6cc80Siku, Mule|r\n",
+									name = "Current V3 Devs: |cffe6cc80Siku, Mule, Nitsah|r\n",
 								},
 								OldStaff = {
 									order = 5,
