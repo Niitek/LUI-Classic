@@ -42,11 +42,11 @@ Questions/Support: Please use the awesome LUI v3 Website if you have any questio
 Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonFacade (Those are not included in this core addon) All addons in the basic addon pack can be replaced by any addons you may want to use instead, some setting up may be required by you to adapt those addons to the interface.
 
 **Known Issues**
-:Bag bar throws an error when moving bags, but otherwise works like normal
-:Recount doesn't get themed properly, but otherwise works like normal
-:Druid Mana bar does not work as intended
-:Swing timer does not display
+*Bag bar throws an error when moving bags, but otherwise works like normal
+*Recount doesn't get themed properly, but otherwise works like normal
+*Druid Mana bar does not work as intended
+*Swing timer does not display
 
 **QoL Stuff Planned**
-:Class icon/color toggle for guild/friend list info text
-:Reinstate Heal/Absorb predictions
+*Class icon/color toggle for guild/friend list info text
+*Reinstate Heal/Absorb predictions
