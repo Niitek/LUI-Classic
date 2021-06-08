@@ -2072,9 +2072,9 @@ function module:SetGuild()
 					end
 					GameTooltip:AddLine("Hints:")
 					GameTooltip:AddLine("|cffff8020Click|r to open Guild Roster.", 0.2, 1, 0.2)
-					GameTooltip:AddLine("|cffff8020RightClick|r to display Guild Information.", 0.2, 1, 0.2)
-					GameTooltip:AddLine("|cffff8020Button4|r to toggle notes.", 0.2, 1, 0.2)
-					GameTooltip:AddLine("|cffff8020Button5|r to toggle hints.", 0.2, 1, 0.2)
+					GameTooltip:AddLine("|cffff8020RightClick|r to toggle notes.", 0.2, 1, 0.2)
+					-- GameTooltip:AddLine("|cffff8020Button4|r to toggle notes.", 0.2, 1, 0.2)
+					-- GameTooltip:AddLine("|cffff8020Button5|r to toggle hints.", 0.2, 1, 0.2)
 					GameTooltip:SetFrameLevel(2) -- keep tooltip above friends/guild list
 					GameTooltip:Show()
 				else
@@ -2136,7 +2136,7 @@ function module:SetGuild()
 			if button == "LeftButton" then -- toggle Guild Roster
 					ToggleFriendsFrame(3)
 			elseif button == "RightButton" then -- toggle guild and officer notes
-				db.Guild.ShowHints =  not db.Guild.ShowNotes
+				db.Guild.ShowNotes = not db.Guild.ShowNotes
 				tooltip:Update()
 				self:UpdateHints()
 			end
