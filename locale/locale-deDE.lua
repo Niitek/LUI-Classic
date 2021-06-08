@@ -20,7 +20,7 @@ L["[PL]"] = true
 L["[R]"] = true
 L["[RL]"] = true
 L["[RW]"] = true
-L["[Trade]"] = "[Handel]"
+L["[Trade - City]"] = "[Handel]"
 L["[W:From]"] = "[W:von]"
 L["[W:To]"] = "[W:Zu]"
 --Translation missing

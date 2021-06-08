@@ -163,7 +163,7 @@ Links: items, spells, enchants, talents, glyphs, quests, achievements, and insta
 L["Stop the chat from fading out over time"] = true
 L["To (|HBNplayer.-|h):"] = true
 L["To (|Hplayer.-|h):"] = true
-L["Trade"] = true
+L["Trade - City"] = true
 L["[Trade]"] = true
 L["Use abreviated channel names"] = true
 L["Use Alt key"] = true

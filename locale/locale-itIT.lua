@@ -38,7 +38,7 @@ L["[RL]"] = "[RL]"
 --Translation missing
 L["[RW]"] = "[RW]"
 --Translation missing
-L["[Trade]"] = "[Trade]"
+L["[Trade - City]"] = "[Trade]"
 --Translation missing
 L["[W:From]"] = "[W:From]"
 --Translation missing

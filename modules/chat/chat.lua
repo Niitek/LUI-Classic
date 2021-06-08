@@ -384,7 +384,7 @@ do
 		[L["Battleground"]] = "[BG]",
 		[L["Battleground Leader"]] = "[BL]",
 		[L["General"]] = "[General]",
-		[L["Trade"]] = "[Trade]",
+		[L["Trade - City"]] = "[Trade]",
 		[L["LocalDefense"]] = "[LocalDefense]",
 		[L["WorldDefense"]] = "[WorldDefense]",
 		[L["LookingForGroup"]] = "[LFG]",
