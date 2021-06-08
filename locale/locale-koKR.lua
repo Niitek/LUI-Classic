@@ -333,7 +333,7 @@ L["Version: "] = "Version: "
 --Translation missing
 L["Vertical Position"] = "Vertical Position"
 --Translation missing
-L["Welcome to LUI v3"] = [=[Welcome to |c0090ffffLUI v3|r, a complete
+L["Welcome to LUI v3 for The Burning Crusade Classic"] = [=[Welcome to |c0090ffffLUI v3|r, a complete
 World of Warcraft User Interface overhaul.]=]
 --Translation missing
 L["Width"] = "Width"

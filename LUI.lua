@@ -810,7 +810,7 @@ local function getOptions()
 							args = {
 								IntroImage = {
 									order = 1,
-									image = [[Interface\AddOns\LUI\media\textures\logo]],
+									image = [[Interface\\AddOns\\LUI\\media\\textures\\logobc]],
 									imageWidth = 512,
 									width = "full",
 									imageHeight = 128,

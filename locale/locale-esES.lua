@@ -275,7 +275,7 @@ L["Use minimalist style tabs"] = "Use minimalist style tabs"
 L["Version %s available for download."] = "Version %s disponible para descarga."
 L["Version: "] = "Versión:"
 L["Vertical Position"] = "Posición Vertical"
-L["Welcome to LUI v3"] = "Bienvenido a LUI v3"
+L["Welcome to LUI v3 for The Burning Crusade Classic"] = "Bienvenido a LUI v3"
 L["Width"] = "Ancho"
 --Translation missing
 L["WorldDefense"] = "WorldDefense"
