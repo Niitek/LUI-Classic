@@ -84,7 +84,7 @@ local function NewIcon(stat, tex)
 	if not stat then return end
 	if stat.icon then return stat.icon end
 
-	local icon = CreateFrame("Button", stat:GetName().."Icon", stat, BackdropTemplateMixin and "BackdropTemplate")
+	local icon = CreateFrame("Button", stat:GetName().."Icon", stat, "BackdropTemplate")
 	icon:SetPoint("RIGHT", stat.text, "LEFT", -2, 0)
 	icon:SetWidth(15)
 	icon:SetHeight(15)
@@ -99,7 +99,7 @@ local function NewStat(statDB)
 	if InfoStats[statDB] then return InfoStats[statDB] end
 	if db[statDB] and not db[statDB].Enable then return {Created = false} end
 
-	local stat = CreateFrame("Frame", "LUI_Info_" .. statDB, LUI_Infos_TopRight, BackdropTemplateMixin and "BackdropTemplate")
+	local stat = CreateFrame("Frame", "LUI_Info_" .. statDB, LUI_Infos_TopRight, "BackdropTemplate")
 	stat.db = statDB
 	stat:EnableMouse(true)
 
@@ -367,26 +367,19 @@ function module:SetClock()
 		stat.OnEnable = function(self)
 			if db.Clock.ShowInstanceDifficulty then
 				self:RegisterEvent("GUILD_PARTY_STATE_UPDATED")
-				--[[ self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED") ]] -- classic test
 				self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED")
-				--[[ self:GUILD_PARTY_STATE_UPDATED() ]] -- classic test
 			else
 				self:UnregisterEvent("GUILD_PARTY_STATE_UPDATED")
-				--[[ self:UnregisterEvent("PLAYER_DIFFICULTY_CHANGED") ]] -- classic test
 				self:UnregisterEvent("INSTANCE_GROUP_SIZE_CHANGED")
 				instanceInfo, guildParty = nil, ""
 			end
-				-- hook the OnClick function of the GameTimeFrame to update the pending invites
-			--[[ if not module:IsHooked(GameTimeFrame, "OnClick") then
-				module:SecureHookScript(GameTimeFrame, "OnClick", stat.CALENDAR_UPDATE_PENDING_INVITES) 
-			end]]  -- classic test
+
 			if not module:IsHooked(TimeManagerMilitaryTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerMilitaryTimeCheck, "OnClick", stat.UPDATE_24HOUR)
 			end
 			if not module:IsHooked(TimeManagerLocalTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerLocalTimeCheck, "OnClick", stat.UPDATE_LOCALTIME)
 			end
-			--[[ self:CALENDAR_UPDATE_PENDING_INVITES() ]] -- classic test
 
 			self:PLAYER_ENTERING_WORLD()
 		end
@@ -445,8 +438,6 @@ function module:SetClock()
 				else
 					TimeManagerLocalTimeCheck:SetChecked(false)
 				end
-			else -- Toggle CalendarFrame
-				--[[ GameTimeFrame:Click() -- using just :Click() wont fire the hook ]]
 			end
 		end
 
@@ -542,21 +533,8 @@ function module:SetClock()
 					end
 				end
 
-				-- World Bosses
-				--[[ for i = 1, GetNumSavedWorldBosses() do
-					if not oneraid then
-						GameTooltip:AddLine(" ")
-						GameTooltip:AddLine("Saved Raid(s) :")
-						oneraid = true
-					end
-
-					local name, _, reset = GetSavedWorldBossInfo(i)
-					GameTooltip:AddDoubleLine(format("%s |cffaaaaaa(%s)", name, RAID_INFO_WORLD_BOSS), formatTime(reset), 1,1,1, 1,1,1)
-				end ]]
-
 				GameTooltip:AddLine(" ")
 				GameTooltip:AddLine("Hint:\n- Right-Click for Time Manager Frame.", 0, 1, 0)
-				--[[ GameTooltip:AddLine("Hint:\n- Left-Click for Calendar Frame.\n- Right-Click for Time Manager Frame.", 0, 1, 0) ]]
 				GameTooltip:Show()
 			end
 		end
@@ -571,7 +549,7 @@ end
 ------------------------------------------------------
 -- / CURRENCY / --
 ------------------------------------------------------
-
+-- Added with WoTLK
 -- function module:SetCurrency()
 -- 	local stat = NewStat("Currency")
 
@@ -1005,7 +983,7 @@ function module:SetGold()
 
 	if db.Gold.Enable and not stat.Created then
 		-- Localized functions
-		local GetMoney, GetBackpackCurrencyInfo, GetItemQualityColor, GetItemInfo = GetMoney, GetBackpackCurrencyInfo, GetItemQualityColor, GetItemInfo
+		local GetMoney, GetItemQualityColor, GetItemInfo = GetMoney, GetItemQualityColor, GetItemInfo
 		local format, floor, abs, mod, select = format, floor, abs, mod, select
 
 		-- Local variables
@@ -1185,23 +1163,6 @@ function module:SetGold()
 				end
 				GameTooltip:AddDoubleLine("Total:", formatTooltipMoney(factionGold[myPlayerFaction] + factionGold[otherFaction]), 1,1,1, 1,1,1)
 
-				--[[ for i = 1, MAX_WATCHED_TOKENS do
-					local name, count, extraCurrencyType, icon, itemID = GetBackpackCurrencyInfo(i)
-
-					if name and i == 1 then
-						GameTooltip:AddLine(" ")
-						GameTooltip:AddLine("Currency:")
-					end
-
-					local r, g, b = 1, 1, 1
-					if itemID then
-						r, g, b = GetItemQualityColor(select(3, GetItemInfo(itemID)))
-					end
-					if name and count then
-						GameTooltip:AddDoubleLine(name, count, r,g,b, 1,1,1)
-					end
-				end ]] -- uncommented for classic compatibility
-
 				GameTooltip:AddLine(" ")
 				GameTooltip:AddLine("Hint:\n- Left-Click to toggle server/toon gold.\n- Right-Click to reset Session.", 0, 1, 0)
 				GameTooltip:Show()
@@ -1218,12 +1179,8 @@ end
 --------------------------------------------------------------------
 -- /GUILD and FRIENDS/ --
 --------------------------------------------------------------------
--- function ShowClassColor()
-	local CLASS = select(2, UnitClass("player"))
-	local ccolors = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[CLASS] or RAID_CLASS_COLORS[CLASS]
 
 	local GF_Colors = {
-		Class = {ccolors.r, ccolors.g, ccolors.b},
 		Note = {0.14, 0.76, 0.15},
 		OfficerNote = {1, 0.56, 0.25},
 		MotD = {1, 0.8, 0},
@@ -1238,8 +1195,8 @@ end
 		FriendlyZone = {0, 1, 0},
 		EnemyZone = {1, 0, 0},
 		RemoteChatZone = {0, 1, 1},
-	}
--- end
+}
+
 -- Localized functions
 local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 
@@ -1339,7 +1296,7 @@ function module:SetGF()
 
 		local function GetZoneColor(zone)
 			return unpack(GF_Colors[
-				-- mobileZones:find(zone..",") and ("RemoteChatZone") or
+				mobileZones:find(zone..",") and ("RemoteChatZone") or
 				hordeZones:find(zone..",") and (horde and "FriendlyZone" or "EnemyZone") or
 				allianceZones:find(zone..",") and (horde and "EnemyZone" or "FriendlyZone") or
 				sanctuaryZones:find(zone..",") and ("SanctuaryZone") or ("ContestedZone")
@@ -1374,7 +1331,7 @@ function module:SetGF()
 		end
 
 		local function SetClassIcon(tex, class)
-			tex:SetTexture([[Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes]])
+			tex:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"); -- this is the image containing all class icons
 			local offset, left, right, bottom, top = 0.025, unpack(CLASS_BUTTONS[class])
 			tex:SetTexCoord(left+offset, right-offset, bottom+offset, top-offset)
 		end
@@ -1419,32 +1376,9 @@ function module:SetGF()
 			rank and button.rank:GetStringWidth() or -gap
 		end
 
-		-- 		--takes table, second arg for recursion. Prints an entire table to default chat.
-		-- function LUI:PrintFullTable(tbl,msg, recurse)
-		-- 	if type(tbl) ~= "table" then return LUI:Print("Tried to Print a nil table.") end
-		-- 	if not recurse then LUI:Print("-------------------------") end
-		-- 	msg = msg or ""
-		-- 	for k,v in pairs(tbl) do
-		-- 		if type(v) == "table" then
-		-- 			LUI:Print(msg,k,v)
-		-- 			LUI:PrintFullTable(v,msg.."-- ", true)
-		-- 		else LUI:Print(msg,k,v) end
-		-- 	end
-		-- 	if not recurse then LUI:Print("-------------------------") end
-		-- end
-
 		local function SetToastData(index, inGroup, offset)
 			local toast, bc, color = toasts[index], nil, nil
-			-- local accountInfo = BNGetFriendInfo(index + offset)
-			-- local gameInfo = BNGetGameAccountInfo(toonID or 0)
-			-- local presenceID, givenName, battleTag = accountInfo.bnetIDAccount , accountInfo.accountName, accountInfo.battleTag
-			-- local client, wowProjectID = gameInfo.client, gameInfo.wowProjectID or 0
-			-- local isOnline, isAFK, isDND = gameInfo.isOnline, accountInfo.isAFK, accountInfo.isDND
-			-- local broadcast, notes = accountInfo.messageText, accountInfo.note
-			-- local toonName, faction, race, class = gameInfo.characterName or "", gameInfo.factionName or "", gameInfo.raceName or "", gameInfo.className or ""
-			-- local realm, zone, level, gameText = gameInfo.realmName or "", gameInfo.areaName or "", gameInfo.characterLevel or "", gameInfo.richPresence or ""
 
-			-- presenceID is the BNAccountID, toonID refers to BNGameAccountID, name preserved for compatibility sake. Clean code in V4.
 			local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
 			local realm, faction, race, class, zone, level, gameText = BNGetGameAccountInfo(toonID or 0)
 
@@ -1486,20 +1420,23 @@ function module:SetGF()
 				end
 				class = stat.LocClassNames[class]
 				if class then
+					-- if db.guild.ShowClassColor then
 					SetClassIcon(toast.class, class)
 					color = RAID_CLASS_COLORS[class]
 					toast.name:SetTextColor(color.r, color.g, color.b)
+					-- end
 				else
+					-- if db.guild.ShowClassIcon then
 					toast.class:SetTexture("")
+					-- end
 				end
 			else
 				toast.class:SetTexture(BNet_GetClientTexture(client))
 				toast.class:SetTexCoord(0.2, 0.8, 0.2, 0.8)
-				toast.name:SetTextColor(0.1, 0.8, 0.8)
+				toast.name:SetTextColor(0.8, 0.8, 0.8)
 				toast.faction:SetTexture("")
 				zone = gameText
 				toast.zone:SetPoint("LEFT", toast.name, "RIGHT", gap, 0)
-				-- toast.zone:SetTextColor(GetZoneColor(zone))
 				toast.zone:SetTextColor(1, 0.77, 0)
 			end
 
@@ -1646,9 +1583,10 @@ function module:SetGF()
 					btn.class = CreateTex(btn)
 					btn.status = CreateTex(btn, btn.class, textOffset)
 					btn.status:SetTexCoord(.1, .9, .1, .9)
-					btn.name = CreateFS(btn, "LEFT", btn.status, textOffset)
+
+					btn.name = CreateFS(btn, "LEFT", btn.class, textOffset)
 					btn.level = CreateFS(btn, "CENTER", btn.name)
-					btn.zone  = CreateFS(btn, "LEFT", btn.level, gap)
+					btn.zone  = CreateFS(btn, "LEFT", btn.level)
 					btn.note = CreateFS(btn, "CENTER", btn.zone, gap, GF_Colors.Note)
 					btn.rank  = CreateFS(btn, "RIGHT",  btn.note, gap, GF_Colors.Rank)
 				end
@@ -2081,18 +2019,6 @@ function module:SetGF()
 			end
 		end
 
-		-- Hooks
-		local function guildRoster()
-			if stat.Guild then
-				stat.Guild.dt = 0
-			end
-		end
-		local function ShowFriends()
-			if stat.Friends then
-				stat.Friends.dt = 0
-			end
-		end
-
 		-- Script functions
 		stat.OnEnable = function(self)
 			self:Hide()
@@ -2100,18 +2026,13 @@ function module:SetGF()
 			for eng, loc in pairs(LOCALIZED_CLASS_NAMES_MALE)   do stat.LocClassNames[loc] = eng end
 			for eng, loc in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do stat.LocClassNames[loc] = eng end
 
-			-- module:SecureHook(C_GuildInfo, "GuildRoster", function() if stat.Guild then stat.Guild.dt = 0 end end)
-			module:SecureHook("GuildRoster", guildRoster)
-			-- module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
-			module:SecureHook("ShowFriends", showFriends)
+			module:SecureHook(C_GuildInfo, "GuildRoster", function() if stat.Guild then stat.Guild.dt = 0 end end)
+			module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
 		end
 
 		stat.OnDisable = function(self)
-			-- module:Unhook(C_GuildInfo, "GuildRoster")
+			module:Unhook(C_GuildInfo, "GuildRoster")
 			module:Unhook(C_FriendList, "ShowFriends")
-			module:Unhook("GuildRoster")
-			module:SecureHook(C_FriendList, "ShowFriends", function() if stat.Friends then stat.Friends.dt = 0 end end)
-			-- module:Unhook("ShowFriends")
 		end
 
 		stat.OnLeave = function(self)
@@ -2191,12 +2112,12 @@ function module:SetGuild()
 
 		stat.PLAYER_GUILD_UPDATE = function(self, unit)
 			if unit and unit ~= "player" then return end
-			if IsInGuild() then GuildRoster() end
+			if IsInGuild() then C_GuildInfo.GuildRoster() end
 		end
 
 		-- Script functions
 		stat.OnEnable = function(self)
-			if IsInGuild() then GuildRoster() end
+			if IsInGuild() then C_GuildInfo.GuildRoster() end
 			self:UpdateText()
 		end
 
@@ -2204,7 +2125,7 @@ function module:SetGuild()
 			self.dt = self.dt + deltaTime
 			if self.dt > 15 then
 				if IsInGuild() and GetNumGuildMembers() then
-					GuildRoster()
+					C_GuildInfo.GuildRoster()
 				else
 					self.dt = 0
 				end
@@ -2214,14 +2135,10 @@ function module:SetGuild()
 		stat.OnClick = function(self, button)
 			if button == "LeftButton" then -- toggle Guild Roster
 					ToggleFriendsFrame(3)
-			elseif button == "RightButton" then -- toggle Guild Info
-				db.Guild.ShowNotes = not db.Guild.ShowNotes
+			elseif button == "RightButton" then -- toggle guild and officer notes
+				db.Guild.ShowHints =  not db.Guild.ShowNotes
 				tooltip:Update()
-			elseif button == "Button4" then -- toggle guild and officer notes
-				if db.Guild.ShowNotes and not db.Guild.ShowNotes
-				then tooltip:Update()
-				else self:UpdateHints()
-				end
+				self:UpdateHints()
 			end
 		end
 
@@ -2240,7 +2157,8 @@ function module:SetGuild()
 end
 
 -- Localized functions
-local GetNumFriends, BNGetNumFriends, GetFriendInfo, BNSetCustomMessage = C_FriendList.GetNumFriends, BNGetNumFriends, C_FriendList.GetFriendInfo, BNSetCustomMessage
+-- local GetNumFriends, BNGetNumFriends, GetFriendInfo, BNSetCustomMessage = C_FriendList.GetNumFriends, BNGetNumFriends, C_FriendList.GetFriendInfo, BNSetCustomMessage
+local BNGetNumFriends, BNSetCustomMessage = BNGetNumFriends, BNSetCustomMessage
 local gsub, format = gsub, format
 
 function module:SetFriends()
@@ -2309,22 +2227,8 @@ function module:SetFriends()
 				friendEntries[i] = tooltip:new(class, name, level, zone, note, status, "", "", nil, i, name or "")
 			end
 			self:UpdateText()
-			-- if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
+			if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
 		end
-
-		-- stat.FRIENDLIST_UPDATE = function(self)
-		-- 	for k, v in pairs(friendEntries) do
-		-- 		tooltip:del(v)
-		-- 		friendEntries[k]=nil
-		-- 	end
-		-- 	totalFriends, onlineFriends = C_FriendList.GetNumFriends(), C_FriendList.GetNumOnlineFriends()
-		-- 	for i = 1, onlineFriends do
-		-- 		local name, level, class, zone, connected, status, note = C_FriendList.GetFriendInfoByIndex(1)
-		-- 		friendEntries[i] = tooltip:new(tooltip.LocClassNames[class] or "", name or "", level or 0, zone or UNKNOWN, note or "|cffffcc00-", status, "", "", nil, i, name or "")
-		-- 	end
-		-- 	self:UpdateText()
-		-- 	if not tooltip.IsGuild and tooltip:IsShown() then tooltip:Update() end
-		-- end
 
 		stat.CHAT_MSG_SYSTEM = function(self, msg)
 			if msg:find(friendOnline) or msg:find(friendOffline) then C_FriendList.ShowFriends() end
@@ -2768,7 +2672,7 @@ end
 ------------------------------------------------------
 -- / Loot Specialization / --
 ------------------------------------------------------
-
+-- added with 5.3 MoP
 function module:SetLootSpec()
 
 	local stat = NewStat("LootSpec")
@@ -2807,7 +2711,7 @@ end
 ------------------------------------------------------
 	-- added with 3.0 WOTLK
 
---[[ function module:SetMoveSpeed()
+function module:SetMoveSpeed()
 
 	local stat = NewStat("MoveSpeed")
 
@@ -2837,7 +2741,7 @@ end
 		stat.Created = true
 	end
 
-end ]]
+end
 
 ------------------------------------------------------
 -- / STAT FUNCTIONS / --
@@ -3048,6 +2952,7 @@ module.defaults = {
 			ShowTotal = false,
 			ShowHints = true,
 			ShowNotes = true,
+			-- ShowClassColor = true,
 			sortCols = {"name", "name", "name"},
 			sortASC = {true, true, true},
 		},
@@ -3094,6 +2999,7 @@ module.defaults = {
 			hideRealm = true,
 			ShowHints = true,
 			ShowNotes = true,
+			-- ShowClassColor = true,
 			sortCols = {"class", "name", "name"},
 			sortASC = {true, true, true},
 		},
@@ -3171,7 +3077,7 @@ module.defaults = {
 		-- 	},
 		-- },
 		LootSpec = {
-			Enable = false,
+			Enable = true,
 			Text = "Loot Spec: ",
 			X = -75,
 			Y = 0,
@@ -3818,6 +3724,15 @@ function module:LoadOptions()
 					set = function(info, value) db.Friends.ShowNotes = value end,
 					order = 5,
 				},
+				-- ShowCLassColor = {
+				-- 	name = "Show Class Colors",
+				-- 	desc = "Whether you want to have names colored by class.",
+				-- 	type = "toggle",
+				-- 	disabled = StatDisabled,
+				-- 	get = function() return db.Friends.ShowClassColor end,
+				-- 	set = function(info, value) db.Friends.ShowClassColor = value end,
+				-- 	order = 5,
+				-- },
 				Position = PositionOptions(6),
 				Font = FontOptions(7),
 				Reset = ResetOption(8),
@@ -3976,15 +3891,15 @@ function module:LoadOptions()
 					set = function(info, value) db.Guild.ShowNotes = value end,
 					order = 4,
 				},
-				ShowCLassColor = {
-					name = "Class Colors",
-					desc = "Whether you want to have names colored by class.",
-					type = "toggle",
-					disabled = StatDisabled,
-					get = function() return db.Guild.ShowCLassColor end,
-					set = function(info, value) db.Guild.ShowClassColor = value end,
-					order = 5,
-				},
+				-- ShowClassColor = {
+				-- 	name = "Show Class Colors",
+				-- 	desc = "Whether you want to have names colored by class.",
+				-- 	type = "toggle",
+				-- 	disabled = StatDisabled,
+				-- 	get = function() return db.Guild.ShowClassColor end,
+				-- 	set = function(info, value) db.Guild.ShowClassColor = value end,
+				-- 	order = 5,
+				-- },
 				Position = PositionOptions(6),
 				Font = FontOptions(7),
 				Reset = ResetOption(8),
@@ -4218,7 +4133,7 @@ function module:OnEnable()
 	EnableStat("Durability")
 	EnableStat("FPS")
 	EnableStat("Gold")
---[[  	EnableStat("GF") ]]
+	EnableStat("GF")
 	EnableStat("Guild")
 	EnableStat("Friends")
 	EnableStat("Instance")
