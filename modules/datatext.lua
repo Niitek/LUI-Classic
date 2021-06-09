@@ -1413,11 +1413,11 @@ function module:SetGF()
 				zone = (zone == nil or zone == "") and UNKNOWN or zone
 				toast.zone:SetPoint("LEFT", toast.faction, "RIGHT", textOffset, 0)
 				toast.zone:SetTextColor(GetZoneColor(zone))
-				toast.sameRealm = (realm == myPlayerRealm)
-				if not toast.sameRealm then
-					local r,g,b = unpack(GF_Colors.Realm)
-					zone = ("%1$s |cff%3$.2x%4$.2x%5$.2x- %2$s"):format(zone, realm, r*255, g*255, b*255)
-				end
+				-- toast.sameRealm = (realm == myPlayerRealm)
+				-- if not toast.sameRealm then
+				-- 	local r,g,b = unpack(GF_Colors.Realm)
+				-- 	zone = ("%1$s |cff%3$.2x%4$.2x%5$.2x- %2$s"):format(zone, realm, r*255, g*255, b*255)
+				-- end
 				class = stat.LocClassNames[class]
 				if class then
 					-- if db.guild.ShowClassColor then
