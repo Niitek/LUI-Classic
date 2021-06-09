@@ -3150,18 +3150,23 @@ local SetStyle = function(self, unit, isSingle)
 	end
 	-- if oufdb.Border.Aggro then module.funcs.AggroGlow(self, unit, oufdb) end
 
-	if unit == "targettarget" and module.db.Settings.ShowV2Textures then
-		module.funcs.V2Textures(self, oUF_LUI_target)
-	elseif unit == "targettargettarget" and module.db.Settings.ShowV2Textures then
-		module.funcs.V2Textures(self, oUF_LUI_targettarget)
-	elseif unit == "focustarget" and module.db.Settings.ShowV2Textures then
-		module.funcs.V2Textures(self, oUF_LUI_focus)
-	elseif unit == "focus" and module.db.Settings.ShowV2Textures then
-		module.funcs.V2Textures(self, oUF_LUI_player)
-	elseif (unit == unit:match("arena%dtarget") and module.db.Settings.ShowV2ArenaTextures) or (unit == unit:match("boss%dtarget") and module.db.Settings.ShowV2BossTextures) then
+	if module.db.Target.Enable == true and module.db.Player.Enable == true then
+		if unit == "targettarget" and module.db.Settings.ShowV2Textures then
+			module.funcs.V2Textures(self, oUF_LUI_target)
+		elseif unit == "targettargettarget" and module.db.Settings.ShowV2Textures then
+			module.funcs.V2Textures(self, oUF_LUI_targettarget)
+		elseif unit == "focustarget" and module.db.Settings.ShowV2Textures then
+			module.funcs.V2Textures(self, oUF_LUI_focus)
+		elseif unit == "focus" and module.db.Settings.ShowV2Textures then
+			module.funcs.V2Textures(self, oUF_LUI_player)
+		end
+	end
+
+	if (unit == unit:match("arena%dtarget") and module.db.Settings.ShowV2ArenaTextures) or (unit == unit:match("boss%dtarget") and module.db.Settings.ShowV2BossTextures) then
 		module.funcs.V2Textures(self, _G["oUF_LUI_"..unit:match("%a+%d")])
 	elseif unit == "partytarget" and module.db.Settings.ShowV2PartyTextures then
 		module.funcs.V2Textures(self, self:GetParent())
+
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

@@ -1056,22 +1056,24 @@ module.ApplySettings = function(unit)
 			-- 		frame:DisableElement("HealPrediction")
 			-- 	end
 			-- end
-
-			if unit == "ToT" or unit == "ToToT" or unit == "FocusTarget" or unit == "Focus" then
-				if not frame.V2Tex then
-					if unit == "ToT" then
-						module.funcs.V2Textures(frame, oUF_LUI_target)
-					elseif unit == "ToToT" then
-						module.funcs.V2Textures(frame, oUF_LUI_targettarget)
-					elseif unit == "FocusTarget" then
-						module.funcs.V2Textures(frame, oUF_LUI_focus)
-					elseif unit == "Focus" then
-						module.funcs.V2Textures(frame, oUF_LUI_player)
+			if module.db.Target.Enable == true and module.db.Player.Enable == true then
+				if unit == "ToT" or unit == "ToToT" or unit == "FocusTarget" or unit == "Focus" then
+					if not frame.V2Tex then
+						if unit == "ToT" then
+							module.funcs.V2Textures(frame, oUF_LUI_target)
+						elseif unit == "ToToT" then
+							module.funcs.V2Textures(frame, oUF_LUI_targettarget)
+						elseif unit == "FocusTarget" then
+							module.funcs.V2Textures(frame, oUF_LUI_focus)
+						elseif unit == "Focus" then
+							module.funcs.V2Textures(frame, oUF_LUI_player)
+						end
 					end
+					frame.V2Tex:Reposition()
+					if module.db.Settings.ShowV2Textures then frame.V2Tex:Show() else frame.V2Tex:Hide() end
 				end
-				frame.V2Tex:Reposition()
-				if module.db.Settings.ShowV2Textures then frame.V2Tex:Show() else frame.V2Tex:Hide() end
-			elseif unit == "PartyTarget" then
+			end
+			if unit == "PartyTarget" then
 				if not frame.V2Tex then module.funcs.V2Textures(frame, _G["oUF_LUI_partyUnitButton"..frame:GetName():match("%d")]) end
 				frame.V2Tex:Reposition()
 				if module.db.Settings.ShowV2PartyTextures then frame.V2Tex:Show() else frame.V2Tex:Hide() end

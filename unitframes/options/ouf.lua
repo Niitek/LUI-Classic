@@ -29,27 +29,31 @@ local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
 
 function module:CreateSettings(order)
 	local toggleV2 = function(info, Enable)
-		for _, f in pairs({"oUF_LUI_targettarget", "oUF_LUI_targettargettarget", "oUF_LUI_focustarget", "oUF_LUI_focus"}) do
-			if _G[f] then
-				if not _G[f].V2Tex then
-					if f == "oUF_LUI_targettarget" then
-						module.funcs.V2Textures(oUF_LUI_targettarget, oUF_LUI_target)
-					elseif f == "oUF_LUI_targettargettarget" then
-						module.V2Textures(oUF_LUI_targettargettarget, oUF_LUI_targettarget)
-					elseif f == "oUF_LUI_focustarget" then
-						module.oUF_LUI.funcs.V2Textures(oUF_LUI_focustarget, oUF_LUI_focus)
-					elseif f == "oUF_LUI_focus" then
-						module.oUF_LUI.funcs.V2Textures(oUF_LUI_focus, oUF_LUI_player)
+		if module.db.Target.Enable == true and module.db.Player.Enable == true then
+			for _, f in pairs({"oUF_LUI_targettarget", "oUF_LUI_targettargettarget", "oUF_LUI_focustarget", "oUF_LUI_focus"}) do
+				if _G[f] then
+					if not _G[f].V2Tex then
+						if f == "oUF_LUI_targettarget" then
+							module.funcs.V2Textures(oUF_LUI_targettarget, oUF_LUI_target)
+						elseif f == "oUF_LUI_targettargettarget" then
+							module.V2Textures(oUF_LUI_targettargettarget, oUF_LUI_targettarget)
+						elseif f == "oUF_LUI_focustarget" then
+							module.oUF_LUI.funcs.V2Textures(oUF_LUI_focustarget, oUF_LUI_focus)
+						elseif f == "oUF_LUI_focus" then
+							module.oUF_LUI.funcs.V2Textures(oUF_LUI_focus, oUF_LUI_player)
+						end
 					end
-				end
-				if Enable then
-					_G[f].V2Tex:Show()
-				else
-					_G[f].V2Tex:Hide()
+						if Enable then
+							StaticPopup_Show("RELOAD_UI")
+							_G[f].V2Tex:Show()
+						else
+							StaticPopup_Show("RELOAD_UI")
+							_G[f].V2Tex:Hide()
+						end
+					end
 				end
 			end
 		end
-	end
 
 	local toggleV2Party = function(info, Enable)
 		for i = 1, 5 do
@@ -147,7 +151,7 @@ function module:CreateSettings(order)
 	end
 
 	local options = self:NewGroup("Settings", order, true, {
-		ShowV2Textures = self:NewToggle("Show LUI v2 Connector Frames", "Whether you want to show LUI v2 Frame Connectors or not.", 1, toggleV2),
+		ShowV2Textures = self:NewToggle("Show LUI v2 Connector Frames", "Whether you want to show LUI v2 Frame Connectors or not. \n \nDisabled with Player and/or Target Frames. \n \nDisable and Renable when frames are restored to restore connectors.", 1, toggleV2),
 		ShowV2PartyTextures = self:NewToggle("Show LUI v2 Connector Frames for Party Frames", "Whether you want to show LUI v2 Frame Connectors on Party Frames or not.", 2, toggleV2Party),
 		ShowV2ArenaTextures = self:NewToggle("Show LUI v2 Connector Frames for Arena Frames", "Whether you want to show LUI v2 Frame Connectors on Arena Frames or not.", 3, toggleV2Arena),
 		ShowV2BossTextures = self:NewToggle("Show LUI v2 Connector Frames for Boss Frames", "Whether you want to show LUI v2 Frame Connectors on Boss Frames or not.", 4, toggleV2Boss),
