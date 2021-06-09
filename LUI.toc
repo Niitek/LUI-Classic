@@ -1,8 +1,8 @@
 ## Interface: 20501
-## Version: 3.34.05
+## Version: 3.36
 ## Title: LUI_tbcc
-## Author: Siku, Mule, Hix, Thaly, Zista
-## FormerAuthor: Louí @EU-Das Syndikat
+## Author: Siku, Mule, Nitsah
+## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista
 ## Notes: User Interface Modification
 ## SavedVariables: LUIDB, LUIGold, LUI_Themes, LUI_Layouts
 ## SavedVariablesPerCharacter: LUICONFIG
