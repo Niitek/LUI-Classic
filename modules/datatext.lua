@@ -1355,12 +1355,20 @@ function module:SetGF()
 			button.name:SetText(formatedStatusText(status, name, isMobile))
 			if name and class and RAID_CLASS_COLORS[class] then
 				local color = RAID_CLASS_COLORS[class]
+				if db.Guild.ShowClassColor then
 				button.name:SetTextColor(color.r, color.g, color.b)
+				end
+				-- if db.Guild.ShowClassIcon then
 				SetClassIcon(button.class, class)
+				-- end
 				SetStatusLayout(button.status, button.name)
+				if db.Guild.ShowLevelColor then
 				color = GetQuestDifficultyColor(level)
 				button.level:SetTextColor(color.r, color.g, color.b)
+				end
+				if db.Guild.ShowZoneColor then
 				button.zone:SetTextColor(GetZoneColor(zone))
+				end
 			end
 
 			button.level:SetText(level)
@@ -1442,13 +1450,13 @@ function module:SetGF()
 
 			toast.name:SetText(formatedStatusText(isAFK and 1 or isDND and 2, format("|cff00b2f0%s|r%s", toast.realID, (toonName and format(" - %s", toonName) or ""))))
 
-			if level and level ~= "" then
-				toast.level:SetText(level)
-				color = GetQuestDifficultyColor(tonumber(level))
-				toast.level:SetTextColor(color.r, color.g, color.b)
-			else
+			-- if level and level ~= "" then
+			-- 	toast.level:SetText(level)
+			-- 	color = GetDifficultyColor(tonumber(level))
+			-- 	toast.level:SetTextColor(color.r, color.g, color.b)
+			-- else
 				toast.level:SetText()
-			end
+			-- end
 
 			toast.zone:SetText(zone)
 			toast.note:SetText(notes)
@@ -2999,7 +3007,10 @@ module.defaults = {
 			hideRealm = true,
 			ShowHints = true,
 			ShowNotes = true,
-			-- ShowClassColor = true,
+			ShowClassColor = true,
+			ShowClassIcon = true,
+			ShowLevelColor = true,
+			ShowZoneColor = true,
 			sortCols = {"class", "name", "name"},
 			sortASC = {true, true, true},
 		},
@@ -3891,15 +3902,42 @@ function module:LoadOptions()
 					set = function(info, value) db.Guild.ShowNotes = value end,
 					order = 4,
 				},
-				-- ShowClassColor = {
-				-- 	name = "Show Class Colors",
-				-- 	desc = "Whether you want to have names colored by class.",
-				-- 	type = "toggle",
-				-- 	disabled = StatDisabled,
-				-- 	get = function() return db.Guild.ShowClassColor end,
-				-- 	set = function(info, value) db.Guild.ShowClassColor = value end,
-				-- 	order = 5,
-				-- },
+				ShowClassColor = {
+					name = "Show Class Colors",
+					desc = "Whether you want to have names colored by class.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Guild.ShowClassColor end,
+					set = function(info, value) db.Guild.ShowClassColor = value end,
+					order = 5,
+				},
+				ShowClassIcon = {
+					name = "Show Class Icons",
+					desc = "Whether you want to have class displayed.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Guild.ShowClassIcon end,
+					set = function(info, value) db.Guild.ShowClassIcon = value end,
+					order = 5,
+				},
+				ShowLevelColor = {
+					name = "Show Level Colors",
+					desc = "Whether you want to have levels colored by level difference.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Guild.ShowLevelColor end,
+					set = function(info, value) db.Guild.ShowLevelColor = value end,
+					order = 5,
+				},
+				ShowZoneColor = {
+					name = "Show Zone Colors",
+					desc = "Whether you want to have zones colored by hostility.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Guild.ShowZoneColor end,
+					set = function(info, value) db.Guild.ShowZoneColor = value end,
+					order = 5,
+				},
 				Position = PositionOptions(6),
 				Font = FontOptions(7),
 				Reset = ResetOption(8),
