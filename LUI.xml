@@ -101,8 +101,8 @@
 
 	<!-- to investigate as we may not need these anymore -->
 	<Script file="unitframes\plugins\singleauras.lua"/>
-	<!-- <Script file="unitframes\plugins\raiddebuffs.lua"/> -->
-	<!-- <Script file="unitframes\plugins\maintank.lua"/> -->
+	<Script file="unitframes\plugins\raiddebuffs.lua"/>
+	<Script file="unitframes\plugins\maintank.lua"/>
 	<!-- <Script file="unitframes\plugins\vehicle.lua"/> -->
 
 	<!-- to possibly move into the core/standard oUF style -->
