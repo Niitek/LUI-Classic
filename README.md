@@ -53,6 +53,14 @@ Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonF
 
 **QoL Stuff Planned**
 
+*Localization for short chat channels (general chat)
+
 *Class icon/color toggle for guild/friend list info text
 
 *Reinstate Heal/Absorb predictions
+
+*Visual cooldown bars
+
+*Add more functionality to LUI bars
+
+*Add a Restore function for Details!
