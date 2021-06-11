@@ -1963,7 +1963,7 @@ function module:SetGF()
 					--function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 					FriendsFrame_InviteOrRequestToJoin(b.gameInfo.playerGuid, b.gameInfo.gameAccountID)
 				else
-					C_PartyInfo.InviteUnit(b.unit)
+					InviteUnit(b.unit)
 				end
 			elseif IsControlKeyDown() then -- edit note
 				if not stat.IsGuild then
