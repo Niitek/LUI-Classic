@@ -1145,7 +1145,7 @@ function module:CreateUnitOptions(unit, order)
 			PowerMissing = self:CreateTextOptions(unit, 7, "Power", "Missing"),
 			Combat = (unit == "Player" or unit == "Target" or unit == "Focus" or unit == "Pet" or unit == "ToT") and self:CreateCombatTextOptions(unit, 8) or nil,
 			DruidMana = (unit == "Player" and (class == "DRUID" or class == "SHAMAN" or class == "PRIEST")) and self:CreateDruidManaTimerOptions(9) or nil,
-			WarlockBar = (unit == "Player" and class == "WARLOCK") and self:CreatePlayerBarTextOptions("WarlockBar", 9) or nil,
+			-- WarlockBar = (unit == "Player" and class == "WARLOCK") and self:CreatePlayerBarTextOptions("WarlockBar", 9) or nil,
 			PvP = (unit == "Player") and self:CreatePvpTimerOptions(10) or nil,
 			-- AltPower = (unit == "Player") and self:CreatePlayerBarTextOptions("AltPower", 12) or nil,
 		}),
