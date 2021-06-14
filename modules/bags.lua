@@ -29,7 +29,6 @@ local db, dbd
 local GetBags = {
 	["Bags"] = {0, 1, 2, 3, 4},
 	["Bank"] = {-1, 5, 6, 7, 8, 9, 10, 11},
-	["Keyring"] = {-2},
 }
 local isCreated = {}
 
@@ -72,7 +71,7 @@ local bagTexSize = 30
 local trashButton = {}
 local trashBag = {}
 
-local LUIBags, LUIBank, LUIKeyring		-- replace self.frame and self.bankframe
+local LUIBags, LUIBank		-- replace self.frame and self.bankframe
 
 --Cache tables.
 local BagsInfo = {}		--replace self.bags
@@ -83,8 +82,6 @@ local BagsSlots = {}		--replace self.bagsframe_buttons
 --At the moment, not sure if tooltip scanning is required.
 --local LUIBagsTT = nil
 
--- hide bags options in default interface
--- InterfaceOptionsDisplayPanelShowFreeBagSpace:Hide()
 --Making sure the Static Popup uses the good args.
 StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 	preferredIndex = 3,
@@ -106,7 +103,7 @@ StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 local function LUIBags_Select(bag)
 	if bag == "Bank" and LUIBank then return LUIBank end
 	if bag == "Bags" and LUIBags then return LUIBags end
-	if bag == "Keyring" and LUIKeyring then return LUIKeyring end
+	if bag == "ContainerFrame1" and LUIKeyring then return LUIKeyring end
 end
 
 local function CheckSortButton()
@@ -177,6 +174,7 @@ end
 local function LUIBags_ToggleBag(id)
 	if id == -2 then
 		ToggleBag(-2)
+		return
 	end
 	LUIBags_Toggle()
 end
@@ -188,21 +186,26 @@ local function LUIBags_StartMoving(self)
 end
 
 local function LUIBags_StopMoving(self)
-	self:StopMovingOrSizing()
-	self:SetUserPlaced(false)
+	if ContainerFrame1 then 
+		self:StopMovingOrSizing()
+		self:SetUserPlaced(true)
 
-	local x, y = self:GetCenter()
+	else
+		self:StopMovingOrSizing()
+		self:SetUserPlaced(false)
 
-	-- Get rid of the "LUI" in the frame name, leaving Bags or Bank
-	local bag = strsub(self:GetName(), 4)
-	db[bag].CoordX = x
-	db[bag].CoordY = y
+		local x, y = self:GetCenter()
+
+		-- Get rid of the "LUI" in the frame name, leaving Bags or Bank
+		local bag = strsub(self:GetName(), 4)
+		db[bag].CoordX = x
+		db[bag].CoordY = y
+	end
 end
 
 function module:InitSelect(bag)
 	if bag == "Bank" and not LUIBank then module:InitBank() end
 	if bag == "Bags" and not LUIBags then module:InitBags() end
-	if bag == "Keyring" and not LUIKeyring then module.initKeyring() end
 end
 
 function module:SlotUpdate(item)
@@ -322,20 +325,12 @@ function module:BagSlotUpdate(bag)
 				module:ReloadLayout("Bags")
 			end
 		end
-		if (bag == -2) then
-			if LUIKeyring and LUIKeyring:IsShown() then
-				module.ReloadLayout("keyring")
-			end
-		end
 	else
 		if LUIBags and LUIBags:IsShown() then
 			module:ReloadLayout("Bags")
 		end
 		if LUIBank and LUIBank:IsShown() then
 			module:ReloadLayout("Bank")
-		end
-		if LUIKeyring and LUIKeyring:IsShown() then
-			module.ReloadLayout("Keyring")
 		end
 	end
 end
@@ -365,9 +360,6 @@ function module:BagFrameSlotNew(slot, parent, bagType)
 		if not ret.frame.tooltipText then
 			ret.frame.tooltipText = ""
 		end
-	elseif bagType == "Keyring" then
-		ret.slot = Slot
-		ret.frame = CreateFrame("checkbutton", "LUIKeyring_Bag"..slot, parent, "ContainerFrameItemButtonTemplate" and "BackdropTemplate")
 	else
 		ret.frame = CreateFrame("checkButton", "LUIBags__Bag"..slot.."Slot", parent, "BagSlotButtonTemplate")
 		ret.slot = slot
@@ -421,7 +413,7 @@ function module:SlotNew(bag, slot)
 	end
 
 	if not ret.frame then
-		ret.frame = CreateFrame("Button", "LUIBags_Item" .. bag .. "_" .. slot, BagsInfo[bag], template)
+		ret.frame = CreateFrame("checkButton", "LUIBags_Item" .. bag .. "_" .. slot, BagsInfo[bag], template)
 			-- Mixin(ret.frame, BackdropTemplateMixin)
 		if not ret.frame.SetBackdrop then Mixin(ret.frame, BackdropTemplateMixin) end
 	end
@@ -524,7 +516,7 @@ function module:SearchReset()
 end
 
 function module:CreateBagFrame(bagType)
-	local frameName = "LUI"..bagType -- LUIBags, LUIBank, LUIKeyring
+	local frameName = "LUI"..bagType -- LUIBags, LUIBank
 	local frame = CreateFrame("Frame", frameName, UIParent)
 	frame:EnableMouse(1)
 	frame:SetMovable(1)
@@ -588,20 +580,9 @@ function module:InitBank()
 		return
 	end
 
-	LUIBank = self:CreateBagFrame("ContainerFrame1")
+	LUIBank = self:CreateBagFrame("Bank")
 	LUIBank:SetScript("OnShow", LUIBank_OnShow)
 	LUIBank:SetScript("OnHide", LUIBank_OnHide)
-end
-
-function module:initKeyring()
-	if LUIKeyring then
-		ToggleBag(-2)
-		return
-	end
-
-	LUIKeyring = self:CreateBagFrame("Keyring")
-	LUIKeyring:SetScript("OnShow", LUIKeyring_OnShow)
-	LUIKeyring:SetScript("OnHide", LUIKeyring_OnHide)
 end
 
 local GetParent_StartMoving = function(self)
@@ -682,7 +663,7 @@ function module:SetBags()
 		self:GetParent().editbox:HighlightText()
 	end
 
-	local button = CreateFrame("Button", nil, LUIBags)
+	local button = CreateFrame("checkButton", nil, LUIBags)
 	button:EnableMouse(1)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetAllPoints(search)
@@ -749,12 +730,8 @@ function module:Layout(bagType)
 	end
 
 	local isBank = false
-	local isKeyring = false
-	local isKeyring = false
 	if bagType == "Bank" then
 		isBank = true
-	elseif bagtype == "Keyring" then
-		isKeyring = true
 	else
 		frame.gold:SetText(GetMoneyString(GetMoney(), 12)) 
 		frame.editbox:SetFont(Media:Fetch("font", db.Bags.Font), 12)
@@ -885,76 +862,6 @@ function module:Layout(bagType)
 		bagsFrame:Hide()
 	end
 	local idx = 0
-	for x, id in ipairs(bagId) do
-		if isKeyring and id == -2 then
-			if not module:IsHooked(ContainerFrame1, "OnShow") then
-				module:HookScript(ContainerFrame1, "OnShow", function(self)		
-
-					local bagCount = GetContainerNumSlots(id)
-
-					if bagCount > 0 then
-						BagsInfo[id] = module:BagNew(id, frame)
-						local idBagType = BagsInfo[id].bagType
-
-						BagsInfo[id]:Show()
-
-						for i = 1, bagCount do
-							local item, isnew = module:SlotNew(id, i)
-
-							if isnew then
-								tinsert(ItemSlots, idx + 1, item)
-							end
-
-							if not isCreated[bagType] then
-								local xoff
-								local yoff
-								local x = (idx % cols)
-								local y = floor(idx / cols)
-
-								xoff = padding + (x * 31) + (x * spacing)
-								yoff = off + padding + (y * 31) + ((y - 1) * spacing)
-								yoff = yoff * -1
-
-								item.frame:ClearAllPoints()
-								item.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", LUI:Scale(xoff), LUI:Scale(yoff))
-								item.frame:SetHeight(LUI:Scale(32))
-								item.frame:SetWidth(LUI:Scale(32))
-								item.frame:SetPushedTexture("")
-								item.frame:SetNormalTexture("")
-								item.frame:Show()
-
-								item.frame:SetBackdrop( {
-									bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-									edgeFile = borderTex,
-									tile = false, tileSize = 0, edgeSize = 15,
-									insets = { left = 5, right = 5, top = 5, bottom = 5 }
-								})
-
-								item.frame:SetBackdropColor(unpack(background_color))
-								item.frame:SetBackdropBorderColor(unpack(border_color))
-
-							end
-
-							LUI:StyleButton(item.frame)
-							module:SlotUpdate(item)
-
-							local iconTex = _G[item.frame:GetName() .. "IconTexture"]
-							iconTex:SetTexCoord(.08, .92, .08, .92)
-							iconTex:SetPoint("TOPLEFT", item.frame, LUI:Scale(3), LUI:Scale(-3))
-							iconTex:SetPoint("BOTTOMRIGHT", item.frame, LUI:Scale(-3), LUI:Scale(3))
-
-							iconTex:Show()
-							item.iconTex = iconTex
-
-							idx = idx + 1
-						end
-					end
-				end)
-			end
-		end
-	end
-
-	local idx = 0
 	for _, id in ipairs(bagId) do
 		local bagCount = GetContainerNumSlots(id)
 
@@ -988,12 +895,14 @@ function module:Layout(bagType)
 					item.frame:SetPushedTexture("")
 					item.frame:SetNormalTexture("")
 					item.frame:Show()
+
 					item.frame:SetBackdrop( {
 						bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 						edgeFile = borderTex,
 						tile = false, tileSize = 0, edgeSize = 15,
 						insets = { left = 5, right = 5, top = 5, bottom = 5 }
 					})
+
 					item.frame:SetBackdropColor(unpack(background_color))
 					item.frame:SetBackdropBorderColor(unpack(border_color))
 
@@ -1026,88 +935,62 @@ end
 
 function module:EnableBags()
 	if db.Enable ~= true then return end
-	-- hooking and setting key ring bag
+	-- 		hooking and setting key ring bag
 	-- this is just a reskin of Blizzard key bag to fit LUI
 	-- hooking OnShow because sometime key max slot changes.
-	-- if not module:IsHooked(ContainerFrame1, "OnShow") then
-	-- 	module:HookScript(ContainerFrame1, "OnShow", function(self)
-			-- Keyring Frame
-			-- local KeyringFrame = CreateFrame("Frame", KeyringFrame, UIParent, "BackdropTemplate")
-			-- 	KeyringFrame:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, LUI:Scale(2))
-			-- 	KeyringFrame:SetFrameStrata("HIGH")
-			-- local keybackdrop = CreateFrame("Frame", keybackdropframe, KeyringFrame, "BackdropTemplate")
-			-- 	keybackdrop:SetPoint("TOPLEFT", LUI:Scale(9), LUI:Scale(-40))
-			-- 	keybackdrop:SetPoint("BOTTOMLEFT", 0, 0)
-			-- 	keybackdrop:SetSize(LUI:Scale(179),LUI:Scale(215))
-			-- 	Mixin(keybackdrop, BackdropTemplateMixin)
-			-- 	keybackdrop:SetBackdrop( {
-			-- 		bgFile = Media:Fetch("background", LUI.Media.empty),
-			-- 		edgeFile = Media:Fetch("border", LUI.Media.empty),
-			-- 		tile = false, edgeSize = 0,
-			-- 		insets = { left = 0, right = 0, top = 0, bottom = 0 }
-			-- 	})
-			-- 	keybackdrop:SetBackdropColor(0,0,0,0)
-			-- 	keybackdrop:SetBackdropBorderColor(0,0,0,0)
-			-- 	-- Sort Button
-			-- local sortBtn = CreateFrame("Button", Keyring_SortButton, KeyringFrame, "UIPanelButtonTemplate")
-			-- 	sortBtn:SetText("Stack & Sort");
-			-- 	sortBtn:SetWidth(LUI:Scale(sortBtn:GetTextWidth()+20))
-			-- 	sortBtn:SetHeight(LUI:Scale(sortBtn:GetTextHeight()+10))
-			-- 	sortBtn:SetPoint("BOTTOMRIGHT", LUI:Scale(-3), LUI:Scale(3))
-			-- 	sortBtn:SetScript("OnClick", function(self, button)
-			-- 		--PlaySound("UI_BagSorting_01");
-			-- 		PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
-			-- 		-- Make sure we arent calling bag updates a million times
-			-- 		module:UnregisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
-			-- 		module:UnregisterEvent("PLAYERBANKSLOTS_CHANGED")
-			-- 		module:PrepareSort(self:GetParent())
-			-- 		module:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
-			-- 		module:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-			-- 	end)
-			-- 	sortBtn:RegisterForClicks("AnyUp")
-			-- 	KeyringFrame.sortButton = sortBtn
+	if not module:IsHooked(ContainerFrame1, "OnShow") then
+		module:HookScript(ContainerFrame1, "OnShow", function(self)
+			ContainerFrame1:EnableMouse(1)
+			ContainerFrame1:SetMovable(1)
+			ContainerFrame1:SetScript("OnMouseDown", LUIBags_StartMoving)
+			ContainerFrame1:SetScript("OnMouseUp", LUIBags_StopMoving)
 
-			-- ContainerFrame1CloseButton:Hide()
-			-- ContainerFrame1Portrait:Hide()
-			-- ContainerFrame1Name:Hide()
-			-- ContainerFrame1BackgroundTop:SetAlpha(0)
-			-- ContainerFrame1BackgroundMiddle1:SetAlpha(0)
-			-- ContainerFrame1BackgroundMiddle2:SetAlpha(0)
-			-- ContainerFrame1BackgroundBottom:SetAlpha(0)
+			local keybackdrop = CreateFrame("Frame", keybackdropframe, ContainerFrame1, "ContainerFrameItemButtonTemplate" and "BackdropTemplate")
+			keybackdrop:SetPoint("TOPLEFT", LUI:Scale(0), LUI:Scale(-0))
+			keybackdrop:SetPoint("BOTTOMLEFT", 0, 0)
+			keybackdrop:SetSize(LUI:Scale(300),LUI:Scale(190))
+			keybackdrop:SetBackdrop( {
+				bgFile = Media:Fetch("background", LUI.Media.empty),
+				edgeFile = Media:Fetch("border", LUI.Media.empty),
+				tile = false, edgeSize = 0,
+				insets = { left = 0, right = 0, top = 0, bottom = 0 }
+			})
+			keybackdrop:SetBackdropColor(0,0,0,0)
+			keybackdrop:SetBackdropBorderColor(0,0,0,0)
 
-			-- local bgColor, color = db.Colors.Background, db.Colors.Border -- Shorter vars for colors.
-			-- for i=1, GetKeyRingSize() do
-			-- 	local slot = _G["ContainerFrame1Item"..i]
-			-- 	local t = _G["ContainerFrame1Item"..i.."IconTexture"]
-			-- 	slot:SetPushedTexture("")
-			-- 	slot:SetNormalTexture("")
-			-- 	t:SetTexCoord(.08, .92, .08, .92)
-			-- 	t:SetPoint("TOPLEFT", slot, LUI:Scale(2), LUI:Scale(-2))
-			-- 	t:SetPoint("BOTTOMRIGHT", slot, LUI:Scale(-2), LUI:Scale(2))
-			-- 	Mixin(slot, BackdropTemplateMixin)
-			-- 	slot:SetBackdrop( {
-			-- 		bgFile = Media:Fetch("background", db.Bags.BackgroundTexture),
-			-- 		edgeFile = Media:Fetch("border", db.Bags.BorderTexture),
-			-- 		tile = false, edgeSize = 20,
-			-- 		insets = { left = 5, right = -3, top = -3, bottom = 5 }
-			-- 	})
-			-- 	slot:SetBackdropColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
-			-- 	slot:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+			ContainerFrame1CloseButton:Hide()
+			ContainerFrame1Portrait:Hide()
+			ContainerFrame1Name:Hide()
+			ContainerFrame1BackgroundTop:SetAlpha(0)
+			ContainerFrame1BackgroundMiddle1:SetAlpha(0)
+			ContainerFrame1BackgroundMiddle2:SetAlpha(0)
+			ContainerFrame1BackgroundBottom:SetAlpha(0)
 
-			-- 	rows = floor(i / keycols)
-			-- 	if (i % keycols) ~= 0 then
-			-- 		rows = rows + 1
-			-- 	end
+			local bgColor, color = db.Colors.Background, db.Colors.Border -- Shorter vars for colors.
+			for i=1, GetKeyRingSize() do
+				local slot = _G["ContainerFrame1Item"..i]
+				local t = _G["ContainerFrame1Item"..i.."IconTexture"]
+				slot:SetPushedTexture("")
+				slot:SetNormalTexture("")
+				t:SetTexCoord(.08, .92, .08, .92)
+				t:SetPoint("TOPLEFT", slot, LUI:Scale(2), LUI:Scale(-2))
+				t:SetPoint("BOTTOMRIGHT", slot, LUI:Scale(-2), LUI:Scale(2))
+					Mixin(slot, BackdropTemplateMixin)
+				slot:SetBackdrop( {
+					bgFile = Media:Fetch("background", db.Bags.BackgroundTexture),
+					edgeFile = Media:Fetch("border", db.Bags.BorderTexture),
+					tile = false, edgeSize = 15,
+					insets = { left = 0, right = -0, top = -0, bottom = 0 }
+				})
+				slot:SetBackdropColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
+				slot:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+				LUI:StyleButton(slot, false)
+			end
 
-			-- 	KeyringFrame:SetWidth(LUI:Scale(i * 31 + (i - 1)))
-			-- 	KeyringFrame:SetHeight(LUI:Scale(rows * 31 + (rows - 1) * spacing + off + padding * 2) + KeyringFrame.sortButton:GetHeight());
-			-- 	LUI:StyleButton(slot, false)
-			-- end
-
-			-- self:ClearAllPoints()
-			-- self:SetPoint("CENTER", UIParent, "CENTER", LUI:Scale(4), LUI:Scale(5))
-		-- end)
-	-- end
+			self:ClearAllPoints()
+			self:SetPoint("CENTER", UIParent, "CENTER", LUI:Scale(4), LUI:Scale(5))
+		end)
+	end
 end
 
 function module:QUEST_ACCEPTED(event)
@@ -1189,26 +1072,6 @@ function module:BANKFRAME_CLOSED()
 
 	LUIBank:Hide()
 end
-
--- function module:KEYRINGFRAME_OPENED()
--- 	if not LUIKeyring then
--- 		module:initKeyring()
--- 	end
-
--- 	module:Layout("ContainerFrame1")
--- 	for _, x in ipairs(GetBags["ContainerFrame1"]) do
--- 		module:BagSlotUpdate(x)
--- 	end
--- 	LUIKeyring:Show()
--- 	LUIKeyring:SetAlpha(1)
--- end
-
--- function module:KEYRINGFRAME_CLOSED()
--- 	if not LUIKeyring then
--- 		return
--- 	end
--- 	LUIKeyring:Hide()
--- end
 
 function module:BAG_CLOSED(event, id)
 	local bagId = BagsInfo[id]
@@ -1336,23 +1199,23 @@ module.defaults = {
 		},
 		-- End of Bank Options
 		-- Start of Keyring Options
-		Keyring = {
-			-- CopyBags = true,
-			KeyCols = 14,
-			Padding = 8,
-			Spacing = 3,
-			Scale = 1,
-			BagScale = 1,
-			BagFrame = true,
-			ItemQuality = false,
-			Locked = 0,
-			CoordX = 0,
-			CoordY = 0,
-			BackgroundTexture = "Blizzard Tooltip",
-			BorderTexture = "Stripped_medium",
-			BorderSize = 5,
-			BorderInset = -1,
-		},
+		-- Keyring = {
+		-- 	-- CopyBags = true,
+		-- 	Cols = 14,
+		-- 	Padding = 8,
+		-- 	Spacing = 3,
+		-- 	Scale = 1,
+		-- 	BagScale = 1,
+		-- 	BagFrame = true,
+		-- 	ItemQuality = false,
+		-- 	Locked = 0,
+		-- 	CoordX = 0,
+		-- 	CoordY = 0,
+		-- 	BackgroundTexture = "Blizzard Tooltip",
+		-- 	BorderTexture = "Stripped_medium",
+		-- 	BorderSize = 5,
+		-- 	BorderInset = -1,
+		-- },
 		--End of Keyring Options
 		Colors = {
 			BlackFrameBG = false,
@@ -1400,19 +1263,12 @@ function module:LoadOptions()
 	local function BankOpt()
 		module:ReloadLayout("Bank")
 	end
-	local function KeyringOpt()
-		module:ReloadLayout("ContainerFrame1")
-	end
 	local function DisabledCopy()
 		return db.Bank.CopyBags
-	end
-	local function DisabledKeyCopy()
-		return db.Keyring.CopyBags
 	end
 	local function ReloadBoth()
 		module:ReloadLayout("Bags")
 		module:ReloadLayout("Bank")
-		module:ReloadLayout("ContainerFrame1")
 	end
 
 	local options = {
@@ -1461,28 +1317,26 @@ function module:LoadOptions()
 				BagFrame = LUI:NewToggle("Show Bag Bar", nil, 8, db.Bank, "BagFrame", dbd.Bank, BankOpt, nil, DisabledCopy),
 			},
 		},
-		Keyring = {
-			name = "Keyring",
-			type = "group",
-			order = 5,
-			args = {
-				-- CopyBags = LUI:NewToggle("Copy Bags", "Make the Keyring frame copy the bags options.", 1, db.Keyring, "CopyBags", dbd.Keyring,
-				-- 	function()
-				-- 		module:CheckBagsCopy()
-				-- 		if db.Keyring.CopyBags then module:CopyBags() end
-				-- 	end, "normal"),
-				KeyCols = LUI:NewSlider("Items Per Row", "Select how many items will be displayed per rows in your Bags.", 2,
-					db.Keyring, "KeyCols", dbd.Keyring, 4, 32, 1, KeyringOpt),
-				-- Header = LUI:NewHeader("", 3),
-				-- KeyPadding = LUI:NewSlider("Keyring Padding", "This sets the space between the background border and the adjacent items.", 4,
-				-- 	db.Keyring, "KeyPadding", dbd.Keyring, 4, 24, 1, KeyringOpt),
-				-- KeySpacing = LUI:NewSlider("Keyring Spacing", "This sets the distance between items.", 5,
-				-- 	db.Keyring, "KeySpacing", dbd.Keyring, 1, 15, 1, KeyringOpt, nil, DisabledKeyCopy),
-				-- Scale = LUI:NewScale("Keyring Scale",6, db.Keyring, "KeyScale", dbd.Keyring, KeyringOpt, nil, DisabledKeyCopy),
-				-- -- BagScale = LUI:NewScale("Bank BagBar",7, db.Keyring, "BagScale", dbd.Keyring, BankOpt, nil, DisabledKeyCopy),
-				-- -- BagFrame = LUI:NewToggle("Show Bag Bar", nil, 8, db.Keyring, "BagFrame", dbd.Keyring, KeyringOpt, nil, DisabledKeyCopy),
-			},
-		},
+		-- Keyring = {
+		-- 	name = "Keyring",
+		-- 	type = "group",
+		-- 	order = 5,
+		-- 	args = {
+		-- 		-- CopyBags = LUI:NewToggle("Copy Bags", "Make the Keyring frame copy the bags options.", 1, db.Keyring, "CopyBags", dbd.Keyring,
+		-- 		-- 	function()
+		-- 		-- 		module:CheckBagsCopy()
+		-- 		-- 		if db.Keyring.CopyBags then module:CopyBags() end
+		-- 		-- 	end, "normal"),
+		-- 		Cols = LUI:NewSlider("Items Per Row", "Select how many items will be displayed per rows in your Bags.", 2,
+		-- 			db.Keyring, "Cols", dbd.Keyring, 4, 32, 1, KeyringOpt),
+		-- 		Header = LUI:NewHeader("", 3),
+		-- 		KeyPadding = LUI:NewSlider("Keyring Padding", "This sets the space between the background border and the adjacent items.", 4,
+		-- 			db.Keyring, "KeyPadding", dbd.Keyring, 4, 24, 1, KeyringOpt),
+		-- 		KeySpacing = LUI:NewSlider("Keyring Spacing", "This sets the distance between items.", 5,
+		-- 			db.Keyring, "KeySpacing", dbd.Keyring, 1, 15, 1, KeyringOpt, nil, DisabledCopy),
+		-- 		Scale = LUI:NewScale("Keyring Frame",6, db.Keyring, "KeyScale", dbd.Keyring, KeyringOpt, nil, DisabledCopy),
+		-- 	},
+		-- },
 		Colors = {
 			name = "Colors",
 			type = "group",
@@ -1511,8 +1365,6 @@ function module:OnEnable()
 
 	-- Add LUIBags to the "Can be closed using ESC" table.
 	tinsert(UISpecialFrames,"LUIBags")
-	-- tinsert(UISpecialFrames,"LUIKeyring")
-
 	CloseAllBags()
 
 	--Now changes the functions to ours
