@@ -496,7 +496,7 @@ function Fader:UnitEventHandler(event, unit)
 	if event == "UNIT_HEALTH" then
 		local curHealth, maxHeatlh = UnitHealth("player"), UnitHealthMax("player")
 		self.Status.health = (curHealth < maxHeatlh) and (curHealth / maxHeatlh)
-	elseif event == "UNIT_POWER" then
+	elseif event == "UNIT_MANA" or "UNIT_ENERGY" or "UNIT_RAGE" then
 		local powerType, curPower, maxPower = UnitPowerType("player"), UnitPower("player"), UnitPowerMax("player")
 		if (powerType == 0) or (powerType == 3) then
 			self.Status.power = (curPower < maxPower) and (curPower / maxPower)
