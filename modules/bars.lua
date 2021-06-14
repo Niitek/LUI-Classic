@@ -7,7 +7,7 @@
 local addonname, LUI = ...
 local module = LUI:Module("Bars", "AceHook-3.0", "AceEvent-3.0")
 local Themes = LUI:Module("Themes")
-local Masque = LibStub("Masque", true)
+if IsAddOnLoaded("Masque") then local Masque = LibStub("Masque", true) end
 local Media = LibStub("LibSharedMedia-3.0")
 local LibKeyBound = LibStub("LibKeyBound-1.0")
 local widgetLists = AceGUIWidgetLSMlists
@@ -907,7 +907,7 @@ function module:HideBlizzard()
 	end
 
 	module:SecureHook("TalentFrame_LoadUI", function()
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		-- PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	end)
 end
 
