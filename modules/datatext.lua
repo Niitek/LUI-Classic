@@ -3716,7 +3716,7 @@ function module:LoadOptions()
 					set = function(info, value)
 						db.Friends.ShowTotal = value
 						InfoStats.Friends:UpdateText()
-						ShowFriends()
+						-- ShowFriends()
 					end,
 					order = 3,
 				},
