@@ -913,70 +913,26 @@ module.ApplySettings = function(unit)
 				end
 
 				-- runes
-				if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
-					module.funcs.Runes(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.Runes.Enable then
-						frame:EnableElement("Runes")
-					else
-						frame:DisableElement("Runes")
-						frame.Runes:Hide()
-					end
-				end
-
-				-- holy power
-				if class == "PALADIN" then
-					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.HolyPower.Enable then
-						frame:EnableElement("ClassIcons")
-					else
-						frame:DisableElement("ClassIcons")
-						frame.ClassIcons:Hide()
-					end
-				end
-				
-				-- arcane changes
-				if class == "MAGE" then
-					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.ArcaneCharges.Enable then
-						frame:EnableElement("ClassIcons")
-					else
-						frame:DisableElement("ClassIcons")
-						frame.ClassIcons:Hide()
-					end
-				end
-
-				-- warlock stuff
-				if class == "WARLOCK" then
-					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.WarlockBar.Enable then
-						frame:EnableElement("ClassIcons")
-					else
-						frame:DisableElement("ClassIcons")
-						frame.ClassIcons:Hide()
-					end
-				end
-
-				-- chi
-				if class == "MONK" then
-					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.Chi.Enable then
-						frame:EnableElement("ClassIcons")
-					else
-						frame:DisableElement("ClassIcons")
-						frame.ClassIcons:Hide()
-					end
-				end
+				-- if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
+				-- 	module.funcs.Runes(frame, frame.__unit, module.db.Player)
+				-- 	if module.db[unit].Bars.Runes.Enable then
+				-- 		frame:EnableElement("Runes")
+				-- 	else
+				-- 		frame:DisableElement("Runes")
+				-- 		frame.Runes:Hide()
+				-- 	end
+				-- end
 
 				-- druid mana bar
-				if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
-					module.funcs.DruidMana(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.DruidMana.Enable then
-						frame:EnableElement("DruidMana")
-					else
-						frame:DisableElement("DruidMana")
-						frame.DruidMana.SetPosition()
-					end
-				end
+				-- if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
+				-- 	module.funcs.DruidMana(frame, frame.__unit, module.db.Player)
+				-- 	if module.db[unit].Bars.DruidMana.Enable then
+				-- 		frame:EnableElement("DruidMana")
+				-- 	else
+				-- 		frame:DisableElement("DruidMana")
+				-- 		frame.DruidMana.SetPosition()
+				-- 	end
+				-- end
 			end
 
 			-- portrait
@@ -1040,12 +996,12 @@ module.ApplySettings = function(unit)
 			end
 
 			-- aggro glow
-			-- if module.db[unit].Border.Aggro then
-			-- 	module.funcs.AggroGlow(frame, frame.__unit, module.db[unit])
-			-- 	frame:EnableElement("Threat")
-			-- else
-			-- 	frame:DisableElement("Threat")
-			-- end
+			if module.db[unit].Border.Aggro then
+				module.funcs.AggroGlow(frame, frame.__unit, module.db[unit])
+				frame:EnableElement("Threat")
+			else
+				frame:DisableElement("Threat")
+			end
 
 			-- heal prediction
 			-- if module.db[unit].HealPrediction then

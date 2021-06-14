@@ -33,7 +33,7 @@ local glowTex = mediaPath..[=[textures\statusbars\glowTex]=]
 local highlightTex = mediaPath..[=[textures\statusbars\highlightTex]=]
 local blankTex = mediaPath..[=[textures\statusbars\blank]=]
 
--- local aggroTex = mediaPath..[=[textures\aggro]=]
+local aggroTex = mediaPath..[=[textures\aggro]=]
 local buttonTex = mediaPath..[=[textures\buttonTex]=]
 
 local backdrop = {
@@ -993,8 +993,8 @@ local CPointsOverride = function(self, event, unit)
 	if unit == "pet" then return end
 
 	local cp
-	if UnitExists("vehicle") then
-		cp = GetComboPoints("vehicle", "target")
+	if class == "Druid" and GetShapeshiftForm() == 1 then 
+		cp = GetComboPoints("player", "target")
 	else
 		cp = GetComboPoints("player", "target")
 	end
@@ -1015,74 +1015,74 @@ local CPointsOverride = function(self, event, unit)
 	end
 end
 
-local WarlockBarOverride = function(self, event, unit, powerType)
-	local specNum = GetSpecialization() 
-	local spec = self.WarlockBar.SpecInfo[specNum]
-	if not spec then return end
-	if self.unit ~= unit or (powerType and powerType ~= spec.powerType) then return end
-	local num = UnitPower(unit, spec.unitPower)
-	local text = ""
-	--Affliction
-	if specNum == 1 then
-		for i = 1, self.WarlockBar.Amount do
-			self.WarlockBar[i]:SetValue(spec.maxValue)
-			if i <= num then self.WarlockBar[i]:SetAlpha(1)
-			else self.WarlockBar[i]:SetAlpha(.4)
-			end
-		end
-	--Demonology
-	elseif specNum == 2 then
-		text = num
-		self.WarlockBar[1]:SetAlpha(1)
-		self.WarlockBar[1]:SetValue(num)	
-	--Destruction
-	elseif specNum == 3 then
-		local power = UnitPower(unit, spec.unitPower, true)
-		for i = 1, self.WarlockBar.Amount do
-			local numOver = power - (i-1)*10
-			if i <= num then
-				self.WarlockBar[i]:SetAlpha(1)
-				self.WarlockBar[i]:SetValue(spec.maxValue)
-			elseif numOver > 0 then
-				self.WarlockBar[i]:SetAlpha(.6)
-				self.WarlockBar[i]:SetValue(numOver)
-			else
-				self.WarlockBar[i]:SetAlpha(.6)
-				self.WarlockBar[i]:SetValue(0)
-			end
-		end
-	end
-	if self.WarlockBar.ShowText then
-		self.WarlockBar.Text:SetText(text)
-	end
-end
+-- local WarlockBarOverride = function(self, event, unit, powerType)
+-- 	local specNum = GetSpecialization() 
+-- 	local spec = self.WarlockBar.SpecInfo[specNum]
+-- 	if not spec then return end
+-- 	if self.unit ~= unit or (powerType and powerType ~= spec.powerType) then return end
+-- 	local num = UnitPower(unit, spec.unitPower)
+-- 	local text = ""
+-- 	--Affliction
+-- 	if specNum == 1 then
+-- 		for i = 1, self.WarlockBar.Amount do
+-- 			self.WarlockBar[i]:SetValue(spec.maxValue)
+-- 			if i <= num then self.WarlockBar[i]:SetAlpha(1)
+-- 			else self.WarlockBar[i]:SetAlpha(.4)
+-- 			end
+-- 		end
+-- 	--Demonology
+-- 	elseif specNum == 2 then
+-- 		text = num
+-- 		self.WarlockBar[1]:SetAlpha(1)
+-- 		self.WarlockBar[1]:SetValue(num)	
+-- 	--Destruction
+-- 	elseif specNum == 3 then
+-- 		local power = UnitPower(unit, spec.unitPower, true)
+-- 		for i = 1, self.WarlockBar.Amount do
+-- 			local numOver = power - (i-1)*10
+-- 			if i <= num then
+-- 				self.WarlockBar[i]:SetAlpha(1)
+-- 				self.WarlockBar[i]:SetValue(spec.maxValue)
+-- 			elseif numOver > 0 then
+-- 				self.WarlockBar[i]:SetAlpha(.6)
+-- 				self.WarlockBar[i]:SetValue(numOver)
+-- 			else
+-- 				self.WarlockBar[i]:SetAlpha(.6)
+-- 				self.WarlockBar[i]:SetValue(0)
+-- 			end
+-- 		end
+-- 	end
+-- 	if self.WarlockBar.ShowText then
+-- 		self.WarlockBar.Text:SetText(text)
+-- 	end
+-- end
 
-local ArcaneChargesOverride = function(self, event, unit, powerType)
-	if self.unit ~= unit then return end
+-- local ArcaneChargesOverride = function(self, event, unit, powerType)
+-- 	if self.unit ~= unit then return end
 
-	local _, _, _, num = UnitDebuff(unit, GetSpellInfo(36032)) -- Arcane Charges
-	if not num then num = 0 end
-	for i = 1, self.ArcaneCharges.Charges do
-		if i <= num then
-			self.ArcaneCharges[i]:SetAlpha(1)
-		else
-			self.ArcaneCharges[i]:SetAlpha(.4)
-		end
-	end
-end
+-- 	local _, _, _, num = UnitDebuff(unit, GetSpellInfo(36032)) -- Arcane Charges
+-- 	if not num then num = 0 end
+-- 	for i = 1, self.ArcaneCharges.Charges do
+-- 		if i <= num then
+-- 			self.ArcaneCharges[i]:SetAlpha(1)
+-- 		else
+-- 			self.ArcaneCharges[i]:SetAlpha(.4)
+-- 		end
+-- 	end
+-- end
 
-local HolyPowerOverride = function(self, event, unit, powerType)
-	if self.unit ~= unit or (powerType and powerType ~= "HOLY_POWER") then return end
+-- local HolyPowerOverride = function(self, event, unit, powerType)
+-- 	if self.unit ~= unit or (powerType and powerType ~= "HOLY_POWER") then return end
 
-	 local num = UnitPower(unit, Enum.PowerType.HolyPower)
-	 for i = 1, self.HolyPower.Powers do
-		 if i <= num then
-			 self.HolyPower[i]:SetAlpha(1)
-		 else
-			 self.HolyPower[i]:SetAlpha(.4)
-		 end
-	 end
-end
+-- 	 local num = UnitPower(unit, Enum.PowerType.HolyPower)
+-- 	 for i = 1, self.HolyPower.Powers do
+-- 		 if i <= num then
+-- 			 self.HolyPower[i]:SetAlpha(1)
+-- 		 else
+-- 			 self.HolyPower[i]:SetAlpha(.4)
+-- 		 end
+-- 	 end
+-- end
 
 local TotemsOverride = function(self, event, slot)
 	if slot > MAX_TOTEMS then return end
@@ -1142,58 +1142,58 @@ local TotemsOverride = function(self, event, slot)
 
 end
 
-local ChiOverride = function(self, event, unit, powerType)
-	if self.unit ~= unit or (powerType and powerType ~= "CHI") then return end
+-- local ChiOverride = function(self, event, unit, powerType)
+-- 	if self.unit ~= unit or (powerType and powerType ~= "CHI") then return end
 
-	 local num = UnitPower(unit, Enum.PowerType.Chi)
-	 for i = 1, self.Chi.Force do
-		 if i <= num then
-			 self.Chi[i]:SetAlpha(1)
-		 else
-			 self.Chi[i]:SetAlpha(.4)
-		 end
-	 end
-end
+-- 	 local num = UnitPower(unit, Enum.PowerType.Chi)
+-- 	 for i = 1, self.Chi.Force do
+-- 		 if i <= num then
+-- 			 self.Chi[i]:SetAlpha(1)
+-- 		 else
+-- 			 self.Chi[i]:SetAlpha(.4)
+-- 		 end
+-- 	 end
+-- end
 
-local DruidManaOverride = function(self, event, unit)
-	if not unit or not UnitIsUnit(self.unit, unit) then return end
-	local _, class = UnitClass(unit)
-	local druidmana = self.DruidMana
+-- local DruidManaOverride = function(self, event, unit)
+-- 	if not unit or not UnitIsUnit(self.unit, unit) then return end
+-- 	local _, class = UnitClass(unit)
+-- 	local druidmana = self.DruidMana
 
-	local form = GetShapeshiftFormID()
-	if self.DruidMana.ShouldEnable(unit) then
-		druidmana:Show()
-	else
-		return druidmana:Hide()
-	end
+-- 	local form = GetShapeshiftFormID()
+-- 	if self.DruidMana.ShouldEnable(unit) then
+-- 		druidmana:Show()
+-- 	else
+-- 		return druidmana:Hide()
+-- 	end
 
-	local min, max = UnitPower('player', Enum.PowerType.Mana), UnitPowerMax('player', Enum.PowerType.Mana)
+-- 	local min, max = UnitPower('player', Enum.PowerType.Mana), UnitPowerMax('player', Enum.PowerType.Mana)
 
-	druidmana:SetMinMaxValues(0, max)
-	druidmana:SetValue(min)
+-- 	druidmana:SetMinMaxValues(0, max)
+-- 	druidmana:SetValue(min)
 
-	local r, g, b
-	if(druidmana.colorClass and UnitIsPlayer(unit)) then
-		r, g, b = unpack(module.colors.class[class])
-	elseif(druidmana.colorSmooth) then
-		r, g, b = oUF.ColorGradient(min, max, module.colors.smooth())
-	else
-		r, g, b = unpack(module.colors.power['MANA'])
-	end
-	if(b) then
-		druidmana:SetStatusBarColor(r, g, b)
+-- 	local r, g, b
+-- 	if(druidmana.colorClass and UnitIsPlayer(unit)) then
+-- 		r, g, b = unpack(module.colors.class[class])
+-- 	elseif(druidmana.colorSmooth) then
+-- 		r, g, b = oUF.ColorGradient(min, max, module.colors.smooth())
+-- 	else
+-- 		r, g, b = unpack(module.colors.power['MANA'])
+-- 	end
+-- 	if(b) then
+-- 		druidmana:SetStatusBarColor(r, g, b)
 
-		local bg = druidmana.bg
-		if(bg) then
-			local mu = bg.multiplier or 1
-			bg:SetVertexColor(r * mu, g * mu, b * mu)
-		end
-	end
+-- 		local bg = druidmana.bg
+-- 		if(bg) then
+-- 			local mu = bg.multiplier or 1
+-- 			bg:SetVertexColor(r * mu, g * mu, b * mu)
+-- 		end
+-- 	end
 
-	if(druidmana.PostUpdatePower) then
-		return druidmana:PostUpdatePower(unit, min, max)
-	end
-end
+-- 	if(druidmana.PostUpdatePower) then
+-- 		return druidmana:PostUpdatePower(unit, min, max)
+-- 	end
+-- end
 
 -- local PostUpdateAltPower = function(altpowerbar, min, cur, max)
 -- 	local pClass, pToken = UnitClass("player")
@@ -1241,24 +1241,24 @@ end
 -- 	end
 -- end
 
-local PostUpdateDruidMana = function(druidmana, unit, min, max)
-	local _, class = UnitClass(unit)
-	if druidmana.color == "By Class" then
-		druidmana:SetStatusBarColor(unpack(module.colors.class[class]))
-	elseif druidmana.color == "By Type" then
-		druidmana:SetStatusBarColor(unpack(module.colors.power.MANA))
-	else
-		druidmana:SetStatusBarColor(oUF.ColorGradient(min, max, module.colors.smooth()))
-	end
+-- local PostUpdateDruidMana = function(druidmana, unit, min, max)
+-- 	local _, class = UnitClass(unit)
+-- 	if druidmana.color == "By Class" then
+-- 		druidmana:SetStatusBarColor(unpack(module.colors.class[class]))
+-- 	elseif druidmana.color == "By Type" then
+-- 		druidmana:SetStatusBarColor(unpack(module.colors.power.MANA))
+-- 	else
+-- 		druidmana:SetStatusBarColor(oUF.ColorGradient(min, max, module.colors.smooth()))
+-- 	end
 
-	local bg = druidmana.bg
+-- 	local bg = druidmana.bg
 
-	if bg then
-		local mu = bg.multiplier or 1
-		local r, g, b = druidmana:GetStatusBarColor()
-		bg:SetVertexColor(r * mu, g * mu, b * mu)
-	end
-end
+-- 	if bg then
+-- 		local mu = bg.multiplier or 1
+-- 		local r, g, b = druidmana:GetStatusBarColor()
+-- 		bg:SetVertexColor(r * mu, g * mu, b * mu)
+-- 	end
+-- end
 
 local ArenaEnemyUnseen = function(self, event, unit, state)
 	if unit ~= self.unit then return end
@@ -2173,36 +2173,26 @@ module.funcs = {
 	ClassIcons = function(self, unit, oufdb)
 		local _, class = UnitClass("player")
 		local BASE_COUNT = {
-			MAGE = 4,
-			MONK = 5,
-			PALADIN = 5,
+			-- MAGE = 4,
+			-- PALADIN = 5,
 			ROGUE = 5,
-			WARLOCK = 5,
+			-- WARLOCK = 5,
 			DRUID = 5,
 		}
 		-- The maximum of a ressource a given class can have
 		local MAX_COUNT = {
-			MAGE = 4,
-			MONK = 6,
-			PALADIN = 5,
+			-- MAGE = 4,
+			-- PALADIN = 5,
 			ROGUE = 6,
-			WARLOCK = 5,
+			-- WARLOCK = 5,
 			DRUID = 5,
 		}
 		local r, g, b
-		if class == "MONK" then r, g, b = unpack(module.colors.chibar[1])
-		elseif class == "PALADIN" then r, g, b = unpack(module.colors.holypowerbar[1])
-		elseif class == "MAGE" then r, g, b = unpack(module.colors.arcanechargesbar[1])
-		elseif class == "WARLOCK" then r, g, b = unpack(module.colors.warlockbar.Shard1)
-		elseif class == "ROGUE" then r, g, b = unpack(module.colors.combopoints[1])
+		if class == "ROGUE" then r, g, b = unpack(module.colors.combopoints[1])
 		elseif class == "DRUID" then r, g, b = unpack(module.colors.combopoints[1])
 		end
 		
-		if class == "MONK" then oufdb.Bars.ClassIcons = oufdb.Bars.Chi
-		elseif class == "PALADIN" then oufdb.Bars.ClassIcons = oufdb.Bars.HolyPower
-		elseif class == "MAGE" then oufdb.Bars.ClassIcons = oufdb.Bars.ArcaneCharges
-		elseif class == "WARLOCK" then oufdb.Bars.ClassIcons = oufdb.Bars.WarlockBar
-		elseif class == "ROGUE" then oufdb.Bars.ClassIcons = oufdb.Bars.Chi
+		if class == "ROGUE" then oufdb.Bars.ClassIcons = oufdb.Bars.Chi
 		elseif class == "DRUID" then oufdb.Bars.ClassIcons = oufdb.Bars.Chi
 		end
 		
@@ -2233,11 +2223,7 @@ module.funcs = {
 		local function checkPowers(event, level)
 			local pLevel = (event == "UNIT_LEVEL") and tonumber(level) or UnitLevel("player")
 			local count = BASE_COUNT[class]
-			if class == "MONK" then
-				if select(4, GetTalentInfo(3, 1, 1)) then
-					count = count + 1
-				end
-			elseif class == "ROGUE" then
+			if class == "ROGUE" then
 				--Check for Strategem, increase CPoints to 6.
 				if select(4, GetTalentInfo(3, 2, 1)) then
 					count = 6
@@ -2261,7 +2247,7 @@ module.funcs = {
 					self.ClassIcons[i]:SetPoint("LEFT", self.ClassIcons[i-1], "RIGHT", oufdb.Bars.ClassIcons.Padding, 0)
 				end
 				--LUI:Print("ClassIcon["..i.."] Is Shown")
-				--self.ClassIcons[i]:Show()
+				self.ClassIcons[i]:Show()
 				if i > self.ClassIcons.Count then
 					self.ClassIcons[i]:Hide()
 				end
@@ -2345,89 +2331,89 @@ module.funcs = {
 
 	-- 	self.AltPowerBar.SetPosition()
 	-- end,
-	DruidMana = function(self, unit, oufdb)
-		if not self.DruidMana then
-			local DruidMana = CreateFrame("StatusBar", nil, self)
+	-- DruidMana = function(self, unit, oufdb)
+	-- 	if not self.DruidMana then
+	-- 		local DruidMana = CreateFrame("StatusBar", nil, self)
 
-			local bg = DruidMana:CreateTexture(nil, "BACKGROUND")
-			bg:SetAllPoints(DruidMana)
+	-- 		local bg = DruidMana:CreateTexture(nil, "BACKGROUND")
+	-- 		bg:SetAllPoints(DruidMana)
 			
-			self.DruidMana = DruidMana
-			self.DruidMana.bg = bg
+	-- 		self.DruidMana = DruidMana
+	-- 		self.DruidMana.bg = bg
 
-			self.DruidMana.Smooth = oufdb.Bars.DruidMana.Smooth
+	-- 		self.DruidMana.Smooth = oufdb.Bars.DruidMana.Smooth
 
-			self.DruidMana.value = SetFontString(self.DruidMana, Media:Fetch("font", oufdb.Texts.DruidMana.Font), oufdb.Texts.DruidMana.Size, oufdb.Texts.DruidMana.Outline)
-			self:Tag(self.DruidMana.value, "[druidmana2]")
+	-- 		self.DruidMana.value = SetFontString(self.DruidMana, Media:Fetch("font", oufdb.Texts.DruidMana.Font), oufdb.Texts.DruidMana.Size, oufdb.Texts.DruidMana.Outline)
+	-- 		self:Tag(self.DruidMana.value, "[druidmana2]")
 			
-			self.DruidMana.ShouldEnable = function(unit)
-				local shouldEnable = false
-				local _, playerClass = UnitClass(unit)
-				-- if(not UnitHasVehicleUI('player')) then
-				-- 	if(UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX) ~= 0) then
-				-- 		if(ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass]) then
-				-- 			local powerType = UnitPowerType(unit)
-				-- 			shouldEnable = ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass][powerType]
-				-- 		end
-				-- 	end
-				-- end
-				return shouldEnable
-			end
+	-- 		self.DruidMana.ShouldEnable = function(unit)
+	-- 			local shouldEnable = false
+	-- 			local _, playerClass = UnitClass(unit)
+	-- 			-- if(not UnitHasVehicleUI('player')) then
+	-- 			-- 	if(UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX) ~= 0) then
+	-- 			-- 		if(ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass]) then
+	-- 			-- 			local powerType = UnitPowerType(unit)
+	-- 			-- 			shouldEnable = ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass][powerType]
+	-- 			-- 		end
+	-- 			-- 	end
+	-- 			-- end
+	-- 			return shouldEnable
+	-- 		end
 			
-			self.DruidMana.SetPosition = function()
-				if not oufdb.Bars.DruidMana.OverPower then return self.Power:SetHeight(oufdb.Bars.Power.Height) end
+	-- 		self.DruidMana.SetPosition = function()
+	-- 			if not oufdb.Bars.DruidMana.OverPower then return self.Power:SetHeight(oufdb.Bars.Power.Height) end
 
-				if self.DruidMana:IsShown() then
-					self.Power:SetHeight(oufdb.Bars.Power.Height/2 - 1)
-					self.DruidMana:SetHeight(oufdb.Bars.DruidMana.Height/2 - 1)
-				else
-					self.Power:SetHeight(oufdb.Bars.Power.Height)
-					self.DruidMana:SetHeight(oufdb.Bars.DruidMana.Height)
-				end
-			end
+	-- 			if self.DruidMana:IsShown() then
+	-- 				self.Power:SetHeight(oufdb.Bars.Power.Height/2 - 1)
+	-- 				self.DruidMana:SetHeight(oufdb.Bars.DruidMana.Height/2 - 1)
+	-- 			else
+	-- 				self.Power:SetHeight(oufdb.Bars.Power.Height)
+	-- 				self.DruidMana:SetHeight(oufdb.Bars.DruidMana.Height)
+	-- 			end
+	-- 		end
 
-			self.DruidMana:SetScript("OnShow", self.DruidMana.SetPosition)
-			self.DruidMana:SetScript("OnHide", self.DruidMana.SetPosition)
+	-- 		self.DruidMana:SetScript("OnShow", self.DruidMana.SetPosition)
+	-- 		self.DruidMana:SetScript("OnHide", self.DruidMana.SetPosition)
 
-			self.DruidMana.PostUpdatePower = PostUpdateDruidMana
-			self.DruidMana.Override = DruidManaOverride
-		end
+	-- 		self.DruidMana.PostUpdatePower = PostUpdateDruidMana
+	-- 		self.DruidMana.Override = DruidManaOverride
+	-- 	end
 
-		self.DruidMana:ClearAllPoints()
-		if oufdb.Bars.DruidMana.OverPower then
-			self.DruidMana:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -2)
-			self.DruidMana:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -2)
-		else
-			self.Power:SetHeight(oufdb.Bars.Power.Height)
-			self.DruidMana:SetPoint("TOPLEFT", self, "TOPLEFT", module.db.Player.Bars.DruidMana.X, module.db.Player.Bars.DruidMana.Y)
-		end
+	-- 	self.DruidMana:ClearAllPoints()
+	-- 	if oufdb.Bars.DruidMana.OverPower then
+	-- 		self.DruidMana:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -2)
+	-- 		self.DruidMana:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -2)
+	-- 	else
+	-- 		self.Power:SetHeight(oufdb.Bars.Power.Height)
+	-- 		self.DruidMana:SetPoint("TOPLEFT", self, "TOPLEFT", module.db.Player.Bars.DruidMana.X, module.db.Player.Bars.DruidMana.Y)
+	-- 	end
 
-		self.DruidMana:SetHeight(oufdb.Bars.DruidMana.Height)
-		self.DruidMana:SetWidth(oufdb.Bars.DruidMana.Width)
-		self.DruidMana:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.DruidMana.Texture))
+	-- 	self.DruidMana:SetHeight(oufdb.Bars.DruidMana.Height)
+	-- 	self.DruidMana:SetWidth(oufdb.Bars.DruidMana.Width)
+	-- 	self.DruidMana:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.DruidMana.Texture))
 
-		self.DruidMana.value:SetFont(Media:Fetch("font", oufdb.Texts.DruidMana.Font), oufdb.Texts.DruidMana.Size, oufdb.Texts.DruidMana.Outline)
-		self.DruidMana.value:SetPoint("CENTER", self.DruidMana, "CENTER")
+	-- 	self.DruidMana.value:SetFont(Media:Fetch("font", oufdb.Texts.DruidMana.Font), oufdb.Texts.DruidMana.Size, oufdb.Texts.DruidMana.Outline)
+	-- 	self.DruidMana.value:SetPoint("CENTER", self.DruidMana, "CENTER")
 
-		if oufdb.Texts.DruidMana.Enable == true then
-			self.DruidMana.value:Show()
-		else
-			self.DruidMana.value:Hide()
-		end
+	-- 	if oufdb.Texts.DruidMana.Enable == true then
+	-- 		self.DruidMana.value:Show()
+	-- 	else
+	-- 		self.DruidMana.value:Hide()
+	-- 	end
 
-		self.DruidMana.color = oufdb.Bars.DruidMana.Color
+	-- 	self.DruidMana.color = oufdb.Bars.DruidMana.Color
 
-		self.DruidMana.bg:SetTexture(Media:Fetch("statusbar", oufdb.Bars.DruidMana.TextureBG))
-		self.DruidMana.bg:SetAlpha(oufdb.Bars.DruidMana.BGAlpha)
-		self.DruidMana.bg.multiplier = oufdb.Bars.DruidMana.BGMultiplier
+	-- 	self.DruidMana.bg:SetTexture(Media:Fetch("statusbar", oufdb.Bars.DruidMana.TextureBG))
+	-- 	self.DruidMana.bg:SetAlpha(oufdb.Bars.DruidMana.BGAlpha)
+	-- 	self.DruidMana.bg.multiplier = oufdb.Bars.DruidMana.BGMultiplier
 
-		if self.DruidMana.ShouldEnable(unit) then self.DruidMana.SetPosition() end
-		if module.db.Player.Bars.DruidMana.Enable then
-			self.DruidMana:Show()
-		else
-			self.DruidMana:Hide()
-		end
-	end,
+	-- 	if self.DruidMana.ShouldEnable(unit) then self.DruidMana.SetPosition() end
+	-- 	if module.db.Player.Bars.DruidMana.Enable then
+	-- 		self.DruidMana:Show()
+	-- 	else
+	-- 		self.DruidMana:Hide()
+	-- 	end
+	-- end,
 
 	-- raid specific
 	SingleAuras = function(self, unit, oufdb)
@@ -2799,102 +2785,102 @@ module.funcs = {
 		end
 	end,
 
-	-- AggroGlow = function(self, unit, oufdb)
-	-- 	if self.Threat then return end
+	AggroGlow = function(self, unit, oufdb)
+		if self.Threat then return end
 
-	-- 	self.Threat = CreateFrame("Frame", nil, self)
-	-- 	self.Threat:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
-	-- 	self.Threat:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0)
-	-- 	self.Threat:SetFrameLevel(self.Health:GetFrameLevel() - 1)
+		self.Threat = CreateFrame("Frame", nil, self)
+		self.Threat:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
+		self.Threat:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0)
+		self.Threat:SetFrameLevel(self.Health:GetFrameLevel() - 1)
 
-	-- 	for i = 1, 8 do
-	-- 		self.Threat[i] = self.Threat:CreateTexture(nil, "BACKGROUND")
-	-- 		self.Threat[i]:SetTexture(aggroTex)
-	-- 		self.Threat[i]:SetWidth(20)
-	-- 		self.Threat[i]:SetHeight(20)
+		for i = 1, 8 do
+			self.Threat[i] = self.Threat:CreateTexture(nil, "BACKGROUND")
+			self.Threat[i]:SetTexture(aggroTex)
+			self.Threat[i]:SetWidth(20)
+			self.Threat[i]:SetHeight(20)
+		end
+
+		-- topleft corner
+		self.Threat[1]:SetTexCoord(0, 1/3, 0, 1/3)
+		self.Threat[1]:SetPoint("TOPLEFT", self.Threat, -8, 8)
+
+		-- topright corner
+		self.Threat[2]:SetTexCoord(2/3, 1, 0, 1/3)
+		self.Threat[2]:SetPoint("TOPRIGHT", self.Threat, 8, 8)
+
+		-- bottomleft corner
+		self.Threat[3]:SetTexCoord(0, 1/3, 2/3, 1)
+		self.Threat[3]:SetPoint("BOTTOMLEFT", self.Threat, -8, -8)
+
+		-- bottomright corner
+		self.Threat[4]:SetTexCoord(2/3, 1, 2/3, 1)
+		self.Threat[4]:SetPoint("BOTTOMRIGHT", self.Threat, 8, -8)
+
+		-- top edge
+		self.Threat[5]:SetTexCoord(1/3, 2/3, 0, 1/3)
+		self.Threat[5]:SetPoint("TOPLEFT", self.Threat[1], "TOPRIGHT")
+		self.Threat[5]:SetPoint("TOPRIGHT", self.Threat[2], "TOPLEFT")
+
+		-- bottom edge
+		self.Threat[6]:SetTexCoord(1/3, 2/3, 2/3, 1)
+		self.Threat[6]:SetPoint("BOTTOMLEFT", self.Threat[3], "BOTTOMRIGHT")
+		self.Threat[6]:SetPoint("BOTTOMRIGHT", self.Threat[4], "BOTTOMLEFT")
+
+		-- left edge
+		self.Threat[7]:SetTexCoord(0, 1/3, 1/3, 2/3)
+		self.Threat[7]:SetPoint("TOPLEFT", self.Threat[1], "BOTTOMLEFT")
+		self.Threat[7]:SetPoint("BOTTOMLEFT", self.Threat[3], "TOPLEFT")
+
+		-- right edge
+		self.Threat[8]:SetTexCoord(2/3, 1, 1/3, 2/3)
+		self.Threat[8]:SetPoint("TOPRIGHT", self.Threat[2], "BOTTOMRIGHT")
+		self.Threat[8]:SetPoint("BOTTOMRIGHT", self.Threat[4], "TOPRIGHT")
+
+		self.Threat.Override = ThreatOverride
+	end,
+
+	-- HealPrediction = function(self, unit, oufdb)
+	-- 	if not self.HealPrediction then
+	-- 		self.HealPrediction = {
+	-- 			myBar = CreateFrame("StatusBar", nil, self.Health),
+	-- 			otherBar = CreateFrame("StatusBar", nil, self.Health),
+	-- 			maxOverflow = 1,
+	-- 		}
 	-- 	end
 
-	-- 	-- topleft corner
-	-- 	self.Threat[1]:SetTexCoord(0, 1/3, 0, 1/3)
-	-- 	self.Threat[1]:SetPoint("TOPLEFT", self.Threat, -8, 8)
+	-- 	self.HealPrediction.myBar:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
+	-- 	self.HealPrediction.myBar:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.HealPrediction.Texture))
+	-- 	self.HealPrediction.myBar:SetStatusBarColor(oufdb.Bars.HealPrediction.MyColor.r, oufdb.Bars.HealPrediction.MyColor.g, oufdb.Bars.HealPrediction.MyColor.b, oufdb.Bars.HealPrediction.MyColor.a)
 
-	-- 	-- topright corner
-	-- 	self.Threat[2]:SetTexCoord(2/3, 1, 0, 1/3)
-	-- 	self.Threat[2]:SetPoint("TOPRIGHT", self.Threat, 8, 8)
+	-- 	self.HealPrediction.otherBar:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
+	-- 	self.HealPrediction.otherBar:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.HealPrediction.Texture))
+	-- 	self.HealPrediction.otherBar:SetStatusBarColor(oufdb.Bars.HealPrediction.OtherColor.r, oufdb.Bars.HealPrediction.OtherColor.g, oufdb.Bars.HealPrediction.OtherColor.b, oufdb.Bars.HealPrediction.OtherColor.a)
 
-	-- 	-- bottomleft corner
-	-- 	self.Threat[3]:SetTexCoord(0, 1/3, 2/3, 1)
-	-- 	self.Threat[3]:SetPoint("BOTTOMLEFT", self.Threat, -8, -8)
+	-- 	self.HealPrediction.myBar:ClearAllPoints()
+	-- 	self.HealPrediction.myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+	-- 	self.HealPrediction.myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 
-	-- 	-- bottomright corner
-	-- 	self.Threat[4]:SetTexCoord(2/3, 1, 2/3, 1)
-	-- 	self.Threat[4]:SetPoint("BOTTOMRIGHT", self.Threat, 8, -8)
-
-	-- 	-- top edge
-	-- 	self.Threat[5]:SetTexCoord(1/3, 2/3, 0, 1/3)
-	-- 	self.Threat[5]:SetPoint("TOPLEFT", self.Threat[1], "TOPRIGHT")
-	-- 	self.Threat[5]:SetPoint("TOPRIGHT", self.Threat[2], "TOPLEFT")
-
-	-- 	-- bottom edge
-	-- 	self.Threat[6]:SetTexCoord(1/3, 2/3, 2/3, 1)
-	-- 	self.Threat[6]:SetPoint("BOTTOMLEFT", self.Threat[3], "BOTTOMRIGHT")
-	-- 	self.Threat[6]:SetPoint("BOTTOMRIGHT", self.Threat[4], "BOTTOMLEFT")
-
-	-- 	-- left edge
-	-- 	self.Threat[7]:SetTexCoord(0, 1/3, 1/3, 2/3)
-	-- 	self.Threat[7]:SetPoint("TOPLEFT", self.Threat[1], "BOTTOMLEFT")
-	-- 	self.Threat[7]:SetPoint("BOTTOMLEFT", self.Threat[3], "TOPLEFT")
-
-	-- 	-- right edge
-	-- 	self.Threat[8]:SetTexCoord(2/3, 1, 1/3, 2/3)
-	-- 	self.Threat[8]:SetPoint("TOPRIGHT", self.Threat[2], "BOTTOMRIGHT")
-	-- 	self.Threat[8]:SetPoint("BOTTOMRIGHT", self.Threat[4], "TOPRIGHT")
-
-	-- 	self.Threat.Override = ThreatOverride
+	-- 	self.HealPrediction.otherBar:SetPoint("TOPLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+	-- 	self.HealPrediction.otherBar:SetPoint("BOTTOMLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 	-- end,
 
-	HealPrediction = function(self, unit, oufdb)
-		if not self.HealPrediction then
-			self.HealPrediction = {
-				myBar = CreateFrame("StatusBar", nil, self.Health),
-				otherBar = CreateFrame("StatusBar", nil, self.Health),
-				maxOverflow = 1,
-			}
-		end
+	-- TotalAbsorb = function(self, unit, oufdb)
+	-- 	if not self.TotalAbsorb then
+	-- 		self.TotalAbsorb = CreateFrame('StatusBar', nil, self.Health)
+	-- 	end
 
-		self.HealPrediction.myBar:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
-		self.HealPrediction.myBar:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.HealPrediction.Texture))
-		self.HealPrediction.myBar:SetStatusBarColor(oufdb.Bars.HealPrediction.MyColor.r, oufdb.Bars.HealPrediction.MyColor.g, oufdb.Bars.HealPrediction.MyColor.b, oufdb.Bars.HealPrediction.MyColor.a)
-
-		self.HealPrediction.otherBar:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
-		self.HealPrediction.otherBar:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.HealPrediction.Texture))
-		self.HealPrediction.otherBar:SetStatusBarColor(oufdb.Bars.HealPrediction.OtherColor.r, oufdb.Bars.HealPrediction.OtherColor.g, oufdb.Bars.HealPrediction.OtherColor.b, oufdb.Bars.HealPrediction.OtherColor.a)
-
-		self.HealPrediction.myBar:ClearAllPoints()
-		self.HealPrediction.myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		self.HealPrediction.myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-
-		self.HealPrediction.otherBar:SetPoint("TOPLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		self.HealPrediction.otherBar:SetPoint("BOTTOMLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-	end,
-
-	TotalAbsorb = function(self, unit, oufdb)
-		if not self.TotalAbsorb then
-			self.TotalAbsorb = CreateFrame('StatusBar', nil, self.Health)
-		end
-
-		self.TotalAbsorb.maxOverflow = 1
+	-- 	self.TotalAbsorb.maxOverflow = 1
 		
-		self.TotalAbsorb:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
-		self.TotalAbsorb:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.TotalAbsorb.Texture))
-		self.TotalAbsorb:SetStatusBarColor(oufdb.Bars.TotalAbsorb.MyColor.r, oufdb.Bars.TotalAbsorb.MyColor.g, oufdb.Bars.TotalAbsorb.MyColor.b, oufdb.Bars.TotalAbsorb.MyColor.a)
+	-- 	self.TotalAbsorb:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
+	-- 	self.TotalAbsorb:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.TotalAbsorb.Texture))
+	-- 	self.TotalAbsorb:SetStatusBarColor(oufdb.Bars.TotalAbsorb.MyColor.r, oufdb.Bars.TotalAbsorb.MyColor.g, oufdb.Bars.TotalAbsorb.MyColor.b, oufdb.Bars.TotalAbsorb.MyColor.a)
 
-		self.TotalAbsorb:ClearAllPoints()
-		self.TotalAbsorb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		self.TotalAbsorb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+	-- 	self.TotalAbsorb:ClearAllPoints()
+	-- 	self.TotalAbsorb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+	-- 	self.TotalAbsorb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 
-		--self.TotalAbsorb.Override = TotalAbsorbOverride
-	end,
+	-- 	--self.TotalAbsorb.Override = TotalAbsorbOverride
+	-- end,
 	
 	V2Textures = function(from, to)
 		if not from.V2Tex then
@@ -3034,8 +3020,8 @@ local SetStyle = function(self, unit, isSingle)
 	module.funcs.Full(self, unit, oufdb)
 	module.funcs.FrameBackdrop(self, unit, oufdb)
 
-	if oufdb.Bars.HealPrediction and oufdb.Bars.HealPrediction.Enable then module.funcs.HealPrediction(self, unit, oufdb) end
-	if oufdb.Bars.TotalAbsorb and oufdb.Bars.TotalAbsorb.Enable then module.funcs.TotalAbsorb(self, unit, oufdb) end
+	-- if oufdb.Bars.HealPrediction and oufdb.Bars.HealPrediction.Enable then module.funcs.HealPrediction(self, unit, oufdb) end
+	-- if oufdb.Bars.TotalAbsorb and oufdb.Bars.TotalAbsorb.Enable then module.funcs.TotalAbsorb(self, unit, oufdb) end
 
 	------------------------------------------------------------------------
 	--	Texts
@@ -3098,16 +3084,16 @@ local SetStyle = function(self, unit, isSingle)
 				Blizzard:Hide("runebar")
 			end
 		elseif class == "DRUID" then
-			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
-			-- if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+			-- if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
+			if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		-- elseif class == "PALADIN" then
 		-- 	if oufdb.Bars.HolyPower.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		-- elseif class == "MONK" then
 		-- 	if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "ROGUE" then
 			if oufdb.Bars.Chi.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
-		elseif class == "SHAMAN" then
-			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
+		-- elseif class == "SHAMAN" then
+		-- 	if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 		-- elseif class == "MAGE" then
 		-- 	if oufdb.Bars.ArcaneCharges.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		-- elseif class == "WARLOCK" then 
@@ -3148,7 +3134,7 @@ local SetStyle = function(self, unit, isSingle)
 			Blizzard:Hide("castbar")
 		end
 	end
-	-- if oufdb.Border.Aggro then module.funcs.AggroGlow(self, unit, oufdb) end
+	if oufdb.Border.Aggro then module.funcs.AggroGlow(self, unit, oufdb) end
 
 	if module.db.Target.Enable == true and module.db.Player.Enable == true then
 		if unit == "targettarget" and module.db.Settings.ShowV2Textures then
