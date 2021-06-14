@@ -697,13 +697,13 @@ module.defaults = {
 		},
 		Chat = {
 			OffsetX = 0,
-			OffsetY = 0,
+			OffsetY = -2,
 			AlwaysShow = false,
-			IsShown = true,
+			IsShown = false,
 			Direction = "TOPRIGHT",
 			Animation = "AlphaSlide",
-			Width = 429,
-			Height = 181
+			Width = 412,
+			Height = 177
 		},
 		Tps = {
 			OffsetX = 0,
@@ -730,12 +730,12 @@ module.defaults = {
 			Height = 181
 		},
 		Raid = {
-			OffsetX = 0,
-			OffsetY = 0,
+			OffsetX = -4,
+			OffsetY = 4,
 			Anchor = "oUF_LUI_raid",
 			Additional = "",
 			AlwaysShow = false,
-			IsShown = true,
+			IsShown = false,
 			Direction = "TOPLEFT",
 			Animation = "AlphaSlide",
 			Width = 409,
