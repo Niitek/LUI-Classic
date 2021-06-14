@@ -550,96 +550,95 @@ end
 -- / CURRENCY / --
 ------------------------------------------------------
 -- Added with WoTLK
--- function module:SetCurrency()
--- 	local stat = NewStat("Currency")
+function module:SetCurrency()
+	local stat = NewStat("Currency")
 
--- 	if db.Currency.Enable and not stat.Created then
--- 		NewIcon(stat)
+	if db.Currency.Enable and not stat.Created then
+		NewIcon(stat)
 
--- 		local CurrencyList
--- 		stat.Currencies = function(self)
--- 			if CurrencyList then return CurrencyList end
+		local CurrencyList
+		stat.Currencies = function(self)
+			if CurrencyList then return CurrencyList end
+			local CurrencyList = {[0] = "None",}
+			for i=1, 1901 do
+				local n, _,_,_,_,_,d = C_CurrencyInfo.GetCurrencyInfo(i)
+				if n ~= "" and d then
+					CurrencyList[i] = n
+				end
+			end
+			return CurrencyList
+		end
 
--- 			local CurrencyList = {[0] = "None",}
--- 			for i=1, 2048 do
--- 				local n, _,_,_,_,_,d = GetCurrencyInfo(i)
--- 				if n ~= "" and d then
--- 					CurrencyList[i] = n
--- 				end
--- 			end
--- 			return CurrencyList
--- 		end
+		-- Events
+		-- stat.Events = {"PLAYER_ENTERING_WORLD"}
 
--- 		-- Events
--- 		stat.Events = { "PLAYER_ENTERING_WORLD" }
+		-- Script functions
+		local factionTex
+		if UnitFactionGroup("player") == "Neutral" then factionTex = LUI.blank
+		else factionTex = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player")
+		end
+		stat.OnEnable = function(self)
+			local tex = factionTex
+			-- Mixin(self.icon, BackdropTemplateMixin)
+			self.icon:SetBackdrop({bgFile = tex, edgeFile = nil, tile = false, edgeSize = 0, insets = {top = 0, right = 0, bottom = 0, left = 0}})
+			self.text:SetText("Currency")
+			self:CURRENCY_DISPLAY_UPDATE()
+		end
 
--- 		-- Script functions
--- 		local factionTex
--- 		if UnitFactionGroup("player") == "Neutral" then factionTex = LUI.blank
--- 		-- else factionTex = [[Interface\PVPFrame\PVP-Currency-]] .. UnitFactionGroup("player")
--- 		end
--- 		stat.OnEnable = function(self)
--- 			local tex = factionTex
--- 			self.icon:SetBackdrop({bgFile = tex, edgeFile = nil, tile = false, edgeSize = 0, insets = {top = 0, right = 0, bottom = 0, left = 0}})
--- 			self.text:SetText("Currency")
--- 			self:CURRENCY_DISPLAY_UPDATE()
--- 		end
+		stat.OnClick = function(self, button)
+			if button == "RightButton" then
+				LUI:Open()
+				LibStub("AceConfigDialog-3.0"):SelectGroup(addonname, module:GetName(), "Currency")
+			else -- Toggle CurrencyFrame
+				ToggleCharacter("PVPFrame")
+			end
+		end
 
--- 		stat.OnClick = function(self, button)
--- 			if button == "RightButton" then
--- 				LUI:Open()
--- 				LibStub("AceConfigDialog-3.0"):SelectGroup(addonname, module:GetName(), "Currency")
--- 			else -- Toggle CurrencyFrame
--- 				ToggleCharacter("TokenFrame")
--- 			end
--- 		end
+		stat.CURRENCY_DISPLAY_UPDATE = function (self)
+			if db.Currency.Display == 0 then
+			self.text:SetText("Currency")
+			else
+			local name, count = C_CurrencyInfo.GetCurrencyInfo(db.Currency.Display)
+			name = name:sub(1, db.Currency.DisplayLimit)
+			name = (#name > 0 and name..":") or name
+			self.text:SetFormattedText("%s %d", name, count)
+			end
+		end
 
--- 		stat.CURRENCY_DISPLAY_UPDATE = function (self)
--- 			if db.Currency.Display == 0 then
--- 				self.text:SetText("Currency")
--- 				return
--- 			end
+		stat.OnEnter = function(self)
+			if CombatTips() then
+				GameTooltip:SetOwner(self, getOwnerAnchor(self))
+				GameTooltip:ClearLines()
+				GameTooltip:AddLine("Currency:", 0.4, 0.78, 1)
 
--- 			local name, count = GetCurrencyInfo(db.Currency.Display)
--- 			name = name:sub(1, db.Currency.DisplayLimit)
--- 			name = (#name > 0 and name..":") or name
--- 			self.text:SetFormattedText("%s %d", name, count)
--- 		end
+				-- for i = 1, C_CurrencyInfo.GetCurrencyListSize() do
+				-- 	local name, isHeader, _, _, _, count = C_CurrencyInfo.GetCurrencyListInfo(i)
+				-- 	if isHeader then
+				-- 		GameTooltip:AddLine(" ")
+				-- 		GameTooltip:AddLine(name)
+				-- 	elseif name then
+						-- if count and count ~= 0 then
+						-- 	GameTooltip:AddDoubleLine(name, count, 1,1,1, 1,1,1)
+						-- else
+						-- 	GameTooltip:AddDoubleLine(name, "--", 1,1,1, 1,1,1)
+						-- end
+				-- 	end
+				-- end
 
--- 		stat.OnEnter = function(self)
--- 			if CombatTips() then
--- 				GameTooltip:SetOwner(self, getOwnerAnchor(self))
--- 				GameTooltip:ClearLines()
--- 				GameTooltip:AddLine("Currency:", 0.4, 0.78, 1)
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Hint:", 0, 1, 0)
+				GameTooltip:AddLine("- Left Click to open Currency frame.", 0, 1, 0)
+				GameTooltip:AddLine("- Right Click to open LUI Currency Options.", 0, 1, 0)
+				GameTooltip:Show()
+			end
+		end
+		stat.OnLeave = function()
+			GameTooltip:Hide()
+		end
 
--- 				for i = 1, GetCurrencyListSize() do
--- 					local name, isHeader, _, _, _, count = GetCurrencyListInfo(i)
--- 					if isHeader then
--- 						GameTooltip:AddLine(" ")
--- 						GameTooltip:AddLine(name)
--- 					elseif name then
--- 						if count and count ~= 0 then
--- 							GameTooltip:AddDoubleLine(name, count, 1,1,1, 1,1,1)
--- 						else
--- 							GameTooltip:AddDoubleLine(name, "--", 1,1,1, 1,1,1)
--- 						end
--- 					end
--- 				end
-
--- 				GameTooltip:AddLine(" ")
--- 				GameTooltip:AddLine("Hint:", 0, 1, 0)
--- 				GameTooltip:AddLine("- Left Click to open Currency frame.", 0, 1, 0)
--- 				GameTooltip:AddLine("- Right Click to open LUI Currency Options.", 0, 1, 0)
--- 				GameTooltip:Show()
--- 			end
--- 		end
--- 		stat.OnLeave = function()
--- 			GameTooltip:Hide()
--- 		end
-
--- 		stat.Created = true
--- 	end
--- end
+		stat.Created = true
+	end
+end
 
 ------------------------------------------------------
 -- / DUALSPEC / --
@@ -1231,7 +1230,7 @@ function module:SetGF()
 
 		local hordeZones = "Orgrimmar,Undercity,Thunder Bluff,Silvermoon City,Durotar,Tirisfal Glades,Mulgore,Eversong Woods,Northern Barrens,Silverpine Forest,Ghostlands,Azshara,"
 		local allianceZones = "Ironforge,Stormwind City,Darnassus,The Exodar,Azuremyst Isle,Bloodmyst Isle,Darkshore,Deeprun Tram,Dun Morogh,Elwynn Forest,Loch Modan,Teldrassil,Westfall,"
-		local sanctuaryZones = "Dalaran,Shattrath,The Maelstrom,"
+		local sanctuaryZones = "Dalaran,Shattrath City,The Maelstrom,"
 		local mobileZones = "Remote Chat,ed"
 
 		local statuses = { -- values inherited from the chat frame
@@ -1803,7 +1802,7 @@ function module:SetGF()
 				slider:SetMinMaxValues(0, #entries - maxEntries)
 				slider:SetValue(sliderValue)
 				slider:Show()
-			else
+				else
 				slider:Hide()
 			end
 			nbEntries = min(maxEntries, #entries)
@@ -1820,6 +1819,8 @@ function module:SetGF()
 				else
 					button.zone:SetWidth(spanZoneC)
 				end
+				if button.client == "BSAp" and db.Friends.hideBSAp == true then button:Hide() end
+				if button.client == "App" and db.Friends.hideApp == true then button:Hide() end
 				button.note:SetWidth(nC)
 			end
 
@@ -2846,26 +2847,26 @@ module.defaults = {
 				a = 1,
 			},
 		},
-		-- Currency = {
-		-- 	Enable = false,
-		-- 	X = 180,
-		-- 	Y = 0,
-		-- 	Display = 0,
-		-- 	DisplayLimit = 40,
-		-- 	InfoPanel = {
-		-- 		Horizontal = "Left",
-		-- 		Vertical = "Bottom",
-		-- 	},
-		-- 	Font = "vibroceb",
-		-- 	FontSize = 12,
-		-- 	Outline = "NONE",
-		-- 	Color = {
-		-- 		r = 1,
-		-- 		g = 1,
-		-- 		b = 1,
-		-- 		a = 1,
-		-- 	},
-		-- },
+		Currency = {
+			Enable = false,
+			X = 180,
+			Y = 0,
+			Display = 0,
+			DisplayLimit = 40,
+			InfoPanel = {
+				Horizontal = "Left",
+				Vertical = "Bottom",
+			},
+			Font = "vibroceb",
+			FontSize = 12,
+			Outline = "NONE",
+			Color = {
+				r = 1,
+				g = 1,
+				b = 1,
+				a = 1,
+			},
+		},
 --[[ 		MoveSpeed = {  
 			Enable = true,
 			X = -590,
@@ -2960,6 +2961,8 @@ module.defaults = {
 			ShowTotal = false,
 			ShowHints = true,
 			ShowNotes = true,
+			hideBSAp = false,
+			hideApp = false,
 			-- ShowClassColor = true,
 			sortCols = {"name", "name", "name"},
 			sortASC = {true, true, true},
@@ -3502,7 +3505,7 @@ function module:LoadOptions()
 				Reset = ResetOption(8),
 			},
 		},
-		--[[ Currency = {  -- Added in 4.0 Cata
+		Currency = {  -- Added in 4.0 Cata
 			name = NameLabel,
 			type = "group",
 			order = 4,
@@ -3546,7 +3549,7 @@ function module:LoadOptions()
 				Font = FontOptions(6),
 				Reset = ResetOption(7),
 			},
-		}, ]]
+		},
 --[[ 		MoveSpeed = {  -- added with 3.0 WOTLK
 			name = NameLabel,
 			type = "group",
@@ -3735,6 +3738,34 @@ function module:LoadOptions()
 					set = function(info, value) db.Friends.ShowNotes = value end,
 					order = 5,
 				},
+				Header = {
+					name = "Shoe/Hide Battle.Net Clients",
+					type = "header",
+					order = 6,
+				},
+				hideBSAp = {
+					name = "Hide B.Net Mobile",
+					desc = "Whether you want to show friends connected to the Battle.Net Mobile App.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Friends.hideBSAp end,
+					set = function(info, value) db.Friends.hideBSAp = value end,
+					order = 7,
+				},
+				hideApp = {
+					name = "Hide B.Net-Client",
+					desc = "Whether you want to show friends connected to the Battle.Net Desktop Client.",
+					type = "toggle",
+					disabled = StatDisabled,
+					get = function() return db.Friends.hideApp end,
+					set = function(info, value) db.Friends.hideApp = value end,
+					order = 8,
+				},
+				-- Header = {
+				-- 	name = "",
+				-- 	type = "header",
+				-- 	order = 9,
+				-- },
 				-- ShowCLassColor = {
 				-- 	name = "Show Class Colors",
 				-- 	desc = "Whether you want to have names colored by class.",
@@ -3744,9 +3775,9 @@ function module:LoadOptions()
 				-- 	set = function(info, value) db.Friends.ShowClassColor = value end,
 				-- 	order = 5,
 				-- },
-				Position = PositionOptions(6),
-				Font = FontOptions(7),
-				Reset = ResetOption(8),
+				Position = PositionOptions(10),
+				Font = FontOptions(11),
+				Reset = ResetOption(12),
 			},
 		},
 		Gold = {
@@ -4166,7 +4197,7 @@ function module:OnEnable()
 	SetInfoTextFrames()
 	EnableStat("Bags")
 	EnableStat("Clock")
- 	-- EnableStat("Currency")
+ 	EnableStat("Currency")
 --[[ 	EnableStat("DualSpec") ]]
 	EnableStat("Durability")
 	EnableStat("FPS")
