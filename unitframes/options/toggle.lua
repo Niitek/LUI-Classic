@@ -924,15 +924,15 @@ module.ApplySettings = function(unit)
 				-- end
 
 				-- druid mana bar
-				-- if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
-				-- 	module.funcs.DruidMana(frame, frame.__unit, module.db.Player)
-				-- 	if module.db[unit].Bars.DruidMana.Enable then
-				-- 		frame:EnableElement("DruidMana")
-				-- 	else
-				-- 		frame:DisableElement("DruidMana")
-				-- 		frame.DruidMana.SetPosition()
-				-- 	end
-				-- end
+				if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
+					module.funcs.DruidMana(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.DruidMana.Enable then
+						frame:EnableElement("DruidMana")
+					else
+						frame:DisableElement("DruidMana")
+						frame.DruidMana.SetPosition()
+					end
+				end
 			end
 
 			-- portrait
@@ -946,20 +946,6 @@ module.ApplySettings = function(unit)
 					frame.Portrait:Hide()
 				end
 			end
-
-			-- alt power
-			-- if unit == "Player" or unit == "Pet" then
-			-- 	if module.db.Player.Bars.AltPower.Enable then
-			-- 		module.funcs.AltPowerBar(frame, frame.__unit, module.db[unit])
-			-- 		frame:EnableElement("AltPowerBar")
-			-- 		frame.AltPowerBar.SetPosition()
-			-- 	else
-			-- 		if frame.AltPowerBar then
-			-- 			frame:DisableElement("AltPowerBar")
-			-- 			frame.AltPowerBar.SetPosition()
-			-- 		end
-			-- 	end
-			-- end
 
 			-- auras
 			if module.db[unit].Aura then
@@ -1004,14 +990,14 @@ module.ApplySettings = function(unit)
 			end
 
 			-- heal prediction
-			-- if module.db[unit].HealPrediction then
-			-- 	if module.db[unit].HealPrediction.Enable then
-			-- 		module.funcs.HealPrediction(frame, frame.__unit, module.db[unit])
-			-- 		frame:EnableElement("HealPrediction")
-			-- 	else
-			-- 		frame:DisableElement("HealPrediction")
-			-- 	end
-			-- end
+			if module.db[unit].HealPrediction then
+				if module.db[unit].HealPrediction.Enable then
+					module.funcs.HealPrediction(frame, frame.__unit, module.db[unit])
+					frame:EnableElement("HealPrediction")
+				else
+					frame:DisableElement("HealPrediction")
+				end
+			end
 			if module.db.Target.Enable == true and module.db.Player.Enable == true then
 				if unit == "ToT" or unit == "ToToT" or unit == "FocusTarget" or unit == "Focus" then
 					if not frame.V2Tex then

@@ -7,6 +7,7 @@
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
 local Fader = LUI:Module("Fader")
+local Forte = LUI:Module("Forte")
 
 local oUF = LUI.oUF
 local Blizzard = LUI.Blizzard
@@ -51,28 +52,18 @@ local barColors = {
 }
 
 local barKeys = {
-	-- Runes = "Runes",
-	-- HolyPower = "ClassIcons",
-	-- AltPower = "AltPowerBar",
-	-- DruidMana = "DruidMana",
-	-- WarlockBar = "ClassIcons",
-	-- ArcaneCharges = "ClassIcons",
-	Chi = "ClassIcons",
+	DruidMana = "DruidMana",
+	Energy = "ClassIcons",
 }
 
 local barNames = {
-	-- Runes = "Runes",
-	-- HolyPower = "Holy Power",
-	-- AltPower = "Alternate Power",
-	-- DruidMana = "Druid Mana",
-	-- ArcaneCharges = "Arcane Charges",
-	-- WarlockBar = "Warlock Bars",
-	Chi = "Chi",
+	DruidMana = "Druid Mana",
+	Energy = "Energy",
 }
 
 local _, class = UnitClass("player")
 if class == "ROGUE" or class == "DRUID" then
-	barNames.Chi = "Combo Points"
+	barNames.Energy = "Combo Points"
 end
 
 local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
@@ -116,7 +107,7 @@ function module:CreateXpRepOptionsPart(barType, order)
 		toggleFunc = function()
 			if not oUF_LUI_player.XP then module.funcs.Experience(oUF_LUI_player, oUF_LUI_player.__unit, xprepdb) end
 			if self.db.XP_Rep.Experience.Enable and UnitLevel("player") ~= MAX_PLAYER_LEVEL then
-				-- oUF_LUI_player.Experience:ForceUpdate()
+				oUF_LUI_player.Experience:ForceUpdate()
 				oUF_LUI_player.XP:Show()
 				if oUF_LUI_player.Rep then oUF_LUI_player.Rep:Hide() end
 			else
@@ -201,60 +192,60 @@ function module:CreateXpRepOptions(order)
 	return options
 end
 
--- function module:CreateHealPredictionOptions(unit, order)
--- 	local disabledFunc = function() return not self.db[unit].Bars.HealPrediction.Enable end
+function module:CreateHealPredictionOptions(unit, order)
+	local disabledFunc = function() return not self.db[unit].Bars.HealPrediction.Enable end
 
--- 	local applySettings = function()
--- 		for _, frame in pairs(self.framelist[unit]) do
--- 			if _G[frame] then
--- 				module.funcs.HealPrediction(_G[frame], _G[frame].__unit, self.db[unit])
--- 				if self.db[unit].Bars.HealPrediction.Enable then
--- 					_G[frame]:EnableElement("HealPrediction")
--- 				else
--- 					_G[frame]:DisableElement("HealPrediction")
--- 				end
--- 				_G[frame]:UpdateAllElements()
--- 			end
--- 		end
--- 	end
+	local applySettings = function()
+		for _, frame in pairs(self.framelist[unit]) do
+			if _G[frame] then
+				module.funcs.HealPrediction(_G[frame], _G[frame].__unit, self.db[unit])
+				if self.db[unit].Bars.HealPrediction.Enable then
+					_G[frame]:EnableElement("HealPrediction")
+				else
+					_G[frame]:DisableElement("HealPrediction")
+				end
+				_G[frame]:UpdateAllElements()
+			end
+		end
+	end
 
--- 	local options = self:NewGroup("Heal Prediction", order, {
--- 		Enable = self:NewToggle("Enable", "Whether you want to show predicted Heals on "..unit.." or not.", 1, applySettings, "full"),
--- 		MyColor = self:NewColor("My", "Heal Prediction Bar", 2, applySettings, nil, disabledFunc),
--- 		OtherColor = self:NewColor("Other", "Heal Prediction Bar", 3, applySettings, nil, disabledFunc),
--- 		empty1 = self:NewDesc(" ", 4),
--- 		Texture = self:NewSelect("Texture", "Choose your Heal Prediction Texture.", 5, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
--- 	})
+	local options = self:NewGroup("Heal Prediction", order, {
+		Enable = self:NewToggle("Enable", "Whether you want to show predicted Heals on "..unit.." or not.", 1, applySettings, "full"),
+		MyColor = self:NewColor("My", "Heal Prediction Bar", 2, applySettings, nil, disabledFunc),
+		OtherColor = self:NewColor("Other", "Heal Prediction Bar", 3, applySettings, nil, disabledFunc),
+		empty1 = self:NewDesc(" ", 4),
+		Texture = self:NewSelect("Texture", "Choose your Heal Prediction Texture.", 5, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
+	})
 
--- 	return options
--- end
+	return options
+end
 
--- function module:CreateTotalAbsorbOptions(unit, order)
--- 	local disabledFunc = function() return not self.db[unit].Bars.TotalAbsorb.Enable end
+function module:CreateTotalAbsorbOptions(unit, order)
+	local disabledFunc = function() return not self.db[unit].Bars.TotalAbsorb.Enable end
 
--- 	local applySettings = function()
--- 		for _, frame in pairs(self.framelist[unit]) do
--- 			if _G[frame] then
--- 				module.funcs.TotalAbsorb(_G[frame], _G[frame].__unit, self.db[unit])
--- 				if self.db[unit].Bars.TotalAbsorb.Enable then
--- 					_G[frame]:EnableElement("TotalAbsorb")
--- 				else
--- 					_G[frame]:DisableElement("TotalAbsorb")
--- 				end
--- 				_G[frame]:UpdateAllElements()
--- 			end
--- 		end
--- 	end
+	local applySettings = function()
+		for _, frame in pairs(self.framelist[unit]) do
+			if _G[frame] then
+				module.funcs.TotalAbsorb(_G[frame], _G[frame].__unit, self.db[unit])
+				if self.db[unit].Bars.TotalAbsorb.Enable then
+					_G[frame]:EnableElement("TotalAbsorb")
+				else
+					_G[frame]:DisableElement("TotalAbsorb")
+				end
+				_G[frame]:UpdateAllElements()
+			end
+		end
+	end
 
--- 	local options = self:NewGroup("Absorb Bar", order, {
--- 		Enable = self:NewToggle("Enable", "Whether you want to show the Absorb Bar on "..unit.." or not.", 1, applySettings, "full"),
--- 		MyColor = self:NewColor("My", "Absorb Bar", 2, applySettings, nil, disabledFunc),
--- 		empty1 = self:NewDesc(" ", 4),
--- 		Texture = self:NewSelect("Texture", "Choose your Absorb Bar Texture.", 5, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
--- 	})
+	local options = self:NewGroup("Absorb Bar", order, {
+		Enable = self:NewToggle("Enable", "Whether you want to show the Absorb Bar on "..unit.." or not.", 1, applySettings, "full"),
+		MyColor = self:NewColor("My", "Absorb Bar", 2, applySettings, nil, disabledFunc),
+		empty1 = self:NewDesc(" ", 4),
+		Texture = self:NewSelect("Texture", "Choose your Absorb Bar Texture.", 5, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
+	})
 
--- 	return options
--- end
+	return options
+end
 
 -- barType: "Health", "Power", "Full"
 function module:CreateBarOptions(unit, order, barType)
@@ -265,9 +256,9 @@ function module:CreateBarOptions(unit, order, barType)
 		for _, frame in pairs(self.framelist[unit]) do
 			if _G[frame] then
 				module.funcs[barType](_G[frame], _G[frame].__unit, self.db[unit])
-				-- if barType == "Health" and _G[frame].HealPrediction then
-				-- 	module.funcs.HealPrediction(_G[frame], _G[frame].__unit, self.db[unit])
-				-- end
+				if barType == "Health" and _G[frame].HealPrediction then
+					module.funcs.HealPrediction(_G[frame], _G[frame].__unit, self.db[unit])
+				end
 				_G[frame]:UpdateAllElements()
 			end
 		end
@@ -281,6 +272,11 @@ function module:CreateBarOptions(unit, order, barType)
 	-- 			if _G[frame] then _G[frame][barType].SetValue = _G[frame][barType].SetValue_ end
 	-- 		end
 	-- 	end
+	-- end
+
+	-- local function SmoothBar(self, bar)
+	-- 	self.SetValue_ = bar.SetValue
+	-- 	self.SetValue = Smooth
 	-- end
 
 	local options = self:NewGroup(barType, order, {
@@ -310,7 +306,7 @@ end
 --barName: Shown Name in the options
 --barType: Key in the options/db
 
---barType: Totems, Runes, HolyPower, Eclipse, ShadowOrbs, ArcaneCharges, WarlockBars
+--barType: Totems, Runes, Eclipse
 function module:CreatePlayerBarOptions(barType, order)
 	local barName = barNames[barType]
 	local barKey = barKeys[barType]
@@ -344,7 +340,7 @@ function module:CreatePlayerBarOptions(barType, order)
 	local options = self:NewGroup(barName, order, {
 		Enable = self:NewToggle("Enable", "Whether you want to show the "..barName.." or not", 1, applySettings, "full"),
 		empty1 = self:NewDesc(" ", 2),
-		Lock = self:NewToggle("Lock", "Whether you want to lock the "..barName.." to your PlayerFrame or not.", 3, applySettings, "full", disabledFunc),
+		Lock = self:NewToggle("Lock", "Whether you want to lock the "..barName.." to your PlayerFrame or not.\nIf locked, Forte Spelltimer will adjust automaticly", 3, applySettings, "full", disabledFunc),
 		X = self:NewInputNumber("X Value", "Choose the X Value for your "..barName..".", 4, applySettings, nil, isLocked),
 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your "..barName..".", 5, applySettings, nil, isLocked),
 		Width = self:NewInputNumber("Width", "Choose the Width for your "..barName..".", 6, applySettings, nil, disabledFunc),
@@ -358,74 +354,70 @@ function module:CreatePlayerBarOptions(barType, order)
 	return options
 end
 
--- barType: "DruidMana", "AltPower"
--- function module:CreatePlayerBarOverlappingOptions(barType, order)
--- 	local barName = barNames[barType]
--- 	local barKey = barKeys[barType]
+-- barType: "DruidMana"
+function module:CreatePlayerBarOverlappingOptions(barType, order)
+	local barName = barNames[barType]
+	local barKey = barKeys[barType]
 
--- 	local disabledFunc = function() return not module.db.Player.Bars[barType].Enable end
--- 	local disabledFunc2 = function() return not (module.db.Player.Bars[barType].Enable or not module.db.Player.Bars[barType].OverPower) end
+	local disabledFunc = function() return not module.db.Player.Bars[barType].Enable end
+	local disabledFunc2 = function() return not (module.db.Player.Bars[barType].Enable or not module.db.Player.Bars[barType].OverPower) end
 
--- 	local values = (barType == "DruidMana") and {
--- 		["By Class"] = "By Class",
--- 		["By Type"] = "By Type",
--- 		["Gradient"] = "Gradient"
--- 	} or {
--- 		["By Class"] = "By Class",
--- 		["By Type"] = "By Type",
--- 		["Individual"] = "Individual"
--- 	}
+	local values = (barType == "DruidMana") and {
+		["By Class"] = "By Class",
+		["By Type"] = "By Type",
+		["Gradient"] = "Gradient"
+	} or {
+		["By Class"] = "By Class",
+		["By Type"] = "By Type",
+		["Individual"] = "Individual"
+	}
 
--- 	local applySettings = function()
--- 		module.funcs[barKey](oUF_LUI_player, oUF_LUI_player.__unit, self.db.Player)
--- 		if self.db.Player.Bars[barType].Enable then
--- 			oUF_LUI_player:EnableElement(barKey)
--- 		else
--- 			oUF_LUI_player:DisableElement(barKey)
--- 		end
--- 	end
+	local applySettings = function()
+		module.funcs[barKey](oUF_LUI_player, oUF_LUI_player.__unit, self.db.Player)
+		if self.db.Player.Bars[barType].Enable then
+			oUF_LUI_player:EnableElement(barKey)
+		else
+			oUF_LUI_player:DisableElement(barKey)
+		end
+	end
 
 	-- local smoothBar = function(self, Smooth)
 	-- 	if barType == "DruidMana" then
-	-- 		if Smooth then
-	-- 			oUF_LUI_player:SmoothBar(oUF_LUI_player.DruidMana)
-	-- 		else
-	-- 			oUF_LUI_player.DruidMana.SetValue = oUF_LUI_player.DruidMana.SetValue_
-	-- 		end
+
+	-- 	if Smooth then
+	-- 		oUF_LUI_player:SmoothBar(oUF_LUI_player.DruidMana)
 	-- 	else
-	-- 		if Smooth then
-	-- 			oUF_LUI_player:SmoothBar(oUF_LUI_player.AltPowerBar)
-	-- 		end
+	-- 		oUF_LUI_player.DruidMana.SetValue = oUF_LUI_player.DruidMana.SetValue_
 	-- 	end
 	-- end
 
--- 	local options = self:NewGroup(barName, order, {
--- 		Enable = self:NewToggle("Enable", "Whether you want to show the "..barName.." Bar or not.", 1, applySettings, "full"),
--- 		empty1 = self:NewDesc(" ", 2),
--- 		OverPower = self:NewToggle("Over Power Bar", "Whether you want the "..barName.." Bar to take up half the Power bar or not.\n\nNote: This option disables other OverPower options!", 3, applySettings, nil, disabledFunc),
--- 		X = self:NewInputNumber("X Value", "Choose the X Value for your "..barName.." Bar.", 4, applySettings, nil, disabledFunc),
--- 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your "..barName.." Bar.", 5, applySettings, nil, disabledFunc),
--- 		Width = self:NewInputNumber("Width", "Choose the Width for your "..barName.." Bar.", 6, applySettings, nil, disabledFunc),
--- 		Height = self:NewInputNumber("Height", "Choose the Height for your "..barName.." Bar.", 7, applySettings, nil, disabledFunc),
--- 		-- Smooth = self:NewToggle("Enable Smooth Bar Animation", "Whether you want to use Smooth Animations or not.", 8, smoothBar, nil, disabledFunc),
--- 		Color = self:NewSelect("Color", "Choose the Color Option for the "..barName.." Bar.", 9, values, nil, applySettings, nil, disabledFunc),
--- 		empty3 = self:NewDesc(" ", 10),
--- 		Texture = self:NewSelect("Texture", "Choose the Texture for the "..barName.." Bar.", 11, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
--- 		TextureBG = self:NewSelect("Background Texture", "Choose the Background Texture for the "..barName.." Bar.", 12, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
--- 		BGAlpha = self:NewSlider("Background Alpha", "Choose the Alpha Value for the "..barName.." Bar Background.", 13, 0, 1, 0.01, applySettings, true, nil, disabledFunc),
--- 		BGMultiplier = self:NewSlider("Background Multiplier", "Choose the Multiplier for the "..barName.." Bar Background.", 14, 0, 1, 0.01, applySettings, true, nil, disabledFunc),
--- 	})
+	local options = self:NewGroup(barName, order, {
+		Enable = self:NewToggle("Enable", "Whether you want to show the "..barName.." Bar or not.", 1, applySettings, "full"),
+		empty1 = self:NewDesc(" ", 2),
+		OverPower = self:NewToggle("Over Power Bar", "Whether you want the "..barName.." Bar to take up half the Power bar or not.\n\nNote: This option disables other OverPower options!", 3, applySettings, nil, disabledFunc),
+		X = self:NewInputNumber("X Value", "Choose the X Value for your "..barName.." Bar.", 4, applySettings, nil, disabledFunc),
+		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your "..barName.." Bar.", 5, applySettings, nil, disabledFunc),
+		Width = self:NewInputNumber("Width", "Choose the Width for your "..barName.." Bar.", 6, applySettings, nil, disabledFunc),
+		Height = self:NewInputNumber("Height", "Choose the Height for your "..barName.." Bar.", 7, applySettings, nil, disabledFunc),
+		-- Smooth = self:NewToggle("Enable Smooth Bar Animation", "Whether you want to use Smooth Animations or not.", 8, smoothBar, nil, disabledFunc),
+		Color = self:NewSelect("Color", "Choose the Color Option for the "..barName.." Bar.", 9, values, nil, applySettings, nil, disabledFunc),
+		empty3 = self:NewDesc(" ", 10),
+		Texture = self:NewSelect("Texture", "Choose the Texture for the "..barName.." Bar.", 11, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
+		TextureBG = self:NewSelect("Background Texture", "Choose the Background Texture for the "..barName.." Bar.", 12, widgetLists.statusbar, "LSM30_Statusbar", applySettings, nil, disabledFunc),
+		BGAlpha = self:NewSlider("Background Alpha", "Choose the Alpha Value for the "..barName.." Bar Background.", 13, 0, 1, 0.01, applySettings, true, nil, disabledFunc),
+		BGMultiplier = self:NewSlider("Background Multiplier", "Choose the Multiplier for the "..barName.." Bar Background.", 14, 0, 1, 0.01, applySettings, true, nil, disabledFunc),
+	})
 
--- 	return options
--- end
+	return options
+end
 
 function module:CreateComboPointsOptions(order)
-	local disabledFunc = function() return not self.db.Target.Bars.ComboPoints.Enable end
+	-- local disabledFunc = function() return not self.db.Target.Bars.ComboPoints.Enable end
 
-	local isLocked = function() return not self.db.Target.Bars.ComboPoints.Enable or self.db.Target.Bars.ComboPoints.Lock end
+	-- local isLocked = function() return not self.db.Target.Bars.ComboPoints.Enable or self.db.Target.Bars.ComboPoints.Lock end
 
 	local applySettings = function(info, Enable)
-		module.funcs.CPoints(oUF_LUI_target, oUF_LUI_target.__unit, self.db.Target)
+		-- module.funcs.CPoints(oUF_LUI_target, oUF_LUI_target.__unit, self.db.Target)
 		if info[5] == "Enable" then
 			if Enable then
 				oUF_LUI_target:EnableElement("CPoints")
@@ -433,6 +425,7 @@ function module:CreateComboPointsOptions(order)
 				oUF_LUI_target:DisableElement("CPoints")
 			end
 		end
+		Forte:SetPosForte()
 		oUF_LUI_target:UpdateAllElements()
 	end
 
@@ -440,7 +433,7 @@ function module:CreateComboPointsOptions(order)
 		Enable = self:NewToggle("Enable", "Whether you want to show your Combo Points or not.", 1, applySettings, "full"),
 		empty1 = self:NewDesc(" ", 2),
 		ShowAlways = self:NewToggle("Show Always", "Whether you want to always show your Combo Points or not.", 3, applySettings, nil, disabledFunc),
-		Lock = self:NewToggle("Lock", "Whether you want to lock the Combo Points to your TargetFrame or not.", 4, applySettings, "full", disabledFunc),
+		Lock = self:NewToggle("Lock", "Whether you want to lock the Combo Points to your TargetFrame or not.\nIf locked, Forte Spelltimer will adjust automaticly", 4, applySettings, "full", disabledFunc),
 		empty2 = self:NewDesc(" ", 5),
 		X = self:NewInputNumber("X Value", "Choose the X Value for your Combo Points.", 6, applySettings, nil, isLocked),
 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your Combo Points.", 7, applySettings, nil, isLocked),
@@ -613,20 +606,11 @@ end
 --barKey: Key in the ouf layout / the creator funcs
 --barName: Shown Name in the options
 --barType: Key in the options/db
---barType: Eclipse, AltPower, PvP, DruidMana?
+--barType: PvP, DruidMana?
 
 function module:CreatePlayerBarTextOptions(barType, order)
 	local barName = barNames[barType]
 	local barKey = barKeys[barType]
-
-	-- local textformats = barType == "AltPower" and {
-	-- 	Absolut = "Absolut",
-	-- 	Percent = "Percent",
-	-- 	Standard = "Standard"
-	-- } or {
-	-- 	Absolut = "Absolut",
-	-- 	Standard = "Standard"
-	-- }
 
 	local disabledFunc = function() return not self.db.Player.Texts[barType].Enable end
 
@@ -650,9 +634,9 @@ function module:CreatePlayerBarTextOptions(barType, order)
 		X = self:NewInputNumber("X Value", "Choose the X Value for your "..barName.." Bar Text.", 7, applySettings, nil, disabledFunc),
 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your "..barName.." Bar Text.", 8, applySettings, nil, disabledFunc),
 		empty3 = self:NewDesc(" ", 9),
-		Format = --[[ (barType == "AltPower") and  ]]self:NewSelect("Format", "Choose the Format for the "..barType.." Bar Text.", 10, textformats, nil, applySettings, nil, disabledFunc) or nil,
-		Color = --[[ (barType == "AltPower") and  ]]self:NewSelect("Color", "Choose the Color Option for the "..barType.." Bar Text.", 11, {["By Class"] = "By Class", ["Individual"] = "Individual"}, nil, applySettings, nil, disabledFunc) or nil,
-		IndividualColor = (barType == "AltPower") and self:NewColorNoAlpha("", barType.." Bar Text", 12, applySettings, nil, disabledFunc) or nil,
+		Format = self:NewSelect("Format", "Choose the Format for the "..barType.." Bar Text.", 10, textformats, nil, applySettings, nil, disabledFunc) or nil,
+		Color = self:NewSelect("Color", "Choose the Color Option for the "..barType.." Bar Text.", 11, {["By Class"] = "By Class", ["Individual"] = "Individual"}, nil, applySettings, nil, disabledFunc) or nil,
+		IndividualColor = self:NewColorNoAlpha("", barType.." Bar Text", 12, applySettings, nil, disabledFunc) or nil,
 	})
 
 	return options
@@ -682,37 +666,36 @@ function module:CreatePvpTimerOptions(order)
 	return options
 end
 
--- function module:CreateDruidManaTimerOptions(order)
--- 	local disabledFunc = function() return not self.db.Player.Texts.DruidMana.Enable end
--- 	local disabledColorFunc = function() return not self.db.Player.Texts.DruidMana.Enable or self.db.Player.Texts.DruidMana.Color ~= "Individual" end
+function module:CreateDruidManaTimerOptions(order)
+	local disabledFunc = function() return not self.db.Player.Texts.DruidMana.Enable end
+	local disabledColorFunc = function() return not self.db.Player.Texts.DruidMana.Enable or self.db.Player.Texts.DruidMana.Color ~= "Individual" end
 
--- 	local applySettings = function()
--- 		module.funcs.DruidMana(oUF_LUI_player, oUF_LUI_player.__unit, self.db.Player)
--- 		-- if oUF_LUI_player.AltPowerBar then oUF_LUI_player.AltPowerBar.SetPosition() end
--- 		oUF_LUI_player.DruidMana.SetPosition()
--- 		oUF_LUI_player:UpdateAllElements()
--- 	end
+	local applySettings = function()
+		module.funcs.DruidMana(oUF_LUI_player, oUF_LUI_player.__unit, self.db.Player)
+		oUF_LUI_player.DruidMana.SetPosition()
+		oUF_LUI_player:UpdateAllElements()
+	end
 
--- 	local options = self:NewGroup("Druid Mana", order, nil, function() return not self.db.Player.Bars.DruidMana.Enable end, {
--- 		Enable = self:NewToggle("Enable", "Whether you want to show your Druid Mana Value while in Cat/Bear or not.", 2, applySettings),
--- 		empty1 = self:NewDesc(" ", 2),
--- 		Font = self:NewSelect("Font", "Choose your Druid Mana Bar Text Font.", 3, widgetLists.font, "LSM30_Font", applySettings, nil, disabledFunc),
--- 		Size = self:NewSlider("Size", "Choose your Druid Mana Bar Text Fontsize.", 4, 1, 40, 1, applySettings, nil, nil, disabledFunc),
--- 		Outline = self:NewSelect("Font Flag", "Choose the Font Flag for the Druid Mana Bar Text.", 5, fontflags, nil, applySettings, nil, disabledFunc),
--- 		empty2 = self:NewDesc(" ", 6),
--- 		X = self:NewInputNumber("X Value", "Choose the X Value for your Druid Mana Bar Text.", 7, applySettings, nil, disabledFunc),
--- 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your Druid Mana Bar Text.", 8, applySettings, nil, disabledFunc),
--- 		Point = self:NewSelect("Point", "Choose the Point for your Druid Mana Bar Text.", 9, positions, nil, applySettings, nil, disabledFunc),
--- 		RelativePoint = self:NewSelect("Relative Point", "Choose the relative Point for your Druid Mana Bar Text.", 10, positions, nil, applySettings, nil, disabledFunc),
--- 		empty3 = self:NewDesc(" ", 11),
--- 		Format = self:NewSelect("Format", "Choose the Format for the Druid Mana Text.", 12, valueFormat, nil, applySettings, nil, disabledFunc),
--- 		HideIfFullMana = self:NewToggle("Hide if Full Mana", "Whether you want to hide the Druid Mana Text when you have full Mana or not.", 13, applySettings, nil, disabledFunc),
--- 		Color = self:NewSelect("Color", "Choose the Color Option for the Druid Mana Text", 14, barColors.Power, nil, applySettings, nil, disabledFunc),
--- 		IndividualColor = self:NewColorNoAlpha("", "Druid Mana Text", 15, applySettings, nil, disabledColorFunc),
--- 	})
+	local options = self:NewGroup("Druid Mana", order, nil, function() return not self.db.Player.Bars.DruidMana.Enable end, {
+		Enable = self:NewToggle("Enable", "Whether you want to show your Druid Mana Value while in Cat/Bear or not.", 2, applySettings),
+		empty1 = self:NewDesc(" ", 2),
+		Font = self:NewSelect("Font", "Choose your Druid Mana Bar Text Font.", 3, widgetLists.font, "LSM30_Font", applySettings, nil, disabledFunc),
+		Size = self:NewSlider("Size", "Choose your Druid Mana Bar Text Fontsize.", 4, 1, 40, 1, applySettings, nil, nil, disabledFunc),
+		Outline = self:NewSelect("Font Flag", "Choose the Font Flag for the Druid Mana Bar Text.", 5, fontflags, nil, applySettings, nil, disabledFunc),
+		empty2 = self:NewDesc(" ", 6),
+		X = self:NewInputNumber("X Value", "Choose the X Value for your Druid Mana Bar Text.", 7, applySettings, nil, disabledFunc),
+		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your Druid Mana Bar Text.", 8, applySettings, nil, disabledFunc),
+		Point = self:NewSelect("Point", "Choose the Point for your Druid Mana Bar Text.", 9, positions, nil, applySettings, nil, disabledFunc),
+		RelativePoint = self:NewSelect("Relative Point", "Choose the relative Point for your Druid Mana Bar Text.", 10, positions, nil, applySettings, nil, disabledFunc),
+		empty3 = self:NewDesc(" ", 11),
+		Format = self:NewSelect("Format", "Choose the Format for the Druid Mana Text.", 12, valueFormat, nil, applySettings, nil, disabledFunc),
+		HideIfFullMana = self:NewToggle("Hide if Full Mana", "Whether you want to hide the Druid Mana Text when you have full Mana or not.", 13, applySettings, nil, disabledFunc),
+		Color = self:NewSelect("Color", "Choose the Color Option for the Druid Mana Text", 14, barColors.Power, nil, applySettings, nil, disabledFunc),
+		IndividualColor = self:NewColorNoAlpha("", "Druid Mana Text", 15, applySettings, nil, disabledColorFunc),
+	})
 
--- 	return options
--- end
+	return options
+end
 
 ------------------------------------------------------------------------
 --	Other Options Constructors
@@ -1063,6 +1046,10 @@ function module:CreateUnitOptions(unit, order)
 		end
 		module.ToggleUnit(unit)
 		module.ApplySettings(unit)
+
+		if unit == "Player" or unit == "Target" or unit == "Focus" then
+			Forte:SetPosForte();
+		end
 	end
 
 	-- because of special way of get/set funcs, i add the default values manually here
@@ -1108,7 +1095,7 @@ function module:CreateUnitOptions(unit, order)
 				Color = self:NewColor("Border", nil, 1, false),
 				EdgeFile = self:NewSelect("Border Texture", "Choose the Border Texture.", 2, widgetLists.border, "LSM30_Border", false),
 				EdgeSize = self:NewSlider("Edge Size", "Choose the Edge Size for the Frame Border.", 3, 1, 50, 1, false),
-				-- Aggro = (unit == "Player" or unit == "Target" or unit == "Focus" or unit == "Pet" or unit == "Maintank" or unit == "Party" or unit == "PartyPet" or unit == "Raid") and self:NewToggle("Aggro Glow", "Whether you want the border color to change if the unit has aggro or not.", 4, false) or nil,
+				Aggro = (unit == "Player" or unit == "Target" or unit == "Focus" or unit == "Pet" or unit == "Maintank" or unit == "Party" or unit == "PartyPet" or unit == "Raid") and self:NewToggle("Aggro Glow", "Whether you want the border color to change if the unit has aggro or not.", 4, false) or nil,
 				Insets = self:NewGroup("Insets", 5, true, {
 					Left = self:NewInputNumber("Left", "Value for the left Border Inset.", 1, false, "half"),
 					Right = self:NewInputNumber("Right", "Value for the right Border Inset.", 2, false, "half"),
@@ -1124,16 +1111,11 @@ function module:CreateUnitOptions(unit, order)
 			Health = self:CreateBarOptions(unit, 1, "Health"),
 			Power = self:CreateBarOptions(unit, 2, "Power"),
 			Full = self:CreateBarOptions(unit, 3, "Full"),
-			-- HealPrediction = self.db[unit].Bars.HealPrediction and self:CreateHealPredictionOptions(unit, 4) or nil,
-			-- TotalAbsorb = self.db[unit].Bars.TotalAbsorb and self:CreateTotalAbsorbOptions(unit, 5) or nil,
-			-- DruidMana = ((class == "DRUID" or class == "PRIEST" or class == "SHAMAN") and unit == "Player") and self:CreatePlayerBarOverlappingOptions("DruidMana", 11) or nil,
-			-- AltPower = (unit == "Player") and self:CreatePlayerBarOverlappingOptions("AltPower", 12) or nil,
-			Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
-			HolyPower = (class == "PALADIN" and unit == "Player") and self:CreatePlayerBarOptions("HolyPower", 15) or nil,
-			WarlockBar = (class == "WARLOCK" and unit == "Player") and self:CreatePlayerBarOptions("WarlockBar", 16) or nil,
-			ArcaneCharges = (class == "MAGE" and unit == "Player") and self:CreatePlayerBarOptions("ArcaneCharges", 16) or nil,
-			Chi = ((class == "MONK" or class == "DRUID" or class == "ROGUE") and unit == "Player") and self:CreatePlayerBarOptions("Chi", 16) or nil,
-			ComboPoints = (unit == "Target") and self:CreateComboPointsOptions(18) or nil,
+			HealPrediction = self.db[unit].Bars.HealPrediction and self:CreateHealPredictionOptions(unit, 4) or nil,
+			TotalAbsorb = self.db[unit].Bars.TotalAbsorb and self:CreateTotalAbsorbOptions(unit, 5) or nil,
+			DruidMana = ((class == "DRUID" or class == "PRIEST" or class == "SHAMAN") and unit == "Player") and self:CreatePlayerBarOverlappingOptions("DruidMana", 11) or nil,
+			-- Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
+			Energy = ((class == "MONK" or class == "DRUID" or class == "ROGUE") and unit == "Player") and self:CreatePlayerBarOptions("Energy", 16) or nil,
 		}),
 		Texts = self:NewGroup("Texts", 4, "tab", nil, disabledFunc, {
 			Name = (unit ~= "Raid") and self:CreateNameTextOptions(unit, 1) or self:CreateRaidNameTextOptions(1),
@@ -1144,10 +1126,8 @@ function module:CreateUnitOptions(unit, order)
 			HealthMissing = self:CreateTextOptions(unit, 6, "Health", "Missing"),
 			PowerMissing = self:CreateTextOptions(unit, 7, "Power", "Missing"),
 			Combat = (unit == "Player" or unit == "Target" or unit == "Focus" or unit == "Pet" or unit == "ToT") and self:CreateCombatTextOptions(unit, 8) or nil,
-			-- DruidMana = (unit == "Player" and (class == "DRUID" or class == "SHAMAN" or class == "PRIEST")) and self:CreateDruidManaTimerOptions(9) or nil,
-			-- WarlockBar = (unit == "Player" and class == "WARLOCK") and self:CreatePlayerBarTextOptions("WarlockBar", 9) or nil,
+			DruidMana = (unit == "Player" and (class == "DRUID" or class == "SHAMAN" or class == "PRIEST")) and self:CreateDruidManaTimerOptions(9) or nil,
 			PvP = (unit == "Player") and self:CreatePvpTimerOptions(10) or nil,
-			-- AltPower = (unit == "Player") and self:CreatePlayerBarTextOptions("AltPower", 12) or nil,
 		}),
 		Castbar = (self.defaults[unit].Castbar) and self:CreateCastbarOptions(unit, 5) or nil,
 		Aura = (self.defaults[unit].Aura) and self:NewGroup("Auras", 6, "tab", nil, disabledFunc, {
