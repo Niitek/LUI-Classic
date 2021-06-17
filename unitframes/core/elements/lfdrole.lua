@@ -35,13 +35,87 @@
 local parent, ns = ...
 local oUF = ns.oUF
 
-local Update = function(self, event)
+local Update = function(self, event, oufdb)
+	print((self.unit))
 	local lfdrole = self.LFDRole
 	if(lfdrole.PreUpdate) then
 		lfdrole:PreUpdate()
 	end
 
-	local role = UnitGroupRolesAssigned(self.unit)
+	local class = UnitClass(self.unit)
+	local name = UnitName(self.unit)
+	-- local talent = NotifyInspect(self.unit)
+	print(class)
+	print(name)
+	print(talent)
+
+	local function setrole(self)
+		local class = UnitClass(self.unit)
+		local name = UnitName(self.unit)
+		local talent = GetInspectSpecialization(self.unit)
+		print(class)
+		print(name)
+		print(talent)
+			if class == "DEATH KNIGHT" or class == "DEATHKNIGHT" then
+				UnitSetRole(name,"DAMAGER");
+			elseif class == "DRUID" then
+				if talent == 1 then 
+					UnitSetRole(name,"DAMAGER");
+				elseif talent == 2 then
+					UnitSetRole(name,"TANK");
+				else
+					UnitSetRole(name,"HEALER");
+				end
+			elseif class == "PALADIN" then
+				if talent == 1 then
+					UnitSetRole(name,"HEALER");
+				elseif talent == 2 then
+					UnitSetRole(name,"TANK");
+				else
+					UnitSetRole(name,"DAMAGER");
+				end
+			elseif class == "ROGUE" then
+				UnitSetRole(name,"DAMAGER");
+			elseif class == "SHAMAN" then
+				if talent == 3 then
+					UnitSetRole(name,"HEALER");
+				else
+					UnitSetRole(name,"DAMAGER");
+				end
+			elseif class == "MAGE" then
+				UnitSetRole(name,"DAMAGER");
+			elseif class == "WARLOCK" then
+				UnitSetRole(name,"DAMAGER");
+			elseif class == "PRIEST" then
+				if talent == 3 then
+					UnitSetRole(name,"DAMAGER");
+				else 
+					UnitSetRole(name,"HEALER");
+				end
+			elseif class == "WARRIOR" then
+				if talent == 3 then
+					UnitSetRole(name,"TANK");
+				else
+					UnitSetRole(name,"DAMAGER");
+				end
+			end
+
+		-- talentPointsSpent(self.unit)
+		-- if ( playerInfo[name].tank == 1 ) then
+		-- UnitSetRole(name,"TANK");
+		-- elseif ( playerInfo[name].heals == 1 ) then
+		-- UnitSetRole(name,"HEALER");
+		-- elseif ( playerInfo[name].mDps == 1 ) then
+		-- UnitSetRole(name,"DAMAGER");
+		-- elseif ( playerInfo[name].rDps == 1 ) then
+		-- UnitSetRole(name,"DAMAGER");
+		-- end
+	end
+
+	local role = 'NONE'
+		if UnitGroupRolesAssigned then
+			role = UnitGroupRolesAssigned(self.unit)
+		end
 	if(role == 'TANK' or role == 'HEALER' or role == 'DAMAGER') then
 		lfdrole:SetTexCoord(GetTexCoordsForRoleSmallCircle(role))
 		lfdrole:Show()
