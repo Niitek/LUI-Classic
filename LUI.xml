@@ -27,6 +27,7 @@
 	<Script file="addons\omen.lua"/>
 	<Script file="addons\recount.lua"/>
 	<Script file="addons\details.lua"/>
+	<Script file="addons\forte.lua"/>
 
 	<!-- Extended Modules -->
 	<Include file="modules\auras\auras.xml"/>
@@ -45,6 +46,7 @@
 	<Script file="modules\removethatbuff.lua"/>
 	<Script file="modules\mirrorbar.lua"/>
 	<Script file="modules\artwork.lua"/>
+	<!-- <Script file="modules\nameplates.lua"/> -->
 
 	<!-- Additional Scripts -->
 	<Script file="scripts\autoinvite.lua"/>
@@ -98,6 +100,7 @@
 	<Script file="unitframes\plugins\oUF_Experience.lua"/>
 	<Script file="unitframes\plugins\oUF_Reputation.lua"/>
 	<Script file="unitframes\plugins\oUF_RaidDebuffs.lua"/>
+	<!-- <Script file="unitframes\plugins\oUF_Smooth.lua"/> -->
 
 	<!-- to investigate as we may not need these anymore -->
 	<Script file="unitframes\plugins\singleauras.lua"/>
@@ -110,7 +113,7 @@
 	<!-- <Script file="unitframes\plugins\chi.lua"/> -->
 	<!-- <Script file="unitframes\plugins\holypower.lua"/> -->
 	<!-- <Script file="unitframes\plugins\warlockbar.lua"/> -->
-	<!-- <Script file="unitframes\plugins\totalabsorb.lua"/> -->
+	<Script file="unitframes\plugins\totalabsorb.lua"/>
 
 	<!-- Unitframe Layout -->
 	<Script file="unitframes\layout\tags.lua"/>

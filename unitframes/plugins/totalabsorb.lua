@@ -77,7 +77,7 @@ local function Enable(self)
 		ta.__owner = self
 		ta.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
+		-- self:RegisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
 		self:RegisterEvent('UNIT_MAXHEALTH', Path)
 		self:RegisterEvent('UNIT_HEALTH', Path)
 
@@ -96,7 +96,7 @@ end
 local function Disable(self)
 	local ta = self.TotalAbsorb
 	if(ta) then
-		self:UnregisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
+		-- self:UnregisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
 		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
 		self:UnregisterEvent('UNIT_HEALTH', Path)
 		ta:Hide()
