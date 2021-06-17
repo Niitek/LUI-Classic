@@ -36,6 +36,7 @@ local wipe = wipe
 local Ambiguate = Ambiguate
 local CastingInfo = CastingInfo
 local ChannelInfo = ChannelInfo
+local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local CreateFrame = CreateFrame
 local GetInventoryItemLink = GetInventoryItemLink
 local GetInventorySlotInfo = GetInventorySlotInfo
