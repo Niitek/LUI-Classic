@@ -484,7 +484,15 @@ function LUI:Update()
 			LUI.db.global.luiconfig[ProfileName].Versions.omen = nil
 			LUI:InstallOmen()
 		end
-
+		
+		if 	IsAddOnLoaded("Forte_Timer") and IsAddOnLoaded("Forte_Cooldown") then
+			-- LUI.db.global.luiconfig[ProfileName].Versions.Forte = nil
+			module:SetForte();
+			CreateCooldowntimerAnimation(); -- if forte is installed properly
+			module:RegisterForteEvents();
+			LUI:InstallForte()
+			
+		end
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		ReloadUI()
 	end)
@@ -558,6 +566,7 @@ function LUI:Configure()
 		LUI:InstallOmen()
 		LUI:InstallBartender()
 		LUI:InstallDetails()
+		LUI:InstallForte()
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		LUI.db.global.luiconfig[ProfileName].IsConfigured = true
@@ -1215,6 +1224,20 @@ local function getOptions()
 									end,
 									disabled = function() return not IsAddOnLoaded("Details") end,
 									hidden = function() return not IsAddOnLoaded("Details") end,
+								},
+								ResetForte = {
+									order = 2,
+									type = "execute",
+									name = "Restore ForteXorcist",
+									func = function()
+										LUICONFIG.Versions.Forte = nil
+										LUI:InstallForte()
+										StaticPopup_Show("RELOAD_UI")
+									end,
+									disabled = function() return not IsAddOnLoaded("Forte_Timer") end,
+									disabled = function() return not IsAddOnLoaded("Forte_Cooldown") end,
+									hidden = function() return not IsAddOnLoaded("Forte_Timer") end,
+									hidden = function() return not IsAddOnLoaded("Forte_Cooldown") end,
 								},
 								Header2 = {
 									name = "Recount Settings",
