@@ -627,6 +627,7 @@ module.defaults.profile.Player = {
 				b = 0.1,
 			},
 		},
+	},
 	Fader = {
 		Casting = true,
 		Combat = true,
