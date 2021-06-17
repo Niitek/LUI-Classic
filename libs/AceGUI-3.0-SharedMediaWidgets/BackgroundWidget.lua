@@ -109,7 +109,7 @@ do
 		local background = self.list[text] ~= text and self.list[text] or Media:Fetch('background',text)
 
 		self.frame.displayButton:SetBackdrop({bgFile = background,
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 			edgeSize = 16,
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }})
 	end
