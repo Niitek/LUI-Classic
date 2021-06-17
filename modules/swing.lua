@@ -13,6 +13,18 @@ local widgetLists = AceGUIWidgetLSMlists
 local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
 local positions = { "TOP", "TOPRIGHT", "TOPLEFT", "BOTTOM", "BOTTOMRIGHT", "BOTTOMLEFT", "RIGHT", "LEFT", "CENTER"}
 
+local GetInventoryItemID = GetInventoryItemID
+local GetTime = GetTime
+local GetSpellInfo = GetSpellInfo
+local UnitCastingInfo = UnitCastingInfo
+local UnitAttackSpeed = UnitAttackSpeed
+local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
+local COMBAT_LOG_EVENT_UNFILTERED = COMBAT_LOG_EVENT_UNFILTERED
+local UNIT_SPELLCAST_SUCCEEDED = UNIT_SPELLCAST_SUCCEEDED
+local UNIT_RANGEDDAMAGE = UNIT_RANGEDDAMAGE
+local UNIT_ATTACK_SPEED = UNIT_ATTACK_SPEED
+local PLAYER_REGEN_ENABLED = PLAYER_REGEN_ENABLED
+
 local _, class = UnitClass("player")
 
 local db, dbd
@@ -20,8 +32,8 @@ local LUISwing
 
 LUI.Versions.swing = 2.0
 
-local meleeing
-local rangeing
+local meleeing = false
+local rangeing = false
 local lasthit
 
 local MainhandID = GetInventoryItemID("player", 16)
@@ -67,7 +79,7 @@ do
 	function OnDurationUpdate(self, elapsed)
 		now = GetTime()
 
-		if meleeing then
+		if meleeing == true then
 			if checkelapsed > 0.02 then
 				-- little hack for detecting melee stop
 				-- improve... dw sucks at this point -.-
@@ -102,7 +114,7 @@ do
 			end
 
 			if now > self.max then
-				if meleeing then
+				if meleeing == true then
 					if lasthit then
 						self.min = self.max
 						self.max = self.max + self.speed
@@ -132,9 +144,8 @@ do
 end
 
 local MeleeChange = function(bar, event, unit)
-	if unit ~= "player" then return end
-	if not meleeing then return end
-
+	if unit ~= "player" then end
+	if meleeing == false then return end
 	local swing = bar.Twohand
 	local swingMH = bar.Mainhand
 	local swingOH = bar.Offhand
@@ -271,77 +282,82 @@ local Ranged = function(bar, event, unit, spellName)
 	swingOH:SetScript("OnUpdate", nil)
 end
 
-local Melee = function(bar, event, _, subevent, _, GUID)
-	if UnitGUID("player") ~= GUID then return end
-	if not string.find(subevent, "SWING") then return end
+local Melee = function(bar, event, _, subevent, _, _, _, _, _, _, tarGUID, _, missType)
+	if UnitGUID("player") ~= UnitGUID("player") then return end
+	local stats = {CombatLogGetCurrentEventInfo()}
+	local subEvent = stats[2]
+	if not string.find(subEvent, "SWING") then return end
+			local swing = bar.Twohand
+			local swingMH = bar.Mainhand
+			local swingOH = bar.Offhand
+			-- calculation of new hits is in OnDurationUpdate
+			-- workaround, cant differ between mainhand and offhand hits
+			if meleeing == true then
+				bar:Show()
 
-	local swing = bar.Twohand
-	local swingMH = bar.Mainhand
-	local swingOH = bar.Offhand
+				swing:Hide()
+				swingMH:Hide()
+				swingOH:Hide()
 
-	-- calculation of new hits is in OnDurationUpdate
-	-- workaround, cant differ between mainhand and offhand hits
-	if not meleeing then
-		bar:Show()
+				swing:SetScript("OnUpdate", nil)
+				swingMH:SetScript("OnUpdate", nil)
+				swingOH:SetScript("OnUpdate", nil)
 
-		swing:Hide()
-		swingMH:Hide()
-		swingOH:Hide()
+				local mhspeed, ohspeed = UnitAttackSpeed("player")
 
-		swing:SetScript("OnUpdate", nil)
-		swingMH:SetScript("OnUpdate", nil)
-		swingOH:SetScript("OnUpdate", nil)
+				if ohspeed then
+					swingMH.min = GetTime()
+					swingMH.max = swingMH.min + mhspeed
+					swingMH.speed = mhspeed
 
-		local mhspeed, ohspeed = UnitAttackSpeed("player")
+					swingMH:Show()
+					swingMH:SetMinMaxValues(swingMH.min, swingMH.max)
+					swingMH:SetScript("OnUpdate", OnDurationUpdate)
 
-		if ohspeed then
-			swingMH.min = GetTime()
-			swingMH.max = swingMH.min + mhspeed
-			swingMH.speed = mhspeed
+					swingOH.min = GetTime()
+					swingOH.max = swingOH.min + ohspeed
+					swingOH.speed = ohspeed
 
-			swingMH:Show()
-			swingMH:SetMinMaxValues(swingMH.min, swingMH.max)
-			swingMH:SetScript("OnUpdate", OnDurationUpdate)
+					swingOH:Show()
+					swingOH:SetMinMaxValues(swingOH.min, swingOH.max)
+					swingOH:SetScript("OnUpdate", OnDurationUpdate)
+				else
+					swing.min = GetTime()
+					swing.max = swing.min + mhspeed
+					swing.speed = mhspeed
 
-			swingOH.min = GetTime()
-			swingOH.max = swingOH.min + ohspeed
-			swingOH.speed = ohspeed
+					swing:Show()
+					swing:SetMinMaxValues(swing.min, swing.max)
+					swing:SetScript("OnUpdate", OnDurationUpdate)					
+				end
 
-			swingOH:Show()
-			swingOH:SetMinMaxValues(swingOH.min, swingOH.max)
-			swingOH:SetScript("OnUpdate", OnDurationUpdate)
-		else
-			swing.min = GetTime()
-			swing.max = swing.min + mhspeed
-			swing.speed = mhspeed
-
-			swing:Show()
-			swing:SetMinMaxValues(swing.min, swing.max)
-			swing:SetScript("OnUpdate", OnDurationUpdate)
-		end
-
-		meleeing = true
-		rangeing = false
-	end
+				meleeing = true
+				rangeing = false
+			end
+		-- end
+	-- end
 
 	lasthit = GetTime()
 end
 
 local ParryHaste = function(bar, event, _, subevent, _, _, _, _, _, _, tarGUID, _, missType)
+	local tarGUID = UnitGUID("target")
 	if UnitGUID("player") ~= tarGUID then return end
-	if not meleeing then return end
-	if not string.find(subevent, "MISSED") then return end
+	if meleeing == false then return end
+	local stats = {CombatLogGetCurrentEventInfo()}
+	local subEvent = stats[2]
+	if not string.find(subEvent, "_MISSED") then return end
 	if missType ~= "PARRY" then return end
 
 	local swing = bar.Twohand
 	local swingMH = bar.Mainhand
 	local swingOH = bar.Offhand
 
-	local _, dualwield = UnitAttackSpeed("player")
+	local _, ohspeed = UnitAttackSpeed("player")
 	local now = GetTime()
 
 	-- needed calculations, so the timer doesnt jump on parryhaste
-	if dualwield then
+	if ohspeed then
 		local percentage = (swingMH.max - now) / swingMH.speed
 
 		if percentage > 0.6 then
@@ -367,7 +383,6 @@ local ParryHaste = function(bar, event, _, subevent, _, _, _, _, _, _, tarGUID, 
 		end
 	else
 		local percentage = (swing.max - now) / swing.speed
-
 		if percentage > 0.6 then
 			swing.max = now + swing.speed * 0.6
 			swing.min = now - (swing.max - now) * percentage / (1 - percentage)
@@ -446,11 +461,13 @@ local SetSwing = function()
 				self.Testmode = nil
 				self:Hide()
 			end
+			meleeing = true
 		elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 			Ranged(self, event, ...)
 		elseif event == "UNIT_RANGEDDAMAGE" then
 			RangedChange(self, event, ...)
 		elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+			meleeing = true
 			Melee(self, event, ...)
 			ParryHaste(self, event, ...)
 		elseif event == "UNIT_ATTACK_SPEED" then
@@ -610,7 +627,6 @@ end
 function module:OnInitialize()
 	db, dbd = LUI:NewNamespace(self, true)
 	local ProfileName = UnitName("player").." - "..GetRealmName()
-
 	if LUI.db.global.luiconfig[ProfileName].Versions.swing ~= LUI.Versions.swing then
 		db:ResetProfile()
 		LUI.db.global.luiconfig[ProfileName].Versions.swing = LUI.Versions.swing
@@ -626,8 +642,7 @@ function module:OnEnable()
 	LUISwing:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED") -- Melee, ParryHaste
 	LUISwing:RegisterEvent("UNIT_ATTACK_SPEED") -- MeleeChange
 	LUISwing:RegisterEvent("PLAYER_REGEN_ENABLED") -- Ooc
-
-	LUISwing:Hide()
+	LUISwing:Show()
 end
 
 function module:OnDisable()
