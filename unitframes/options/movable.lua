@@ -181,9 +181,9 @@ do
 	local OnDragStart = function(self)
 		self:StartMoving()
 
-		local frame = self.obj
-		frame:ClearAllPoints()
-		frame:SetPoint("TOPLEFT", self)
+		-- local frame = self.obj
+		-- frame:ClearAllPoints()
+		-- frame:SetPoint("TOPLEFT", self)
 	end
 
 	local OnDragStop = function(self)
