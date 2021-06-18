@@ -51,7 +51,7 @@ function LUI:InstallOmen()
 	Omen.db.profile.Bar.MyBarColor.r = 0.592156862745098
 	Omen.db.profile.Bar.MyBarColor.g = 0.592156862745098
 	Omen.db.profile.Bar.MyBarColor.b = 0.592156862745098
-	Omen.db.profile.Bar.Texture = "Minimalist"
+	Omen.db.profile.Bar.Texture = "LUI_Gradient"
 	Omen.db.profile.Bar.ShowTPS = false
 	Omen.db.profile.Bar.AggroBarColor.r = 0.592156862745098
 	Omen.db.profile.Bar.AggroBarColor.g = 0.592156862745098
@@ -60,7 +60,7 @@ function LUI:InstallOmen()
 	Omen.db.profile.Bar.BarColor.r = 0.3686274509803922
 	Omen.db.profile.Bar.BarColor.g = 0.3686274509803922
 	Omen.db.profile.Bar.BarColor.b = 0.3686274509803922
-	Omen.db.profile.Bar.Font = "vibrocen"
+	Omen.db.profile.Bar.Font = "Neuropol"
 	Omen.db.profile.Bar.Height = 25
 	Omen.db.profile.Bar.FadeBarColor.r = 0.4666666666666667
 	Omen.db.profile.Bar.FadeBarColor.g = 0.4666666666666667
