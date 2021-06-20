@@ -1022,10 +1022,6 @@ function module:HideBlizzard()
 		end
 		frame:Hide()
 	end
-
-	module:SecureHook("TalentFrame_LoadUI", function()
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
 end
 
 function module:SetButtons()
