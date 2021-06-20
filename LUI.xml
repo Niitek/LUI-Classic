@@ -46,7 +46,7 @@
 	<Script file="modules\removethatbuff.lua"/>
 	<Script file="modules\mirrorbar.lua"/>
 	<Script file="modules\artwork.lua"/>
-	<!-- <Script file="modules\nameplates.lua"/> -->
+	<Script file="modules\nameplates.lua"/>
 
 	<!-- Additional Scripts -->
 	<Script file="scripts\autoinvite.lua"/>

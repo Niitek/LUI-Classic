@@ -1,6 +1,6 @@
 --[[
 	Project.: LUI NextGenWoWUserInterface
-	File....: LUI_tbcc.lua
+	File....: LUI.lua
 	Version.: 3.403
 	Rev Date: 13/02/2011
 	Author..: Louí [EU-Das Syndikat] <In Fidem>
@@ -293,8 +293,7 @@ end
 -- / CREATE ME A FRAME FUNC / --
 ------------------------------------------------------
 
-function LUI:CreateMeAFrame(fart,fname,fparent,fwidth,fheight,fscale,fstrata,flevel,
-							fpoint,frelativeFrame,frelativePoint,fofsx,fofsy,falpha,finherit)
+function LUI:CreateMeAFrame(fart,fname,fparent,fwidth,fheight,fscale,fstrata,flevel,fpoint,frelativeFrame,frelativePoint,fofsx,fofsy,falpha,finherit)
 	local f = CreateFrame(fart,fname,fparent,finherit)
 	if BackdropTemplateMixin then Mixin(f, BackdropTemplateMixin) end
 	local sw = scale(fwidth)
@@ -375,15 +374,15 @@ function LUI:SyncAddonVersion()
 			sendVersion("WHISPER", name)
 		end
 	end
---[[ 	for i = 1, BNGetNumFriends() do -- send to BN friends (on your realm) via whisper on login
-		local friend = C_BattleNet.GetFriendAccountInfo(i)
-		local toon = friend.gameAccountInfo
-		if toon.characterName and toon.isOnline and toon.clientProgram == "WoW" then
-			if toon.realmName == myRealm and toon.factionName == myFaction then
-				sendVersion("WHISPER", toon.characterName)
+	for i = 1, BNGetNumFriends() do -- send to BN friends (on your realm) via whisper on login
+		local _, _, _, toonName, toonID, client, isOnline = BNGetFriendInfo(i)
+		if toonName and isOnline and client == "WoW" then
+			local _, _, _, realmName, _, faction = BNGetToonInfo(toonID or 0)
+			if realmName == myRealm and faction == myFaction then
+				sendVersion("WHISPER", toonName)
 			end
 		end
-	end ]]
+	end
 	sendVersion("GUILD") -- send to guild on login
 	LUI:RegisterEvent("GROUP_ROSTER_UPDATE", groupUpdate, "Party") -- send to party on join party
 	LUI:RegisterEvent("GROUP_ROSTER_UPDATE", groupUpdate, "Raid") -- send to raid on join raid
@@ -465,6 +464,10 @@ function LUI:Update()
 	update_frame:RegisterForClicks("AnyUp")
 	update_frame:SetScript("OnClick", function(self)
 
+		if IsAddOnLoaded("Grid") then
+			LUI.db.global.luiconfig[ProfileName].Versions.grid = nil
+			LUI:InstallGrid()
+		end
 		if IsAddOnLoaded("Plexus") then
 			LUI.db.global.luiconfig[ProfileName].Versions.plexus = nil
 			LUI:InstallPlexus()
@@ -485,14 +488,11 @@ function LUI:Update()
 			LUI:InstallOmen()
 		end
 		
-		if 	IsAddOnLoaded("Forte_Timer") and IsAddOnLoaded("Forte_Cooldown") then
-			-- LUI.db.global.luiconfig[ProfileName].Versions.Forte = nil
-			module:SetForte();
-			CreateCooldowntimerAnimation(); -- if forte is installed properly
-			module:RegisterForteEvents();
+		if IsAddOnLoaded("Forte_Core") then
+			LUI.db.global.luiconfig[ProfileName].Versions.forte = nil
 			LUI:InstallForte()
-			
 		end
+
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		ReloadUI()
 	end)
@@ -561,12 +561,13 @@ function LUI:Configure()
 			wipe(LUI.db.global.luiconfig[ProfileName].Versions)
 		end
 
+		LUI:InstallGrid()
 		LUI:InstallPlexus()
 		LUI:InstallRecount()
 		LUI:InstallOmen()
 		LUI:InstallBartender()
-		LUI:InstallDetails()
 		LUI:InstallForte()
+		LUI:InstallDetails()
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		LUI.db.global.luiconfig[ProfileName].IsConfigured = true
@@ -843,16 +844,20 @@ local function getOptions()
 									order = 4,
 									width = "full",
 									type = "description",
-									fontSize = "large",
+									name = L["Version: "]..GetAddOnMetadata(addonname, "Version"),
+								},
+								RevText = {
+									order = 5,
+									width = "full",
+									type = "description",
 									name = function()
-										local version, alpha, git = strsplit("-", LUI.Rev)
-										if not version then
-											return "Version: "..GetAddOnMetadata(addonname, "Version")
-										elseif not alpha then
-											return "Version: "..version
-										else
-											return format("Version: %s Alpha %s", version, alpha)
+										local revision = LUI.Rev
+										if revision and strmatch(revision,"-%d+") then
+											revision = gsub( strmatch(revision,"-%d+"), "-", "r")
+										elseif revision and strmatch(revision, "%d") then
+											revision = "r"..revision
 										end
+										return L["Revision: "]..(revision or "???")
 									end,
 								},
 							},
@@ -935,7 +940,7 @@ local function getOptions()
 									end,
 									order = 9,
 								},
-								alwaysShowPlexus = {
+								alwaysShowRaid = {
 									name = "Show Raid",
 									desc = "Whether you want to show your Raid Panel by entering World or not.\n",
 									type = "toggle",
@@ -1135,7 +1140,7 @@ local function getOptions()
 									type = "description",
 									order = 51,
 								},
-								--[[ HideBlizzardRaid = {
+								HideBlizzardRaid = {
 									name = "Hide Blizzard Raid Frames",
 									desc = "Hide Blizzard Raid Frames (only available when LUI Unitframes are disabled)",
 									type = "toggle",
@@ -1151,7 +1156,7 @@ local function getOptions()
 										end
 									end,
 									order = 52,
-								}, ]]
+								},
 							},
 						},
 						Addons = {
@@ -1175,6 +1180,30 @@ local function getOptions()
 									end,
 									disabled = function() return not IsAddOnLoaded("Bartender4") end,
 									hidden = function() return not IsAddOnLoaded("Bartender4") end,
+								},
+								ResetForte = {
+									order = 2,
+									type = "execute",
+									name = "Restore ForteXorcist",
+									func = function()
+										LUI.db.global.luiconfig[ProfileName].Versions.forte = nil
+										LUI:InstallForte()
+										StaticPopup_Show("RELOAD_UI")
+									end,
+									disabled = function() return not IsAddOnLoaded("ForteXorcist") end,
+									hidden = function() return not IsAddOnLoaded("ForteXorcist") end,
+								},
+								ResetGrid = {
+									order = 2,
+									type = "execute",
+									name = "Restore Grid",
+									func = function()
+										LUI.db.global.luiconfig[ProfileName].Versions.grid = nil
+										LUI:InstallGrid()
+										StaticPopup_Show("RELOAD_UI")
+									end,
+									disabled = function() return not IsAddOnLoaded("Grid") end,
+									hidden = function() return not IsAddOnLoaded("Grid") end,
 								},
 								ResetPlexus = {
 									order = 2,
@@ -1224,20 +1253,6 @@ local function getOptions()
 									end,
 									disabled = function() return not IsAddOnLoaded("Details") end,
 									hidden = function() return not IsAddOnLoaded("Details") end,
-								},
-								ResetForte = {
-									order = 2,
-									type = "execute",
-									name = "Restore ForteXorcist",
-									func = function()
-										LUICONFIG.Versions.Forte = nil
-										LUI:InstallForte()
-										StaticPopup_Show("RELOAD_UI")
-									end,
-									disabled = function() return not IsAddOnLoaded("Forte_Timer") end,
-									disabled = function() return not IsAddOnLoaded("Forte_Cooldown") end,
-									hidden = function() return not IsAddOnLoaded("Forte_Timer") end,
-									hidden = function() return not IsAddOnLoaded("Forte_Cooldown") end,
 								},
 								Header2 = {
 									name = "Recount Settings",
@@ -1297,7 +1312,7 @@ local function getOptions()
 									order = 8,
 									width = "full",
 									type = "description",
-									name = "ATTENTION:\nAll SavedVariables from Plexus, Recount, Omen, Bartender and Details will be reset!"
+									name = "ATTENTION:\nAll SavedVariables from Grid, Plexus, Recount, Omen, Bartender and Details will be reset!"
 								},
 								Reset = {
 									order = 9,
@@ -1351,7 +1366,7 @@ local function getOptions()
 									width = "full",
 									type = "description",
 									fontSize = "large",
-									name = "|cffa335eeQoke, StephenFOlson, Fearon Whitcomb, Skinny Man Music, David Cook, Dalton Matheson, Curtis Motzner, Christoph Fischer, Hansth, Michael Swancott, Steph Lee, rb4havoc, Max McBurn, Michelle Larrew, Grant Sundstrom, Cory Linnerooth, Eagle Billie, Angryrice, Ian Huisman, Greta Kratz, Sacrosact Stars, Leisulong, Christopher Rhea".."\n",
+									name = "|cffa335eeQoke, StephenFOlson, Fearon Whitcomb, Ragnarok, Skinny Man Music, David Cook, Dalton Matheson, Curtis Motzner, Christoph Fischer, Michael Rowan, Hansth, Michael Swancott, Steph Lee, rb4havoc, Max McBurn, Michelle Larrew, Grant Sundstrom, Cory Linnerooth, Eagle Billie".."\n",
 								},
 								
 								OtherPatrons = {
@@ -1359,7 +1374,7 @@ local function getOptions()
 									width = "full",
 									type = "description",
 									fontSize = "medium",
-									name = "|cff1eff00Adam Moody, Andrew DePaola, Anthony Béchard, apexius, Azona, BIRDki, Brandon Burr, Chris Manring, Confatalis, Darkion43, Dochouse, gnuheike, Joseph Arnett, Kris Springer, Lyra, Lysa Richey, Mathias Reffeldt, Melvin de Grauw, Michael Rowan, Michael Walker, Mike, McCabe, Mike Williams, Nathan Adams, Nick Giovanni, necr0, Oscar Olofsson, Philipp Rissle, Ragnarok, Richard Scholten, Romain Gorgibus, Saturos Zed, Scott Crawford, Sean O'Shea, Shawn Pitts, Slawomir Baran, Spencer Sommers, Srg Kuja, Thomas A Hutto, Tobias Lidén, Xenthe, Ziri".."\n",
+									name = "|cff1eff00Adam Moody, Andrew DePaola, Angryrice, Anthony Béchard, apexius, Azona, BIRDki, Brandon Burr, Chris Manring, Confatalis, Dochouse, gnuheike, Ian Huisman, Joseph Arnett, Kris Springer, Lyra, Lysa Richey, Mathias Reffeldt, Max McBurn, Melvin de Grauw, Michael Walker, Mike, McCabe, Mike Williams, Nathan Adams, Nick Giovanni, necr0, Oscar Olofsson, Philipp Rissle, Preston Cheek, Ranarok, Richard Scholten, Romain Gorgibus, Saturos Zed, Scott Crawford, Sean O'Shea, Shawn Pitts, Slawomir Baran, Spencer Sommers, Srg Kuja, Thomas A Hutto, Tobias Lidén, Xenthe, Ziri".."\n",
 								},
 							},
 						},
