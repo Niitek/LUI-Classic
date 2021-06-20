@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="LibStub\LibStub.lua"/>
-    <Include file="CallbackHandler-1.0-7\CallbackHandler-1.0.xml"/>
+    <Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 
     <!-- <Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/> -->
     <Script file="LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
