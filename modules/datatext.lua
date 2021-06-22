@@ -1384,6 +1384,8 @@ function module:SetGF()
 		end
 
 		local function SetToastData(index, inGroup, offset)
+			if db.Friends.hideApp == false then
+
 			local toast, bc, color = toasts[index], nil, nil
 
 			local presenceID, givenName, battletag, isBattletag, characterName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcast, notes = BNGetFriendInfo(index + offset)
@@ -1413,7 +1415,6 @@ function module:SetGF()
 			SetStatusLayout(toast.status, toast.name)
 
 			toast.client = client
-
 			if client == BNET_CLIENT_WOW then
 				toast.faction:SetTexture([[Interface\Glues\CharacterCreate\UI-CharacterCreate-Factions]])
 				toast.faction:SetTexCoord(faction == 1 and 0.03 or 0.53, faction == 1 and 0.47 or 0.97, 0.03, 0.97)
@@ -1427,15 +1428,11 @@ function module:SetGF()
 				-- end
 				class = stat.LocClassNames[class]
 				if class then
-					-- if db.guild.ShowClassColor then
 					SetClassIcon(toast.class, class)
 					color = RAID_CLASS_COLORS[class]
 					toast.name:SetTextColor(color.r, color.g, color.b)
-					-- end
 				else
-					-- if db.guild.ShowClassIcon then
 					toast.class:SetTexture("")
-					-- end
 				end
 			else
 				toast.class:SetTexture(BNet_GetClientTexture(client))
@@ -1466,7 +1463,7 @@ function module:SetGF()
 			toast.zone:GetStringWidth(),
 			toast.note:GetStringWidth()
 		end
-
+	end
 		local function UpdateScrollButtons(nbEntries)
 			for i=1, #buttons do buttons[i]:Hide() end
 			local baseOffset = -realFriendsHeight
@@ -1531,6 +1528,7 @@ function module:SetGF()
 				return bc
 			end
 		})
+		-- if db.Friends.hideApp == false then
 
 		toasts = setmetatable({}, {
 			__index = function(t, k)
@@ -1559,7 +1557,7 @@ function module:SetGF()
 				return btn
 			end
 		})
-
+	-- end
 		buttons = setmetatable({}, {
 			__index = function(t, k)
 				local btn = CreateFrame("Button", nil, stat)
@@ -1669,41 +1667,43 @@ function module:SetGF()
 			local tnC, lC, zC, nC = 0, -gap, -gap, 0
 			local spanZoneC = 0
 
-			if nbRealFriends > 0 then
-				nbBroadcast = 0
-				local i = 1
-				local indexOffset = 0
-				while i <= nbRealFriends do
-					local button, client, isOnline, tnW, lW, zW, nW, spanZoneW = SetToastData(i, inGroup, indexOffset)
+			if db.Friends.hideApp == false then
+				if nbRealFriends > 0 then
+					nbBroadcast = 0
+					local i = 1
+					local indexOffset = 0
+					while i <= nbRealFriends do
+						local button, client, isOnline, tnW, lW, zW, nW, spanZoneW = SetToastData(i, inGroup, indexOffset)
 
-					if tnW > tnC then tnC = tnW end
-					if client == BNET_CLIENT_WOW then
-						if lW > lC then lC = lW end
-						if zW > zC then zC = zW end
-					else
-						if zW > spanZoneC then spanZoneC = zW end
+						if tnW > tnC then tnC = tnW end
+						if client == BNET_CLIENT_WOW then
+							if lW > lC then lC = lW end
+							if zW > zC then zC = zW end
+						else
+							if zW > spanZoneC then spanZoneC = zW end
+						end
+						if nW > nC then nC = nW end
+
+						if isOnline then
+							i = i + 1
+						else indexOffset = indexOffset + 1
+						end
 					end
-					if nW > nC then nC = nW end
+					sort(toasts, sortClients)
 
-					if isOnline then
-						i = i + 1
-					else indexOffset = indexOffset + 1
+					realFriendsHeight = (nbRealFriends + nbBroadcast) * btnHeight + (#entries>0 and gap or 0)
+					if hideNotes then nC = -gap end
+
+					spanZoneC = max(spanZoneC, lC + gap + iconSize + textOffset + zC)
+					rid_width = iconSize + textOffset + tnC + spanZoneC + nC + 2*gap
+
+					if #entries>0 then
+						local t = toasts[nbRealFriends]
+						local offsetY = t.bcIndex and btnHeight or 0
+						sep2:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, 2-offsetY)
+						sep2:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", 0, 2-offsetY-btnHeight)
+						sep2:Show()
 					end
-				end
-				sort(toasts, sortClients)
-
-				realFriendsHeight = (nbRealFriends + nbBroadcast) * btnHeight + (#entries>0 and gap or 0)
-				if hideNotes then nC = -gap end
-
-				spanZoneC = max(spanZoneC, lC + gap + iconSize + textOffset + zC)
-				rid_width = iconSize + textOffset + tnC + spanZoneC + nC + 2*gap
-
-				if #entries>0 then
-					local t = toasts[nbRealFriends]
-					local offsetY = t.bcIndex and btnHeight or 0
-					sep2:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, 2-offsetY)
-					sep2:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", 0, 2-offsetY-btnHeight)
-					sep2:Show()
 				end
 			end
 			if self.IsGuild or #entries==0 then sep2:Hide() end
@@ -1819,8 +1819,6 @@ function module:SetGF()
 				else
 					button.zone:SetWidth(spanZoneC)
 				end
-				if button.client == "BSAp" and db.Friends.hideBSAp == true then button:Hide() end
-				if button.client == "App" and db.Friends.hideApp == true then button:Hide() end
 				button.note:SetWidth(nC)
 			end
 
@@ -1833,7 +1831,6 @@ function module:SetGF()
 				button.note:SetWidth(notesC)
 				button.rank:SetWidth(rankC)
 			end
-
 			if nbEntries>0 then
 				local col = db[GorF()].sortCols[1]
 				local obj = buttons[1][col]
@@ -2185,7 +2182,11 @@ function module:SetFriends()
 		-- Stat functions
 		stat.UpdateText = function(self, updatePanel)
 			local totalRF, onlineRF = BNGetNumFriends()
-			self.text:SetText((db.Friends.ShowTotal and "Friends: %d/%d" or "Friends: %d"):format(onlineFriends + onlineRF, totalFriends + totalRF))
+			if db.Friends.hideApp == false then
+				self.text:SetText((db.Friends.ShowTotal and "Friends: %d/%d" or "Friends: %d"):format(onlineFriends + onlineRF, totalFriends + totalRF))
+			else
+				self.text:SetText((db.Friends.ShowTotal and "Friends: %d/%d" or "Friends: %d"):format(onlineFriends, totalFriends))
+			end
 			if updatePanel then self:BN_FRIEND_INFO_CHANGED() end
 		end
 
@@ -2961,7 +2962,6 @@ module.defaults = {
 			ShowTotal = false,
 			ShowHints = true,
 			ShowNotes = true,
-			hideBSAp = false,
 			hideApp = false,
 			-- ShowClassColor = true,
 			sortCols = {"name", "name", "name"},
@@ -3738,43 +3738,18 @@ function module:LoadOptions()
 					set = function(info, value) db.Friends.ShowNotes = value end,
 					order = 5,
 				},
-				Header = {
-					name = "Shoe/Hide Battle.Net Clients",
-					type = "header",
-					order = 6,
-				},
-				hideBSAp = {
-					name = "Hide B.Net Mobile",
-					desc = "Whether you want to show friends connected to the Battle.Net Mobile App.",
-					type = "toggle",
-					disabled = StatDisabled,
-					get = function() return db.Friends.hideBSAp end,
-					set = function(info, value) db.Friends.hideBSAp = value end,
-					order = 7,
-				},
 				hideApp = {
-					name = "Hide B.Net-Client",
+					name = "Hide B.Net-Clients",
 					desc = "Whether you want to show friends connected to the Battle.Net Desktop Client.",
 					type = "toggle",
 					disabled = StatDisabled,
 					get = function() return db.Friends.hideApp end,
-					set = function(info, value) db.Friends.hideApp = value end,
+					set = function(info, value) 
+						db.Friends.hideApp = value 
+						StaticPopup_Show("RELOAD_UI")
+					end,
 					order = 8,
 				},
-				-- Header = {
-				-- 	name = "",
-				-- 	type = "header",
-				-- 	order = 9,
-				-- },
-				-- ShowCLassColor = {
-				-- 	name = "Show Class Colors",
-				-- 	desc = "Whether you want to have names colored by class.",
-				-- 	type = "toggle",
-				-- 	disabled = StatDisabled,
-				-- 	get = function() return db.Friends.ShowClassColor end,
-				-- 	set = function(info, value) db.Friends.ShowClassColor = value end,
-				-- 	order = 5,
-				-- },
 				Position = PositionOptions(10),
 				Font = FontOptions(11),
 				Reset = ResetOption(12),
