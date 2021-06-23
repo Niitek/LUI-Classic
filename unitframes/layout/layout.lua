@@ -125,7 +125,7 @@ do
 	}
 
 	channelingTicks = {
-		["First Aid"] = 1 -- Bandages
+		-- ["First Aid"] = 1 -- Bandages
 	}
 	if classChannels[class] then
 		for k, v in pairs(classChannels[class]) do
