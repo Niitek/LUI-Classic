@@ -13,6 +13,7 @@ local StickyChannels = module:Module("StickyChannels")
 local Themes = LUI:Module("Themes")
 local Media = LibStub("LibSharedMedia-3.0")
 local widgetLists = AceGUIWidgetLSMlists
+-- local "CHAT_MSG_CHANNEL" = "CHAT_MSG_CHANNEL"
 
 local L = LUI.L
 local db, dbd
@@ -473,6 +474,35 @@ local function positionChatFrame()
 	FCF_SavePositionAndDimensions(frame)
 	FCF_SetLocked(frame, 1)
 end
+-- local chatEvents = --[[ "CHAT_MSG_BATTLEGROUND", "CHAT_MSG_BATTLEGROUND_LEADER",  ]]"CHAT_MSG_CHANNEL", "CHAT_MSG_EMOTE", "CHAT_MSG_GUILD", "CHAT_MSG_OFFICER", "CHAT_MSG_PARTY", "CHAT_MSG_RAID", "CHAT_MSG_RAID_LEADER", "CHAT_MSG_RAID_WARNING", "CHAT_MSG_PARTY_LEADER", "CHAT_MSG_SAY", "CHAT_MSG_WHISPER", "CHAT_MSG_BN_WHISPER", "CHAT_MSG_WHISPER_INFORM", "CHAT_MSG_YELL", "CHAT_MSG_BN_WHISPER_INFORM" -- , "CHAT_MSG_BN_CONVERSATION"
+-- local _SetCVar = SetCVar -- Keep a local copy of SetCVar so we don't call the hooked version
+-- local SetCVar = function(...)
+-- 	local status, err = pcall(function(...) return _SetCVar(...) end, ...)
+-- 	return status
+-- end
+
+-- hooksecurefunc('ConsoleExec', function(msg)
+-- 	local cmd, cvar, value = msg:match('^(%S+)%s+(%S+)%s*(%S*)')
+-- 	if cmd == 'set' then -- /console SET cvar value
+-- 			TraceCVar(cvar, value)
+-- 		else -- /console cvar value
+-- 			TraceCVar(cmd, cvar)
+-- 		end
+-- 	end
+-- end)
+
+local function ChatNameColorEvent()
+	-- print((db.General.ClassColor))
+	-- if db.General.ClassColor == Always then hooksecurefunc('ConsoleExec', function("^chatClassColorOverride 0")
+	-- elseif db.General.ClassColor == Never then hooksecurefunc('ConsoleExec', function("^SET chatClassColorOverride 1")
+	-- elseif db.General.ClassColor == Legacy then hooksecurefunc('ConsoleExec', function("^SET chatClassColorOverride 2")
+	-- end
+end
+
+-- local ccvf = CreateFrame("Frame")
+-- 	ccvf:RegisterEvent(chatEvents)
+-- 	ccvf:SetScript("OnEvent", ChatNameColorEvent)
+-- 	ccvf:Show()
 
 local function configureTab(tab, minimalist)
 	if minimalist then
@@ -568,7 +598,6 @@ function module:SetColors()
 		EditBox:ChatEdit_UpdateHeader(_G[name].editBox)
 	end
 end
-
 function module:LibSharedMedia_Registered(mediaType, key)
 	if mediaType == "font" and key == db.General.Font.Font then
 		for i, name in ipairs(CHAT_FRAMES) do
@@ -714,7 +743,7 @@ module.defaults = {
 		y = 46,
 		point = "BOTTOMLEFT",
 		width = 404,
-		height = 171,
+		height = 173,
 		General = {
 			Font = {
 				Font = (function()
@@ -729,6 +758,7 @@ module.defaults = {
 				Flag = "NONE",
 			},
 			ShortChannelNames = true,
+			ClassColor = "Always",
 			DisableFading = true,
 			MinimalistTabs = true,
 			LinkHover = true,
@@ -760,7 +790,11 @@ function module:LoadOptions()
 
 		positionChatFrame()
 	end
-
+	local ClassColorOpt = {
+		b = "Legacy",
+		a = "Always",
+		c = "Never",
+	}
 	local options = {
 		General = self:NewGroup(L["General Settings"], 1, {
 			Font = self:NewGroup(L["Font"], 1, true, {
@@ -769,6 +803,15 @@ function module:LoadOptions()
 				Size = self:NewSlider(L["Size"], L["Choose a fontsize"], 3, 6, 20, 1, true, false, "full")
 			}),
 			ShortChannelNames = self:NewToggle(L["Short channel names"], L["Use abreviated channel names"], 2, true),
+			-- ClassColor = {
+			-- 	name = "Color names by class",
+			-- 	desc = "Colors player names by their designated class color.",
+			-- 	type = "select",
+			-- 	get = function() return db.General.ClassColorOpt end,
+			-- 	set = function(info, value) if "always" then db.General.ClassColorOpt = "always" and SetCVar("chatClassColorOverride", 2)
+			-- 				elseif "legacy" then db.General.ClassColorOpt = "legacy" and SetCVar("chatClassColorOverride", 1) end,
+			-- 	order = 1,
+			ClassColor = self:NewSelect("Color names by class", "Colors player names by their designated class color", 2, ClassColorOpt),
 			DisableFading = self:NewToggle(L["Disable fading"], L["Stop the chat from fading out over time"], 3, true),
 			MinimalistTabs = self:NewToggle(L["Minimalist tabs"], L["Use minimalist style tabs"], 4, true),
 			LinkHover = self:NewToggle(L["Link hover tooltip"], L["Show tooltip when mousing over links in chat"], 5, true),
@@ -827,6 +870,7 @@ function module:Refresh(info, value)
 	end
 
 	configureTabs(db.General.MinimalistTabs)
+	ChatNameColorEvent(db.General.ShowClassColor)
 
 	self:LibSharedMedia_Registered("font", db.General.Font.Font)
 
