@@ -266,7 +266,7 @@ module.defaults = {
 	},
 }
 
-module.defaultState = false
+module.defaultState = true
 module.getter = "generic"
 module.setter = "generic"
 

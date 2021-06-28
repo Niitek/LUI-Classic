@@ -23,7 +23,7 @@ Profiler.TraceScope(module, "RemoveThatBuff", "LUI")
 
 module.defaults = {
 	profile = {
-		Enable = false,
+		Enable = true,
 		Buffs = {
 		},
 	},
