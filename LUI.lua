@@ -189,8 +189,8 @@ local function CheckResolution()
 			Infotext.db.defaults.profile.Memory.X = 190
 		end
 
-		LUI.defaults.profile.Frames.Dps.X = -968
-		LUI.defaults.profile.Frames.Dps.Y = 863
+		LUI.defaults.profile.Frames.Dps.X = -878
+		LUI.defaults.profile.Frames.Dps.Y = 862
 
 		LUI.defaults.profile.Frames.Tps.X = 5
 		LUI.defaults.profile.Frames.Tps.Y = 882
@@ -488,7 +488,7 @@ function LUI:Update()
 			LUI:InstallOmen()
 		end
 		
-		if IsAddOnLoaded("Forte_Core") then
+		if IsAddOnLoaded("Forte_Timer") then
 			LUI.db.global.luiconfig[ProfileName].Versions.forte = nil
 			LUI:InstallForte()
 		end
@@ -556,6 +556,7 @@ function LUI:Configure()
 		SetCVar("useUiScale", 1)
 		SetCVar("chatMouseScroll", 1)
 		SetCVar("chatStyle", "classic")
+		-- SetCVar("colorChatNamesByClass", 1)
 
 		if LUI.db.global.luiconfig[ProfileName].Versions then
 			wipe(LUI.db.global.luiconfig[ProfileName].Versions)
@@ -566,7 +567,7 @@ function LUI:Configure()
 		LUI:InstallRecount()
 		LUI:InstallOmen()
 		LUI:InstallBartender()
-		LUI:InstallForte()
+		-- LUI:InstallForte()
 		LUI:InstallDetails()
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
@@ -1190,8 +1191,8 @@ local function getOptions()
 										LUI:InstallForte()
 										StaticPopup_Show("RELOAD_UI")
 									end,
-									disabled = function() return not IsAddOnLoaded("ForteXorcist") end,
-									hidden = function() return not IsAddOnLoaded("ForteXorcist") end,
+									disabled = function() return not IsAddOnLoaded("Forte_Timer") end,
+									hidden = function() return not IsAddOnLoaded("Forte_Timer") end,
 								},
 								ResetGrid = {
 									order = 2,

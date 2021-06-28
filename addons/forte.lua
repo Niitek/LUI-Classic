@@ -25,7 +25,9 @@ LUI.Versions.forte = "v1.980.8"; -- major version - DON'T change this for just e
 
 local LR = {"LEFT","RIGHT"};
 local TB = {"TOP","BOTTOM"};
-local TTR = {"TOP","TOPRIGHT"};
+local TTR = {"TOP","TOPRIGHT","TOPLEFT","LEFT","RIGHT","BOTTOM","BOTTOMLEFT","BOTTOMRIGHT"};
+local TTL = {"TOP","TOPRIGHT","TOPLEFT","LEFT","RIGHT","BOTTOM","BOTTOMLEFT","BOTTOMRIGHT"};
+local TT = {"TOP","TOPRIGHT","TOPLEFT","LEFT","RIGHT","BOTTOM","BOTTOMLEFT","BOTTOMRIGHT"};
 
 local global_settings = {
 	ShardEnable = false,
@@ -65,23 +67,23 @@ local splash_settings = {
 }
 
 local timer_instances = {
-	["Spell Timer"] = {
+	Player = {
 		anchor = {"oUF_LUI_player"},
-		offset = {
-			DEATHKNIGHT = {"Runes","Runes"},
-			SHAMAN = {"Totems","TotemBar",1},
-			DRUID = {"Eclipse","EclipseBar"},
-			PALADIN = {"HolyPower","HolyPower"},
-			WARLOCK = {"SoulShards","SoulShards"},
-		},
+		-- offset = {
+		-- 	DEATHKNIGHT = {"Runes","Runes"},
+		-- 	SHAMAN = {"Totems","TotemBar",1},
+		-- 	DRUID = {"Eclipse","EclipseBar"},
+		-- 	PALADIN = {"HolyPower","HolyPower"},
+		-- 	WARLOCK = {"SoulShards","SoulShards"},
+		-- },
 		settings = {
 			Spell = true,
 			Label = false,
-			Target = false,
-			Focus = false,
-			Other = false,
+			Target = true,
+			Focus = true,
+			Other = true,
 			NoTarget = true,
-			UnknownTarget = false,
+			UnknownTarget = true,
 			You = true,
 			RaidDebuffs = false,
 		}
@@ -217,7 +219,7 @@ end
 
 function LUI:InstallForte()
 	if not module:FXLoaded() then return end
-	if LUICONFIG.Versions.forte == LUI.Versions.forte and LUICONFIG.IsForteInstalled == true then return end
+	-- if LUICONFIG.Versions.forte == LUI.Versions.forte and LUICONFIG.IsForteInstalled == true then return end
 	if not FW.Settings then
 		FW:RegisterVariablesEvent(LUI.InstallForte);
 		return;
@@ -260,6 +262,7 @@ function LUI:InstallForte()
 				module:Copy(data.settings,instance); -- instance
 			end
 		end
+		-- FW:RefreshFrames()
 	end
 	-- restore defaults
 	if IsAddOnLoaded("Forte_Cooldown") then
@@ -268,7 +271,7 @@ function LUI:InstallForte()
 		module:Copy(FW.InstanceDefault.Splash,module:GetSplash() ); -- FX
 		module:Copy(splash_settings,module:GetSplash() ); -- global
 	end
-
+	module:SetForte()
 	LUICONFIG.Versions.forte = LUI.Versions.forte
 	LUICONFIG.IsForteInstalled = true
 end
@@ -552,7 +555,8 @@ module.defaults = {
 		IndividualColor = true,
 		Color = {0.24,0.24,0.24},
 
-		["Spell Timer"] = {
+		Player = {
+			Location = "TOPLEFT",
 			Enable = true,
 			Lock = true,
 			PaddingX = 0,
@@ -566,6 +570,7 @@ module.defaults = {
 			PaddingY = 0,
 		},
 		Focus = {
+			Location = "TOPRIGHT",
 			Enable = false,
 			Lock = true,
 			PaddingX = 0,
@@ -824,9 +829,9 @@ function module:LoadOptions()
 						},
 					},
 				},
-				["Spell Timer"] = newSpellTimerOption(2, "This frame can be attached to the Player frame and show important buffs/debuffs on yourself, spells without a target and some important cooldowns."),
+				Player = newSpellTimerOption(2, "This frame can be attached to the Player frame and show important buffs/debuffs on yourself, spells without a target and some important cooldowns.",TTL),
 				Target = newSpellTimerOption(3, "This frame can be attached to the target frame and show important buffs/debuffs on your target.",TTR),
-				Focus = newSpellTimerOption(4, "This frame can be attached to the focus frame and show important buffs/debuffs on your focus."),
+				Focus = newSpellTimerOption(4, "This frame can be attached to the focus frame and show important buffs/debuffs on your focus.",TTR),
 				Compact = newSpellTimerOption(5, "Will show a compact timer frame with important spells on multiple units.",LR),
 			},
 		},
