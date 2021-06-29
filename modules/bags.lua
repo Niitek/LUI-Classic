@@ -103,7 +103,6 @@ StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT"] = {
 local function LUIBags_Select(bag)
 	if bag == "Bank" and LUIBank then return LUIBank end
 	if bag == "Bags" and LUIBags then return LUIBags end
-	if bag == "ContainerFrame1" and LUIKeyring then return LUIKeyring end
 end
 
 local function CheckSortButton()
@@ -186,13 +185,8 @@ local function LUIBags_StartMoving(self)
 end
 
 local function LUIBags_StopMoving(self)
-	if ContainerFrame1 then 
 		self:StopMovingOrSizing()
 		self:SetUserPlaced(true)
-
-	else
-		self:StopMovingOrSizing()
-		self:SetUserPlaced(false)
 
 		local x, y = self:GetCenter()
 
@@ -201,7 +195,6 @@ local function LUIBags_StopMoving(self)
 		db[bag].CoordX = x
 		db[bag].CoordY = y
 	end
-end
 
 function module:InitSelect(bag)
 	if bag == "Bank" and not LUIBank then module:InitBank() end
@@ -940,8 +933,6 @@ function module:EnableBags()
 	-- hooking OnShow because sometime key max slot changes.
 	if not module:IsHooked(ContainerFrame1, "OnShow") then
 		module:HookScript(ContainerFrame1, "OnShow", function(self)
-			ContainerFrame1:EnableMouse(1)
-			ContainerFrame1:SetMovable(1)
 			ContainerFrame1:SetScript("OnMouseDown", LUIBags_StartMoving)
 			ContainerFrame1:SetScript("OnMouseUp", LUIBags_StopMoving)
 
@@ -996,14 +987,12 @@ end
 function module:QUEST_ACCEPTED(event)
 	module:ReloadLayout("Bags")
 	module:ReloadLayout("Bank")
-	-- module.ReloadLayout("ContainerFrame1")
 end
 
 function module:UNIT_QUEST_LOG_CHANGED(event, unit)
 	if unit == "player" then
 		module:ReloadLayout("Bags")
 		module:ReloadLayout("Bank")
-		-- module.ReloadLayout("ContainerFrame1")
 	end
 end
 
