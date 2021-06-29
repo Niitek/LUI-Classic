@@ -66,10 +66,10 @@ function LUI:InstallOmen()
 	Omen.db.profile.Bar.FadeBarColor.g = 0.4666666666666667
 	Omen.db.profile.Bar.FadeBarColor.b = 0.4666666666666667
 	Omen.db.profile.Bar.UseMyBarColor = true
-	Omen.db.profile.PositionX = LUI:Scale(478.61)
-	Omen.db.profile.PositionY = LUI:Scale(225.01)
-	Omen.db.profile.PositionW = 198.8860415275098
-	Omen.db.profile.PositionH = 196.9849329984127
+	Omen.db.profile.PositionX = LUI:Scale(462.61)
+	Omen.db.profile.PositionY = LUI:Scale(226.01)
+	Omen.db.profile.PositionW = 194.8860415275098
+	Omen.db.profile.PositionH = 197.9849329984127
 	
 	LUI.db.global.luiconfig[ProfileName].Versions.omen = LUI.Versions.omen
 end

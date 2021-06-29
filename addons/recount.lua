@@ -32,8 +32,8 @@ function LUI:InstallRecount()
 	Recount.db.profile.MainWindow.Buttons.RightButton = false
 	Recount.db.profile.MainWindow.Buttons.ReportButton = false
 	Recount.db.profile.MainWindow.ShowScrollbar = false
-	Recount.db.profile.MainWindow.Position.y = -421
-	Recount.db.profile.MainWindow.Position.x = 333
+	Recount.db.profile.MainWindow.Position.y = -420
+	Recount.db.profile.MainWindow.Position.x = 424
 	Recount.db.profile.MainWindow.Position.w = 193
 	Recount.db.profile.MainWindow.Position.h = 245
 	Recount.db.profile.MainWindow.RowHeight = 27

@@ -706,8 +706,8 @@ module.defaults = {
 			Height = 177
 		},
 		Tps = {
-			OffsetX = -15,
-			OffsetY = 0,
+			OffsetX = 1,
+			OffsetY = -1,
 			Anchor = "OmenAnchor",
 			Additional = "",
 			AlwaysShow = false,
@@ -718,8 +718,8 @@ module.defaults = {
 			Height = 181
 		},
 		Dps = {
-			OffsetX = 90,
-			OffsetY = -29,
+			OffsetX = 0,
+			OffsetY = -30,
 			Anchor = "Recount_MainWindow",
 			Additional = "",
 			AlwaysShow = false,
