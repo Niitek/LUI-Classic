@@ -43,11 +43,7 @@ Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonF
 
 **Known Issues**
 
-*Recount doesn't get themed properly, but otherwise works like normal
-
 *Druid Mana bar does not work as intended
-
-*Swing timer does not display
 
 **QoL Stuff Planned**
 
@@ -56,7 +52,5 @@ Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonF
 *Class icon/color toggle for guild/friend list info text
 
 *Reinstate Absorb predictions
-
-*Visual cooldown bars
 
 *Add a Restore function for Details!
