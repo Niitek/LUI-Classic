@@ -149,39 +149,6 @@ local Page = {
 	},
 }
 
-local toggleDummyBar
-do
-	local function playerRegenDisabled(bar, event)
-		module:UnregisterEvent(event)
-
-		toggleDummyBar(bar, false)
-		LUI:Print("Dummy "..bar:GetName().." hidden due to combat.")
-	end
-
-	toggleDummyBar = function(bar, force)
-		local show = not bar:IsShown()
-		if force then show = force end
-
-		local parent = bar:GetParent()
-		if not parent then parent = LUIExtraActionBar end
-
-		if show then
-			if not parent.SetBackdrop then Mixin(parent, BackdropTemplateMixin) end
-			parent:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
-			bar.button:Show()
-			bar:Show()
-			bar.outro:Stop()
-			bar.intro:Play()
-
-			module:RegisterEvent("PLAYER_REGEN_DISABLED", playerRegenDisabled, bar)
-		else
-			if parent.SetBackdrop then parent:SetBackdrop({}) end
-			bar.intro:Stop()
-			bar:Hide()
-		end
-	end
-end
-
 local last = "HIDEGRID"
 local function HookGrid(self, event)
 	if event == "ACTIONBAR_SHOWGRID" then
@@ -340,7 +307,7 @@ end
 
 local function GetBarState(id)
 	local bardb = db["Bottombar"..id]
-	local condition = id == 1 and "[vehicleui] 12; [overridebar] 14; [possessbar] [@vehicle, exists] 12; [bonusbar:5] 11; " or ""
+	local condition = id == 1 and "[vehicleui] 12; [overridebar] 14; [bonusbar:5] 11; " or ""
 
 	if bardb.State.Alt ~= bardb.State[1] then
 		condition = condition.."[mod:alt] "..bardb.State.Alt.."; "
@@ -360,10 +327,11 @@ local function GetBarState(id)
 	return condition
 end
 
-local function GetButton(bar, barid, barpos, buttonid)
-	local button = CreateFrame("CheckButton", "LUIBar"..barpos..barid.."Button"..buttonid, bar, "ActionBarButtonTemplate")
-	--button:RegisterForClicks("AnyDown")
+local function CreateButton(bar, barid, barpos, buttonid)
+	local button = CreateFrame("CheckButton", format("LUIBar%s%sButton%s", barpos, barid, buttonid), bar, "ActionBarButtonTemplate")
 	button:SetID(buttonid)
+
+	-- module:HookActionButton(button)
 	return button
 end
 
@@ -669,7 +637,7 @@ function module:SetBottomBar(id)
 		bar.buttons = {}
 
 		for i = 1, 12 do
-			local button = GetButton(bar, id, "Bottom", i)
+			local button = CreateButton(bar, id, "Bottom", i)
 			button:UnregisterEvent("ACTIONBAR_SHOWGRID")
 			button:UnregisterEvent("ACTIONBAR_HIDEGRID")
 			button:SetAttribute("showgrid", 100)
@@ -741,7 +709,7 @@ function module:SetSideBar(side, id)
 		bar.buttons = {}
 
 		for i = 1, 12 do
-			local button = GetButton(bar, id, side, i)
+			local button = CreateButton(bar, id, side, i)
 
 			button:UnregisterEvent("ACTIONBAR_SHOWGRID")
 			button:UnregisterEvent("ACTIONBAR_HIDEGRID")
@@ -753,7 +721,7 @@ function module:SetSideBar(side, id)
 			bar:SetFrameRef("Button"..i, button)
 			bar.buttons[i] = button
 			if button:GetName():find("LUI") then button.buttonType = "LUIBar"..sideID.."Button" end
-			button:SetAttribute("flyoutDirection", side == "Left" and "RIGHT" or "LEFT")
+			-- button:SetAttribute("flyoutDirection", side == "Left" and "RIGHT" or "LEFT")
 		end
 
 		bar:RegisterEvent("ACTIONBAR_SHOWGRID")
@@ -937,10 +905,6 @@ function module:HideBlizzard()
 		end
 		frame:Hide()
 	end
-
-	-- module:SecureHook("TalentFrame_LoadUI", function()
-	-- 	PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	-- end)
 end
 
 	local function StyleButton(button)
@@ -957,6 +921,14 @@ end
 		local borderTex = [[Interface\AddOns\LUI\media\textures\buttons2\Border.tga]]
 		local font = [[Interface\Addons\LUI\media\fonts\vibrocen.ttf]]
 		local dummy = function() end
+		-- LibKeyBound stuff
+		local function GetHotkey(button) return GetBindingKey("CLICK "..button:GetName()..":LeftButton") end
+
+		local function Button_OnEnter(button)
+			if button.GetHotkey then
+				LibKeyBound:Set(button)
+			end
+		end
 	
 		if button:GetNormalTexture() then
 			button:GetNormalTexture():SetAlpha(0)
@@ -970,7 +942,7 @@ end
 			end
 		end
 	
-		if button.__Styled == true then return end
+		if button.__Styled then return end
 	
 		table.insert(buttonlist, button)
 		button.__Styled = true
@@ -983,7 +955,7 @@ end
 			if parent == "MultiCastActionPage1" then return end
 			if parent == "MultiCastActionPage2" then return end
 			if parent == "MultiCastActionPage3" then return end
-		end
+			end
 
 		local name = button:GetName()
 		local size = button:GetWidth()
@@ -1038,12 +1010,8 @@ end
 
 		if not db.General.ShowEquipped then border:Hide() end
 
-		button.GetHotkey = function(button) return GetBindingKey("CLICK "..button:GetName()..":LeftButton") end
-		button:HookScript("OnEnter", function(button)
-			if button.GetHotkey then
-				LibKeyBound:Set(button)
-			end
-		end)
+		button.GetHotkey = GetHotkey
+		button:HookScript("OnEnter", Button_OnEnter)
 	
 			if Masque then return end
 
@@ -1174,12 +1142,14 @@ end
 
 		button.SetFrameLevel = dummy
 	end
+	module:SecureHook("ActionButton_Update", StyleButton)
 
 	local function StylePetButtons()
 		for i = 1, 10 do
 			StyleButton(_G["PetActionButton"..i])
 		end
 	end
+	module:SecureHook("PetActionBar_Update", StylePetButtons)
 
 	local function StyleStanceButtons()
 		for i = 1, 10 do
@@ -1187,7 +1157,45 @@ end
 		end
 	end
 
-	local function UpdateHotkey(self, abt)
+	module:SecureHook("StanceBar_Update", StyleStanceButtons)
+	module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
+
+	local flyoutButtons = 0
+	-- local function StyleFlyout(self)
+	-- 	if not self.FlyoutArrow then return end
+	
+	-- 	self.FlyoutBorder:SetAlpha(0)
+	-- 	self.FlyoutBorderShadow:SetAlpha(0)
+	
+	-- 	SpellFlyoutHorizontalBackground:SetAlpha(0)
+	-- 	SpellFlyoutVerticalBackground:SetAlpha(0)
+	-- 	SpellFlyoutBackgroundEnd:SetAlpha(0)
+	
+	-- 	for i = 1, GetNumFlyouts() do
+	-- 		local _, _, numSlots, isKnown = GetFlyoutInfo(GetFlyoutID(i))
+	-- 		if isKnown then
+	-- 			flyoutButtons = numSlots
+	-- 			break
+	-- 		end
+	-- 	end
+	
+	-- 	local arrowDistance
+	-- 	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
+	-- 		arrowDistance = 5
+	-- 	else
+	-- 		arrowDistance = 2
+	-- 	end
+	-- end
+	
+	-- local function StyleFlyoutButton()
+	-- 	for i = 1, flyoutButtons do
+	-- 		if _G["SpellFlyoutButton"..i] then
+	-- 			StyleButton(_G["SpellFlyoutButton"..i])
+	-- 		end
+	-- 	end
+	-- end
+	
+		local function UpdateHotkey(self, abt)
 		local gsub = string.gsub
 		local hotkey = _G[self:GetName().."HotKey"]
 		local text = hotkey:GetText()
@@ -1215,6 +1223,7 @@ end
 			hotkey:SetText(text)
 		end
 	end
+	module:SecureHook("ActionButton_UpdateHotkeys", UpdateHotkey)
 
 	local function Button_UpdateUsable(button)
 		local icon = _G[button:GetName().."Icon"]
@@ -1232,6 +1241,7 @@ end
 			icon:SetVertexColor(0.8, 0.1, 0.1)
 		end
 	end
+	module:SecureHook("ActionButton_UpdateUsable", Button_UpdateUsable)
 
 	local function Button_OnUpdate(button, elapsed)
 		button.__elapsed = (button.__elapsed or 0) + elapsed
@@ -1241,56 +1251,42 @@ end
 			Button_UpdateUsable(button)
 		end
 	end
+	module:SecureHook("ActionButton_OnUpdate", Button_OnUpdate)
 
-	function module:HookActionButton(button)
-		if button then
-			module:SecureHook(button, "Update", StyleButton)
-			module:SecureHook(button, "OnUpdate", Button_OnUpdate)
-			module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
-			module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
-		end
-		--Prevent rehooking.
-		if not module:IsHooked("StanceBar_Update") then
-			module:SecureHook("StanceBar_Update", StyleStanceButtons)
-			module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
-			module:SecureHook("PetActionBar_Update", StylePetButtons)
-		end
-	end
-	
-	function module:LIBKEYBOUND_ENABLED()
-		module.keyBoundMode = true
-	end
-	function module:LIBKEYBOUND_DISABLED()
-		module.keyBoundMode = nil
-	end
-	
+
 	function module:SetLibKeyBound()
+		function self:LIBKEYBOUND_ENABLED() self.keyBoundMode = true end
+
+		function self:LIBKEYBOUND_DISABLED() self.keyBoundMode = nil end
+	
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_ENABLED")
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_DISABLED")
-	--LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
+	-- LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
 end
 
 function module:SetBars()
 	if not (IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Dominos") or IsAddOnLoaded("Macaroon")) and db.General.Enable then
 		if not db.StatesLoaded then LoadStates(g_defaultStates) end
 
-		module:SetLibKeyBound()
+		self:SetLibKeyBound()
 
 		for i = 1, 6 do
-			module:SetBottomBar(i)
+			self:SetBottomBar(i)
 		end
 
 		for i = 1, 2 do
-			module:SetSideBar("Left", i)
-			module:SetSideBar("Right", i)
+			self:SetSideBar("Left", i)
+			self:SetSideBar("Right", i)
 		end
 
-		module:SetPetBar()
-		module:SetStanceBar()
-		module:SetVehicleExit()
+		self:SetPetBar()
+		self:SetStanceBar()
+		self:SetVehicleExit()
 
-		module:HideBlizzard()
-		module:HookActionButton()
+		self:HideBlizzard()
+
+
+		self:RegisterEvent("PLAYER_LEVEL_UP")
 	else
 		g_isBarAddOnLoaded = true
 	end
@@ -1661,206 +1657,206 @@ module.childGroups = "select"
 module.getter = "generic"
 module.setter = "Refresh"
 
-	local function getState(info)
+local function getState(info)
+	info[#info] = tonumber(info[#info]) or info[#info]
+	local val = module.db(info)
+	for k, v in pairs(info.option.values()) do
+		if v == val then
+			return k
+		end
+	end
+end
+local function setOptionPoints()
+	module:Refresh()
+	module:UpdatePositionOptions()
+end
+
+local function setBottombarState(info, value)
+	info[#info] = tonumber(info[#info]) or info[#info]
+	module.db(info, info.option.values()[value])
+
+	local id = tonumber(info[#info-2]:match("%d+"))
+	UnregisterStateDriver(bars[id], "page")
+	RegisterStateDriver(bars[id], "page", GetBarState(id))
+end
+
+local function createBottomBarOptions(num, order)
+	if g_isBarAddOnLoaded then return end
+	local disabledFunc = function() return not db["Bottombar"..num].Enable end
+
+	local option = module:NewGroup("Action Bar "..num, order, false, InCombatLockdown, {
+		header0 = module:NewHeader("Action Bar "..num.." Settings", 0),
+		Enable = (num ~= 1) and module:NewToggle("Show Action Bar "..num, nil, 1, true) or nil,
+		empty1 = (num ~= 1) and  module:NewDesc(" ", 2) or nil,
+		HideEmpty = module:NewToggle("Hide Empty Buttons", nil, 3, true, nil, disabledFunc),
+		[""] = module:NewPosSliders("Action Bar "..num, 4, false, "LUIBar"..num, true, nil, disabledFunc),
+		Point = module:NewSelect("Point", "Choose the Point for your Action Bar "..num, 5, g_pointList, nil, setOptionPoints, nil, disabledFunc),
+		empty2 = module:NewDesc(" ", 6),
+		Scale = module:NewSlider("Scale", "Scale of Action Bar "..num..".", 7, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
+		empty3 = module:NewDesc(" ", 8),
+		NumPerRow = module:NewSlider("Buttons Per Row", "Choose the Number of Buttons per row for your Action Bar "..num..".", 9, 1, 12, 1, true, nil, nil, disabledFunc),
+		NumButtons = module:NewSlider("Number of Buttons", "Choose the Number of Buttons for your Action Bar "..num..".", 10, 1, 12, 1, true, nil, nil, disabledFunc),
+		State = module:NewGroup("State Settings", 11, getState, setBottombarState, true, {
+			Alt = module:NewSelect("Alt", "Choose the Alt State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 25, g_stateList, nil, false, nil, disabledFunc),
+			Ctrl = module:NewSelect("Ctrl", "Choose the Ctrl State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 26, g_stateList, nil, false, nil, disabledFunc),
+		}),
+	})
+
+	if num == 1 then
+		for i, name in ipairs(g_stateText) do							   
+			option.args.State.args[tostring(i)] = module:NewSelect(name, format("Choose the State for %s.\n\nDefaults: %s", name, g_defaultStates.Bottombar1[i]), i, g_stateList, nil, false, nil, disabledFunc)
+		end
+	else	
+		option.args.State.args["1"] = module:NewSelect("Default", format("Choose the State for Action Bar %s.\n\nDefaults: %s", num, g_defaultStates["Bottombar"..num][1]), 1, g_stateList, nil, false, nil, disabledFunc)
+	end
+
+	return option
+end
+
+local function setSidebarState(info, value)
 		info[#info] = tonumber(info[#info]) or info[#info]
-		local val = module.db(info)
-		for k, v in pairs(info.option.values()) do
-			if v == val then
-				return k
+	local val = info.option.values()[value]
+	module.db(info, val)
+
+	local barname = gsub(info[#info-2], "Sidebar", "LUIBar")
+	UnregisterStateDriver(_G[barname], "page")
+	RegisterStateDriver(_G[barname], "page", val)
+end
+
+local optIsDisabled = {
+	TopTex = function() return not db.TopTexture.Enable end,
+	TopTexAnim = function() return not db.TopTexture.Enable or not db.TopTexture.Animation end,
+	BottomTex = function() return not db.BottomTexture.Enable end,
+	["Stance Bar"] = function() return not db.StanceBar.Enable end,
+	["Pet Bar"] = function() return not db.PetBar.Enable end,
+	["Vehicle Exit"] = function() return not db.VehicleExit.Enable end,
+	Hotkey = function() return not db.General.ShowHotkey end,
+	Count = function() return not db.General.ShowCount end,
+	Macro = function() return not db.General.ShowMacro end,
+}
+
+local btSideBarPresets = {
+	Right1 = { position = { x = -90, y = 95,   point = "RIGHT",    }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
+	Left1 =  { position = { x = 20,  y = 95,   point = "LEFT",     }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
+	Right2 = { position = { x = -90, y = -210, point = "TOPRIGHT", }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
+	Left2 =  { position = { x = 20,  y = -210, point = "TOPLEFT",  }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
+}
+
+function module:AutoAdjustBT4(sideID)
+	local bardb = module.db.profile["Sidebar"..sideID]
+	if not IsAddOnLoaded("Bartender4") or not strsub(bardb.Anchor, 1, 3) == "BT4" then return end
+	local _, num = strsplit("r", bardb.Anchor)
+	local barOpt = Bartender4.db:GetNamespace("ActionBars").profile.actionbars[tonumber(num)]
+	--local barOpt = Bartender4DB.namespaces.ActionBars.profiles[Bartender4.db:GetCurrentProfile()].actionbars[tonumber(num)]
+	for k, v in pairs(btSideBarPresets[sideID]) do
+		if type(v) == "table" then
+			for k2, v2 in pairs(v) do
+				barOpt[k][k2] = v2
+			end
+		else
+			barOpt[k] = v
+		end
+	end
+	barOpt.enabled = bardb.Enable
+	barOpt.position.scale = bardb.Scale
+	local yOffset = bardb.Offset - module.defaults.profile["Sidebar"..sideID].Offset
+	-- Those values were initially taken with sidebar at 0.85 scale, adjust accordingly.
+	barOpt.position.x = barOpt.position.x / 0.85 * bardb.Scale
+	barOpt.position.y = (barOpt.position.y + yOffset) / 0.85 * bardb.Scale
+
+	Bartender4:UpdateModuleConfigs()
+	if not bardb.IsOpen then
+		SidebarSetAlpha(bardb.Anchor, 0)
+	end
+end
+
+StaticPopupDialogs["LUI_CONFIRM_SIDEBAR_ADJUST"] = {
+	text = "This will change alter the Bartender4 settings for the selected anchor bar. Are you sure?",
+	button1 = "Yes",
+	button2 = "No",
+	OnAccept = function(self, sideID)
+		module:AutoAdjustBT4(sideID)
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
+local function createSideBarOptions(side, num, order)
+	local bardb = db["Sidebar"..side..num]
+	local disabledFunc = function() return not bardb.Enable end
+	local disabledPosFunc = function() return not bardb.Enable or (g_isBarAddOnLoaded and bardb.AutoPosDisable) end
+	local showDialog = function()
+		local dialog = StaticPopup_Show("LUI_CONFIRM_SIDEBAR_ADJUST") 
+		dialog.data = side..num
+	end
+	local hideAnchoredBar = function(...)
+		if IsAddOnLoaded("Bartender4") and strsub(bardb.Anchor, 1, 3) == "BT4" then
+			local _, num = strsplit("r", bardb.Anchor)
+			local barOpt = Bartender4.db:GetNamespace("ActionBars").profile.actionbars[tonumber(num)]
+			barOpt.visibility.always = not bardb.Enable
+			Bartender4:UpdateModuleConfigs()
+			if bardb.Enable and not bardb.IsOpen then
+				SidebarSetAlpha(bardb.Anchor, 0)
 			end
 		end
-	end
-	local function setOptionPoints()
-		module:Refresh()
-		module:UpdatePositionOptions()
-	end
-	
-	local function setBottombarState(info, value)
-		info[#info] = tonumber(info[#info]) or info[#info]
-		module.db(info, info.option.values()[value])
-
-		local id = tonumber(info[#info-2]:match("%d+"))
-		UnregisterStateDriver(bars[id], "page")
-		RegisterStateDriver(bars[id], "page", GetBarState(id))
+		module:Refresh(...)
 	end
 
-	local function createBottomBarOptions(num, order)
-		if g_isBarAddOnLoaded then return end
-		local disabledFunc = function() return not db["Bottombar"..num].Enable end
-	
-		local option = module:NewGroup("Action Bar "..num, order, false, InCombatLockdown, {
-			header0 = module:NewHeader("Action Bar "..num.." Settings", 0),
-			Enable = (num ~= 1) and module:NewToggle("Show Action Bar "..num, nil, 1, true) or nil,
-			empty1 = (num ~= 1) and  module:NewDesc(" ", 2) or nil,
-			HideEmpty = module:NewToggle("Hide Empty Buttons", nil, 3, true, nil, disabledFunc),
-			[""] = module:NewPosSliders("Action Bar "..num, 4, false, "LUIBar"..num, true, nil, disabledFunc),
-			Point = module:NewSelect("Point", "Choose the Point for your Action Bar "..num, 5, g_pointList, nil, setOptionPoints, nil, disabledFunc),
-			empty2 = module:NewDesc(" ", 6),
-			Scale = module:NewSlider("Scale", "Scale of Action Bar "..num..".", 7, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
-			empty3 = module:NewDesc(" ", 8),
-			NumPerRow = module:NewSlider("Buttons Per Row", "Choose the Number of Buttons per row for your Action Bar "..num..".", 9, 1, 12, 1, true, nil, nil, disabledFunc),
-			NumButtons = module:NewSlider("Number of Buttons", "Choose the Number of Buttons for your Action Bar "..num..".", 10, 1, 12, 1, true, nil, nil, disabledFunc),
-			State = module:NewGroup("State Settings", 11, getState, setBottombarState, true, {
-				Alt = module:NewSelect("Alt", "Choose the Alt State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 25, g_stateList, nil, false, nil, disabledFunc),
-				Ctrl = module:NewSelect("Ctrl", "Choose the Ctrl State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 26, g_stateList, nil, false, nil, disabledFunc),
-			}),
-		})
-	
-		if num == 1 then
-			for i, name in ipairs(g_stateText) do							   
-				option.args.State.args[tostring(i)] = module:NewSelect(name, format("Choose the State for %s.\n\nDefaults: %s", name, g_defaultStates.Bottombar1[i]), i, g_stateList, nil, false, nil, disabledFunc)
-			end
-		else	
-			option.args.State.args["1"] = module:NewSelect("Default", format("Choose the State for Action Bar %s.\n\nDefaults: %s", num, g_defaultStates["Bottombar"..num][1]), 1, g_stateList, nil, false, nil, disabledFunc)
-		end
-	
-		return option
-	end
-	
-	local function setSidebarState(info, value)
-			info[#info] = tonumber(info[#info]) or info[#info]
-		local val = info.option.values()[value]
-		module.db(info, val)
+	local option = module:NewGroup(side.." Bar "..num, order, false, InCombatLockdown, {
+		header1 = module:NewHeader(side.." Bar "..num.." Settings", 0),
+		Enable = module:NewToggle("Show "..side.." Bar "..num, nil, 1, hideAnchoredBar),
+		empty1 = module:NewDesc(" ", 2),
+		Intro = g_isBarAddOnLoaded and module:NewDesc("Which Bar do you want to use for this Sidebar?\nChoose one or type in the MainAnchor manually.\n\nMake sure your Bar is set to 6 buttons/2 columns and isn't used for another Sidebar.\nLUI will position your Bar automatically.", 3) or nil,
+		AnchorDropDown = g_isBarAddOnLoaded and module:NewSelect("Anchor", nil, 4, PRESET_BAR_ANCHORS) or nil,
+		Anchor = g_isBarAddOnLoaded and module:NewInput("Anchor", "Choose the Bar for this Sidebar.", 5, nil, nil, disabledFunc) or nil,
+		Additional = module:NewInput("Additional Frames", "Type in any additional frame names (seperated by commas), that you would like to show/hide with the Sidebar.", 6, true, nil, disabledFunc),
+		empty2 = module:NewDesc(" ", 7),
+		Scale = module:NewSlider("Scale", "Choose the Scale for this Sidebar.", 7.33, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
+		AutoAdjust = module:NewExecute("Auto-Adjust BT4Bar", "If you recently changed the bar anchor, make sure to move the previous bar outside of the Sidebar to prevent overlaps.", 7.66, showDialog, nil, nil, disabledFunc, not IsAddOnLoaded("Bartender4")),
+		empty4 = module:NewDesc(" ", 8),
+		[""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
+		AutoPosDisable = g_isBarAddOnLoaded and module:NewToggle("Stop touching me!", "Whether or not to have LUI handle your Bar Positioning.", 10, true, nil, disabledFunc) or nil,
+		HideEmpty = not g_isBarAddOnLoaded and module:NewToggle("Hide Empty Buttons", nil, 11, true, nil, disabledFunc) or nil,
+		empty3 = module:NewDesc(" ", 12),
+		Offset = module:NewInputNumber("Y Offset", "Y Offset for your Sidebar", 13, setOptionPoints, nil, disabledFunc),
+		OpenInstant = module:NewToggle("Open Instant", "Whether or not to show an open/close animation.", 14, true, nil, disabledFunc),
+		State = not g_isBarAddOnLoaded and module:NewGroup("State Settings", 15, getState, setSidebarState, true, {
+			["1"] = module:NewSelect("Default", "Choose the State for "..side.." Bar "..num..".\n\nDefaults: "..g_defaultStates["Sidebar"..side..num][1], 1, g_stateList, nil, false, nil, disabledFunc),
+		}) or nil,
+	})
 
-		local barname = gsub(info[#info-2], "Sidebar", "LUIBar")
-		UnregisterStateDriver(_G[barname], "page")
-		RegisterStateDriver(_G[barname], "page", val)
-	end
-	
-	local optIsDisabled = {
-		TopTex = function() return not db.TopTexture.Enable end,
-		TopTexAnim = function() return not db.TopTexture.Enable or not db.TopTexture.Animation end,
-		BottomTex = function() return not db.BottomTexture.Enable end,
-		["Stance Bar"] = function() return not db.StanceBar.Enable end,
-		["Pet Bar"] = function() return not db.PetBar.Enable end,
-		["Vehicle Exit"] = function() return not db.VehicleExit.Enable end,
-		Hotkey = function() return not db.General.ShowHotkey end,
-		Count = function() return not db.General.ShowCount end,
-		Macro = function() return not db.General.ShowMacro end,
-	}
-	
-	local btSideBarPresets = {
-		Right1 = { position = { x = -90, y = 95,   point = "RIGHT",    }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
-		Left1 =  { position = { x = 20,  y = 95,   point = "LEFT",     }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
-		Right2 = { position = { x = -90, y = -210, point = "TOPRIGHT", }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
-		Left2 =  { position = { x = 20,  y = -210, point = "TOPLEFT",  }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
-	}
-	
-	function module:AutoAdjustBT4(sideID)
-		local bardb = module.db.profile["Sidebar"..sideID]
-		if not IsAddOnLoaded("Bartender4") or not strsub(bardb.Anchor, 1, 3) == "BT4" then return end
-		local _, num = strsplit("r", bardb.Anchor)
-		local barOpt = Bartender4.db:GetNamespace("ActionBars").profile.actionbars[tonumber(num)]
-		--local barOpt = Bartender4DB.namespaces.ActionBars.profiles[Bartender4.db:GetCurrentProfile()].actionbars[tonumber(num)]
-		for k, v in pairs(btSideBarPresets[sideID]) do
-			if type(v) == "table" then
-				for k2, v2 in pairs(v) do
-					barOpt[k][k2] = v2
-				end
-			else
-				barOpt[k] = v
-			end
+	if option.args.AnchorDropDown then
+		option.args.AnchorDropDown.desc = function(info)
+			info[#info] = "Anchor"
+			return "Choose the Bar for this Sidebar.\n\nDefault: "..dbd(info)
 		end
-		barOpt.enabled = bardb.Enable
-		barOpt.position.scale = bardb.Scale
-		local yOffset = bardb.Offset - module.defaults.profile["Sidebar"..sideID].Offset
-		-- Those values were initially taken with sidebar at 0.85 scale, adjust accordingly.
-		barOpt.position.x = barOpt.position.x / 0.85 * bardb.Scale
-		barOpt.position.y = (barOpt.position.y + yOffset) / 0.85 * bardb.Scale
-	
-		Bartender4:UpdateModuleConfigs()
-		if not bardb.IsOpen then
-			SidebarSetAlpha(bardb.Anchor, 0)
-		end
-	end
-	
-	StaticPopupDialogs["LUI_CONFIRM_SIDEBAR_ADJUST"] = {
-		text = "This will change alter the Bartender4 settings for the selected anchor bar. Are you sure?",
-		button1 = "Yes",
-		button2 = "No",
-		OnAccept = function(self, sideID)
-			module:AutoAdjustBT4(sideID)
-		end,
-		timeout = 0,
-		whileDead = true,
-		hideOnEscape = true,
-	}
-	
-	local function createSideBarOptions(side, num, order)
-		local bardb = db["Sidebar"..side..num]
-		local disabledFunc = function() return not bardb.Enable end
-		local disabledPosFunc = function() return not bardb.Enable or (g_isBarAddOnLoaded and bardb.AutoPosDisable) end
-		local showDialog = function()
-			local dialog = StaticPopup_Show("LUI_CONFIRM_SIDEBAR_ADJUST") 
-			dialog.data = side..num
-		end
-		local hideAnchoredBar = function(...)
-			if IsAddOnLoaded("Bartender4") and strsub(bardb.Anchor, 1, 3) == "BT4" then
-				local _, num = strsplit("r", bardb.Anchor)
-				local barOpt = Bartender4.db:GetNamespace("ActionBars").profile.actionbars[tonumber(num)]
-				barOpt.visibility.always = not bardb.Enable
-				Bartender4:UpdateModuleConfigs()
-				if bardb.Enable and not bardb.IsOpen then
-					SidebarSetAlpha(bardb.Anchor, 0)
+		option.args.AnchorDropDown.get = function(info)
+			info[#info] = "Anchor"
+			local val = db(info)
+			for k, v in pairs(info.option.values()) do
+				if v == val then
+					return k
 				end
 			end
-			module:Refresh(...)
 		end
-	
-		local option = module:NewGroup(side.." Bar "..num, order, false, InCombatLockdown, {
-			header1 = module:NewHeader(side.." Bar "..num.." Settings", 0),
-			Enable = module:NewToggle("Show "..side.." Bar "..num, nil, 1, hideAnchoredBar),
-			empty1 = module:NewDesc(" ", 2),
-			Intro = g_isBarAddOnLoaded and module:NewDesc("Which Bar do you want to use for this Sidebar?\nChoose one or type in the MainAnchor manually.\n\nMake sure your Bar is set to 6 buttons/2 columns and isn't used for another Sidebar.\nLUI will position your Bar automatically.", 3) or nil,
-			AnchorDropDown = g_isBarAddOnLoaded and module:NewSelect("Anchor", nil, 4, PRESET_BAR_ANCHORS) or nil,
-			Anchor = g_isBarAddOnLoaded and module:NewInput("Anchor", "Choose the Bar for this Sidebar.", 5, nil, nil, disabledFunc) or nil,
-			Additional = module:NewInput("Additional Frames", "Type in any additional frame names (seperated by commas), that you would like to show/hide with the Sidebar.", 6, true, nil, disabledFunc),
-			empty2 = module:NewDesc(" ", 7),
-			Scale = module:NewSlider("Scale", "Choose the Scale for this Sidebar.", 7.33, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
-			AutoAdjust = module:NewExecute("Auto-Adjust BT4Bar", "If you recently changed the bar anchor, make sure to move the previous bar outside of the Sidebar to prevent overlaps.", 7.66, showDialog, nil, nil, disabledFunc, not IsAddOnLoaded("Bartender4")),
-			empty4 = module:NewDesc(" ", 8),
-			[""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
-			AutoPosDisable = g_isBarAddOnLoaded and module:NewToggle("Stop touching me!", "Whether or not to have LUI handle your Bar Positioning.", 10, true, nil, disabledFunc) or nil,
-			HideEmpty = not g_isBarAddOnLoaded and module:NewToggle("Hide Empty Buttons", nil, 11, true, nil, disabledFunc) or nil,
-			empty3 = module:NewDesc(" ", 12),
-			Offset = module:NewInputNumber("Y Offset", "Y Offset for your Sidebar", 13, setOptionPoints, nil, disabledFunc),
-			OpenInstant = module:NewToggle("Open Instant", "Whether or not to show an open/close animation.", 14, true, nil, disabledFunc),
-			State = not g_isBarAddOnLoaded and module:NewGroup("State Settings", 15, getState, setSidebarState, true, {
-				["1"] = module:NewSelect("Default", "Choose the State for "..side.." Bar "..num..".\n\nDefaults: "..g_defaultStates["Sidebar"..side..num][1], 1, g_stateList, nil, false, nil, disabledFunc),
-			}) or nil,
-		})
-	
-		if option.args.AnchorDropDown then
-			option.args.AnchorDropDown.desc = function(info)
-				info[#info] = "Anchor"
-				return "Choose the Bar for this Sidebar.\n\nDefault: "..dbd(info)
-			end
-			option.args.AnchorDropDown.get = function(info)
-				info[#info] = "Anchor"
-				local val = db(info)
-				for k, v in pairs(info.option.values()) do
-					if v == val then
-						return k
-					end
-				end
-			end
-			option.args.AnchorDropDown.set = function(info, value)
-				info[#info] = "Anchor"
-				db(info, info.option.values()[value])
-				SidebarSetAnchor(side, num)
-			end
+		option.args.AnchorDropDown.set = function(info, value)
+			info[#info] = "Anchor"
+			db(info, info.option.values()[value])
+			SidebarSetAnchor(side, num)
 		end
+	end
 	
 		return option
 	end
 	
 	local function createOtherBarOptions(name, order, frame, dbName, multiRow)
-		if g_isBarAddOnLoaded then return end
-		local specialBar = (name == "Extra Action Bar")
-		local function setDummyBar()
-			if InCombatLockdown() then return end
-			toggleDummyBar(ExtraActionBarFrame)
-		end
+		-- if g_isBarAddOnLoaded then return end
+		-- local specialBar = (name == "Extra Action Bar")
+		-- local function setDummyBar()
+		-- 	if InCombatLockdown() then return end
+		-- 	toggleDummyBar(ExtraActionBarFrame)
+		-- end
 	
 		local option = module:NewGroup(name, order, false, InCombatLockdown, {
 			header0 = module:NewHeader(name.." Settings", 0),
@@ -1876,7 +1872,7 @@ module.setter = "Refresh"
 	
 		return option
 	end
-	
+
 	function module:LoadOptions()
 		local dryCall = function() module:Refresh() end
 	
@@ -1937,7 +1933,6 @@ module.setter = "Refresh"
 			StanceBar = createOtherBarOptions("Shapeshift/Stance Bar", 14, "LUIStanceBar", "StanceBar", true),
 			PetBar = createOtherBarOptions("Pet Bar", 15, "LUIPetBar", "PetBar", true),
 			VehicleExit = createOtherBarOptions("Vehicle Exit Button", 17, "LUIVehicleExit"),
-			ExtraActionBar = createOtherBarOptions("Extra Action Bar", 18, "LUIExtraActionBar"),
 		}
 	
 		return options
@@ -1966,13 +1961,19 @@ module.setter = "Refresh"
 			module:SetPetBar()
 			module:SetStanceBar()
 			module:SetVehicleExit()
-			module:SetExtraActionBar()
 		end
 	
 		LUIBarsTopBG:SetAlpha(db.TopTexture.Alpha)
 		LUIBarsTopBG:ClearAllPoints()
 		LUIBarsTopBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.TopTexture.X, db.TopTexture.Y)
 		ShowIf(LUIBarsTopBG, db.TopTexture.Enable)
+
+		if Forte:IsEnabled() and Forte.db.Cooldown.Lock then
+			local FXCD = FW and FW.Frames.FX_Cooldown1
+			if FXCD and FXCD:IsShown() then
+				LUIBarsTopBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.TopTexture.X, db.TopTexture.Y + db.TopTexture.AnimationHeight)
+			end
+		end
 	
 		LUIBarsBottomBG:SetAlpha(db.BottomTexture.Alpha)
 		LUIBarsBottomBG:ClearAllPoints()
@@ -1985,25 +1986,39 @@ module.setter = "Refresh"
 			local count = _G[name.."Count"]
 			if count then
 				count:SetFont(Media:Fetch("font", db.General.CountFont), db.General.CountSize, db.General.CountOutline)
-				ShowIf(count, db.General.ShowCount)
+			if db.General.ShowCount then
+				count:Show()
+			else
+				count:Hide()
+			end
 			end
 	
 			local hotkey = _G[name.."HotKey"]
 			if hotkey then
 				hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
-				ShowIf(hotkey, db.General.ShowHotkey)
-			end
+				if db.General.ShowHotkey then
+					hotkey:Show()
+				else
+					hotkey:Hide()
+				end
+				end
 	
 			local macro = _G[name.."Name"]
 			if macro then
 				macro:SetFont(Media:Fetch("font", db.General.MacroFont), db.General.MacroSize, db.General.MacroOutline)
-				ShowIf(macro, db.General.ShowMacro)
-			end
+				if db.General.ShowMacro then
+					macro:Show()
+				else
+					macro:Hide()
+				end
+				end
 	
 			local border = _G[name.."Border"]
-			if border then
-				ShowIf(border, db.General.ShowEquipped and button.action and IsEquippedAction(button.action))
-			end
+			if db.General.ShowEquipped and button.action and IsEquippedAction(button.action) then
+				if border then border:Show() end
+			else
+				if border then border:Hide() end
+				end
 		end
 	
 		SidebarSetAnchor("Left", 1)
@@ -2040,7 +2055,7 @@ module.setter = "Refresh"
 	
 	end
 	
-	function module:PLAYER_SPECIALIZATION_CHANGED()
+	function module:PLAYER_LEVEL_UP()
 		module:SetStanceBar()
 	end
 	
@@ -2062,6 +2077,6 @@ module.setter = "Refresh"
 	end
 	
 	function module:OnDisable()
-		module:UnRegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+		module:UnRegisterEvent("PLAYER_LEVEL_UP")
 	end
 	
