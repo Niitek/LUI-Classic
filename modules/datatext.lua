@@ -24,6 +24,8 @@ local db, dbd
 local CLASS_BUTTONS = CLASS_ICON_TCOORDS
 local BNET_CLIENT_WOW = BNET_CLIENT_WOW
 local BNET_CLIENT_MOBILE = "BSAp"
+local GetItemCount, GetItemInfo = GetItemCount, GetItemInfo
+local GetContainerItemID, GetContainerItemInfo, GetContainerNumSlots, UseContainerItem =  GetContainerItemID, GetContainerItemInfo, GetContainerNumSlots, UseContainerItem
 
 ------------------------------------------------------
 -- / LOCAL VARIABLES / --
@@ -208,6 +210,58 @@ function module:SetBags()
 	local stat = NewStat("Bags")
 
 	if db.Bags.Enable and not stat.Created then
+		
+		function module:ItemTracked(info, item) -- info = true: remove item from list
+			if type(info) == "table" and not GetItemInfo(item) then
+				if CursorHasItem() then
+					item = select(2, GetCursorInfo())
+					ClearCursor()
+				elseif strfind(item, "Button") then
+					return OpenAllBags(true)
+				end
+			end
+		
+			local _, itemLink, _,_,_,_,_,_,_,_, itemPrice = GetItemInfo(item)
+		
+			-- Check item.
+			if not itemLink then
+				print(item .. " |cffff0000is not a valid item.")
+				return
+			end
+		
+			local itemID = tonumber(string.match(itemLink, "item:(%d+)"))
+		
+			if info == true then -- remove
+				db.Bags.Tracked[itemID] = nil
+		
+				-- if db.Bags.Settings.ShowTracked then
+					print("|cff00ff00Successfully removed|r "..itemLink.." |cff00ff00from the tracking list.")
+				-- end
+			else
+				if db.Bags.Tracked[itemID] then
+					-- if db.Bags.Settings.ShowTracked then
+						print(itemLink.." |cffff0000 is already in the tracking list.")
+					-- end
+				-- elseif itemPrice <= 0 then
+					print(itemLink.." |cffff0000 has no sell price and can't be excluded.")
+				else
+					db.Bags.Tracked[itemID] = true
+		
+					-- if db.Bags.Settings.ShowTracked then
+						print("|cff00ff00Successfully added|r "..itemLink.." |cff00ff00to the tracking list.")
+					-- end
+				end
+			end
+		end
+	
+		function module:ClearTracked()
+			wipe(db.Bags.Tracked)
+		
+			-- if db.Bags.Settings.ShowTracked then
+				print("|cff00ff00Successfully cleared the tracking list.")
+			-- end
+		end
+	
 		-- Localized functions
 		local GetContainerNumFreeSlots, GetContainerNumSlots = GetContainerNumFreeSlots, GetContainerNumSlots
 
@@ -232,17 +286,23 @@ function module:SetBags()
 		}
 
 		-- Event functions
-		stat.Events = {"BAG_UPDATE"}
+		stat.Events = {"BAG_UPDATE",}
 
 		stat.BAG_UPDATE = function(self, bagID) -- Change occured to items in player inventory
+			
+			for i,v in pairs(db.Bags.Tracked) do
+				count = GetItemCount(i)
+				itemlink = GetItemInfo(i)
+			end
+			if count == nil then count=0 end
+
 			local free, total, used = 0, 0, 0
 
 			for i = 0, NUM_BAG_SLOTS do
 				free, total = free + GetContainerNumFreeSlots(i), total + GetContainerNumSlots(i)
 			end
-
 			used = total - free
-			self.text:SetFormattedText("Bags: %d/%d", used, total)
+			self.text:SetFormattedText("Bags: %d/%d (%d)", used, total, count) 
 
 			-- Update tooltip if open.
 			UpdateTooltip(self)
@@ -276,7 +336,11 @@ function module:SetBags()
 					GameTooltip:AddDoubleLine((bagTypes[k] or "Unknown")..":", totalslots[k]-v.."/"..totalslots[k], 1, 1, 1, 1, 1, 1)
 				end
 				GameTooltip:AddLine(" ")
-
+				GameTooltip:AddLine("Tracked items:", 0.4, 0.78, 1)
+				for i,v in pairs(db.Bags.Tracked) do
+					GameTooltip:AddDoubleLine((GetItemInfo(i))..":", (GetItemCount(i,(db.Bags.Inlcudebank))), 1,1,1,1,1,1)
+				end
+				GameTooltip:AddLine(" ")
 				GameTooltip:AddLine("Hint: Click to open Bags.", 0.0, 1.0, 0.0)
 				GameTooltip:Show()
 			end
@@ -882,6 +946,137 @@ function module:SetDurability()
 		end
 
 		stat.Created = true
+	end
+end
+------------------------------------------------------
+-- / EXP / --
+------------------------------------------------------
+function module:setEXP()
+	local stat = NewStat("EXP")
+	if db.EXP.Enable and not stat.Created then
+		-- Localized functions
+		local GetMoney, GetItemQualityColor, GetItemInfo = GetMoney, GetItemQualityColor, GetItemInfo
+		local format, floor, abs, mod, select = format, floor, abs, mod, select
+
+		-- Local variables
+
+		-- Local functions
+
+		-- Stat functions
+		stat.RefreshServerTotal = function(self)
+			-- serverGold = 0
+		end
+		stat.ResetEXP = function(self, player, faction)
+			if not player then return end
+
+			-- if player == "ALL" then
+			-- 	db.realm.Gold = {
+			-- 		[myPlayerFaction] = {
+			-- 			[myPlayerName] = GetMoney(),
+			-- 		},
+			-- 		[otherFaction] = {},
+			-- 	}
+			-- 	goldPlayerArray = {["ALL"] = "ALL", [myPlayerName] = myPlayerName,}
+			-- elseif faction then
+			-- 	if player == myPlayerName then
+			-- 		db.realm.Gold[faction][player] = GetMoney()
+			-- 	else
+			-- 		db.realm.Gold[faction][player] = nil
+			-- 		goldPlayerArray[player] = nil
+			-- 	end
+			-- end
+
+			-- oldMoney = GetMoney()
+			self:RefreshServerTotal()
+			self:PLAYER_XP_UPDATE()
+		end
+
+		-- Event functions
+		stat.Events = {"PLAYER_XP_UPDATE"}
+		stat.PLAYER_XP_UPDATE = function(self)
+
+			local currXP = UnitXP("player")
+			local maxXP = UnitXPMax("player")
+
+			-- Set value
+			-- self.text:SetText(formatMoney(db.Gold.ServerTotal and serverGold or newMoney))
+
+			-- Update gold db
+			-- db.realm.Gold[myPlayerFaction][myPlayerName] = newMoney
+
+			-- Update gold count
+			-- oldMoney = newMoney
+
+			-- Update tooltip if open
+			UpdateTooltip(self)
+		end
+
+		-- Script functions
+		stat.OnEnable = function(self)
+			-- oldMoney = GetMoney()
+			self:RefreshServerTotal()
+			self:PLAYER_XP_UPDATE()
+		end
+
+		stat.OnReset = stat.PLAYER_XP_UPDATE
+
+		stat.OnClick = function(self, button)
+			if button == "RightButton" then -- reset session
+				profit = 0
+				spent = 0
+				-- oldMoney = GetMoney()
+				UpdateTooltip(self)
+			else -- toggle server/toon gold
+				-- db.Gold.ServerTotal = not db.Gold.ServerTotal
+				self:PLAYER_XP_UPDATE()
+			end
+		end
+
+		stat.OnEnter = function(self)
+			if CombatTips() then
+				GameTooltip:SetOwner(self, getOwnerAnchor(self))
+				GameTooltip:ClearLines()
+				GameTooltip:AddLine("Money:", 0.4, 0.78, 1)
+				GameTooltip:AddLine(" ")
+
+				GameTooltip:AddLine("Session:")
+				-- GameTooltip:AddDoubleLine("Earned:", formatMoney(profit), 1,1,1, 1,1,1)
+				-- GameTooltip:AddDoubleLine("Spent:", formatMoney(spent), 1,1,1, 1,1,1)
+
+				-- if profit < spent then
+				-- 	GameTooltip:AddDoubleLine("Deficit:", formatMoney(profit-spent), 1,0,0, 1,1,1)
+				-- elseif profit > spent then
+				-- 	GameTooltip:AddDoubleLine("Profit:", formatMoney(profit-spent), 0,1,0, 1,1,1)
+				-- end
+
+
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Character:")
+				-- for player, gold in pairs(db.realm.Gold[myPlayerFaction]) do
+				-- 	GameTooltip:AddDoubleLine(player, formatTooltipMoney(gold), colors[myPlayerFaction].r, colors[myPlayerFaction].g, colors[myPlayerFaction].b, 1,1,1)
+				-- 	factionGold[myPlayerFaction] = factionGold[myPlayerFaction] + gold
+				-- end
+				-- for player, gold in pairs(db.realm.Gold[otherFaction]) do
+				-- 	GameTooltip:AddDoubleLine(player, formatTooltipMoney(gold), colors[otherFaction].r, colors[otherFaction].g, colors[otherFaction].b, 1,1,1)
+				-- 	factionGold[otherFaction] = factionGold[otherFaction] + gold
+				-- end
+
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Server:")
+				-- if factionGold[otherFaction] > 0 then
+				-- 	GameTooltip:AddDoubleLine(myPlayerFaction..":", formatTooltipMoney(factionGold[myPlayerFaction]), colors[myPlayerFaction].r, colors[myPlayerFaction].g, colors[myPlayerFaction].b, 1,1,1)
+				-- 	GameTooltip:AddDoubleLine(otherFaction..":", formatTooltipMoney(factionGold[otherFaction]), colors[otherFaction].r, colors[otherFaction].g, colors[otherFaction].b, 1,1,1)
+				-- end
+				-- GameTooltip:AddDoubleLine("Total:", formatTooltipMoney(factionGold[myPlayerFaction] + factionGold[otherFaction]), 1,1,1, 1,1,1)
+
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Hint:\n- Left-Click to toggle server/toon gold.\n- Right-Click to reset Session.", 0, 1, 0)
+				GameTooltip:Show()
+			end
+		end
+		stat.OnLeave = function()
+			GameTooltip:Hide()
+		end
 	end
 end
 
@@ -2826,6 +3021,8 @@ module.defaults = {
 				b = 1,
 				a = 1,
 			},
+			Tracked = {},
+			Inlcudebank = false,
 		},
 		Clock = {
 			Enable = true,
@@ -2908,6 +3105,24 @@ module.defaults = {
 		Durability = {
 			Enable = true,
 			X = 350,
+			Y = 0,
+			InfoPanel = {
+				Horizontal = "Left",
+				Vertical = "Top",
+			},
+			Font = "vibroceb",
+			FontSize = 12,
+			Outline = "NONE",
+			Color = {
+				r = 1,
+				g = 1,
+				b = 1,
+				a = 1,
+			},
+		},
+		EXP = {
+			Enable = true,
+			X = 700,
 			Y = 0,
 			InfoPanel = {
 				Horizontal = "Left",
@@ -3144,7 +3359,34 @@ function module:LoadOptions()
 	-- Local variables
 	local msvalues = {"Both", "Home", "World"}
 	local fontflags = {"NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME"}
-
+	local removeTrackedKey
+	local TrackedList = {}
+	
+	local disabled = {
+		NoTrackedSelected = function() return not removeTrackedKey end,
+		NoTracked = function() return not next(TrackedList) end,
+	}
+	
+	-- get/set functions for bag Tracked items
+	local function TrackedGet(info) return removeTrackedKey end
+	local function TrackedSet(info, value) removeTrackedKey = value end
+	local function removeTracked(info)
+		if removeTrackedKey then
+			self:ItemTracked(true, removeTrackedKey)
+			removeTrackedKey = nil
+		end
+	end
+	
+	local function tracked()
+		wipe(TrackedList)
+		for itemID in pairs(db.Bags.Tracked) do
+			local _, itemLink = GetItemInfo(itemID)
+			TrackedList[itemID] = itemLink
+		end
+		return TrackedList
+		-- print((TrackedList))
+	end
+	
 	db.Gold.PlayerReset = dbd.Gold.PlayerReset
 	for _, faction in pairs(db.realm.Gold) do
 		for player, gold in pairs(faction) do
@@ -3444,7 +3686,20 @@ function module:LoadOptions()
 				},
 				Position = PositionOptions(3),
 				Font = FontOptions(4),
-				Reset = ResetOption(5),
+				
+				AddTracked = self:NewGroup("Add Item to be Tracked", 5, LUI.dummy, "ItemTracked", true, disabled.Bags, {
+					Description = self:NewDesc("To add an item to the Tracked list, do one of the following:\n" ..
+							"Drag and drop (leftclick) an item into the box.\nEnter an item ID, Name or Link in the input box.\n (You can provide a link by Shift + Leftclicking on an item or link.)", 1),
+					DropItem = self:NewExecute("Drop an item here!", "Select an item and drop it on this slot. (Leftclick)", 2, "ItemTracked"),
+					InputItem = self:NewInput("Enter Item ID, Name or Link", "Enter an Item ID, Name or Link (Shift + Leftclick an item)", 3, false)
+				}),
+				Inlcudebank = self:NewToggle("Include Bank Items", nil, 6, true),
+				RemoveTracked = self:NewGroup("Remove Item from Tracked List", 7, TrackedGet, TrackedSet, true, disabled.Bags, {
+					Select = self:NewSelect("Select Item", "Select the item which you want to remove from the Tracked list.", 1, tracked, nil, false, "double"),
+					Remove = self:NewExecute("Remove selected item", "Removes the selected item from the Tracked list.", 2, removeTracked, nil, nil, disabled.NoTrackedSelected),
+					Clear = self:NewExecute("Clear tracked items", "Removes the selected item from the Tracked list.", 3, "ClearTracked", "Do you really want to clear all tracked items?", nil, disabled.NoTracked),
+				}),
+				Reset = ResetOption(7),
 			},
 		},
 		Clock = {
@@ -3640,6 +3895,33 @@ function module:LoadOptions()
 				},
 				Position = PositionOptions(3),
 				Font = FontOptions(4),
+				Reset = ResetOption(5),
+			},
+		},
+		EXP = {
+			name = NameLabel,
+			type = "group",
+			order = 8,
+			args = {
+				Header = {
+					name = "EXP",
+					type = "header",
+					order = 1,
+				},
+				Enable = {
+					name = "Enable",
+					desc = "Whether you want to show your EXP or not.",
+					type = "toggle",
+					width = "full",
+					get = function() return db.EXP.Enable end,
+					set = function(info, value)
+						db.EXP.Enable = value
+						ToggleStat("EXP")
+					end,
+					order = 2,
+				},
+				Position = PositionOptions(3, "EXP"),
+				Font = FontOptions(4, "EXP"),
 				Reset = ResetOption(5),
 			},
 		},
@@ -4152,6 +4434,12 @@ function module:LoadOptions()
 		},
 	}
 
+	local dropitem = options.Bags.args.AddTracked.args.DropItem
+	dropitem.imageWidth = 64
+	dropitem.imageHeight = 64
+	dropitem.imageCoords = {0.15, 0.8, 0.15, 0.8}
+	dropitem.image = "Interface\\Buttons\\UI-Quickslot2"
+
 	return options
 end
 
@@ -4175,6 +4463,7 @@ function module:OnEnable()
  	EnableStat("Currency")
 --[[ 	EnableStat("DualSpec") ]]
 	EnableStat("Durability")
+	-- EnableStat("EXP")
 	EnableStat("FPS")
 	EnableStat("Gold")
 	EnableStat("GF")
@@ -4195,6 +4484,7 @@ function module:OnDisable()
 	DisableStat("Bags")
 	DisableStat("Durability")
 	DisableStat("Gold")
+	DisableStat("EXP")
 	DisableStat("Clock")
 	DisableStat("Guild")
 	DisableStat("Friends")
