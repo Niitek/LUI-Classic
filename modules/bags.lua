@@ -260,28 +260,15 @@ function module:SlotUpdate(item)
 		newItemTexture:SetSize(item.frame:GetSize())
 	end
 
-	-- Quest Item code from Blizzard's ContainerFrame.lua
-	local questTexture = itemSubType
-	if questTexture then
-		questTexture:SetSize(item.frame:GetSize())
-		local isQuestItem, questId, isActive = GetItemInfo()
-		if questId and not isActive and db.Bags.ShowQuest then
-			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
-			questTexture:Show()
-		elseif (questId or isQuestItem) and db.Bags.ShowQuest then
-			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER)
-			questTexture:Show()
-		else
-			questTexture:Hide()
-		end
-	end
-
 	if (clink) then
-		local name, _, itemQuality, _, _, iType = GetItemInfo(clink)
+		local name, _, itemQuality, _, _, iType, _, _, _, _, _, classID = GetItemInfo(clink)
 		item.name, item.itemQuality = name, itemQuality
 		-- color slot according to item quality
 		if db.Bags.Rarity and not item.frame.lock and itemQuality > 1 then
 			item.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
+		-- color slot according to quest item.
+		elseif db.Bags.ShowQuest and not item.frame.lock and classID == 12 then
+			item.frame:SetBackdropBorderColor(1,1,0)
 		end
 	else
 		item.name, item.itemQuality = nil, nil
@@ -1451,9 +1438,9 @@ function module:PrepareSort(frame)
 					return;
 				end
 
-				local name, _, itemQuality, itemLevel, requiredLevel, itemType, itemSubType, stackCount, equipLocation, _, sellPrice = GetItemInfo(itemId);
+				local name, _, itemQuality, itemLevel, requiredLevel, itemType, itemSubType, stackCount, equipLocation, _, sellPrice, classID = GetItemInfo(itemId);
 
-				local sortString = itemQuality .. itemType .. itemSubType .. requiredLevel .. itemLevel .. name .. itemId;
+				local sortString = itemQuality .. itemType .. itemSubType .. requiredLevel .. itemLevel .. name .. itemId .. classID;
 
 				local itemFamily = GetItemFamily(itemId);
 
