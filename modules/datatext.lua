@@ -385,24 +385,17 @@ function module:SetClock()
 			local inInstance, instanceType = IsInInstance()
 			if inInstance then
 				local _,_, instanceDifficulty,_, maxPlayers, dynamicMode, isDynamic, _, instanceGroupSize = GetInstanceInfo()
-				if (instanceType == "raid" or instanceType == "party") then
-					if instanceDifficulty == 14 then
-						instanceInfo = instanceGroupSize.." |cffffcc00N" -- Flexible renamed Normal in 6.0
-					elseif instanceDifficulty == 7 or instanceDifficulty == 17 then
-						instanceInfo = maxPlayers.." |cff00ccffL"        -- Looking for Raid
-					elseif instanceDifficulty == 1 or instanceDifficulty == 3 or instanceDifficulty == 4 or instanceDifficulty == 12 then
+				local normal = 1, 3, 173
+				local heroic = 2, 4, 9, 148, 174, 175, 176
+
+				if instanceType == "party" then
+					if instanceDifficulty == normal then
 						instanceInfo = maxPlayers.." |cff00ff00N"        -- Legacy Normal
-					elseif instanceDifficulty == 15 then
-						instanceInfo = maxPlayers.." |cff00ff00H"        -- Normal renamed Heroic in 6.0
-					elseif instanceDifficulty == 16 or instanceDifficulty == 23 then
-						instanceInfo = maxPlayers.." |cffff0000M"        -- Heroic renamed Mythic in 6.0
-					elseif instanceDifficulty == 8 then
-						instanceInfo = maxPlayers.." |cffff0000C"        -- Challenge Mode
-					elseif instanceDifficulty == 24 then
-						instanceInfo = maxPlayers.." |cff00ff00T"        -- Timewalking Dungeon
-					else
+					elseif instanceDifficulty == heroic then
 						instanceInfo = maxPlayers.." |cffff0000H"        -- Legacy Heroic
 					end
+				elseif instanceType == "raid" then
+						instanceInfo = maxPlayers.." |cff00ff00N"
 				else
 					instanceInfo = nil
 				end
@@ -2570,7 +2563,7 @@ function module:SetInstance()
 			end)
 
 			-- Set value
-			self.text:SetFormattedText("Instance [%d]", #instances)
+			self.text:SetFormattedText("Saved Instances [%d]", #instances)
 
 			-- Update tooltip if open
 			UpdateTooltip(self)
@@ -2581,7 +2574,7 @@ function module:SetInstance()
 
 		-- Script functions
 		stat.OnEnable = function(self)
-			self.text:SetText("Instance [0]")
+			self.text:SetText("Saved Instances [0]")
 			self:PLAYER_ENTERING_WORLD()
 		end
 
@@ -2771,11 +2764,16 @@ function module:SetWeaponInfo()
 		stat.OnEnter = function(self)
 			if CombatTips() then
 				local mspeed, ospeed = UnitAttackSpeed("player")
+				local mtext = string.format("%.2fs", tonumber(mspeed))
+				if ospeed ~= nil and ospeed ~= 0 then
+					local otext = string.format(" %.2fs", tonumber(ospeed))
+				else local otext = "-"
+				end
 				GameTooltip:SetOwner(self, getOwnerAnchor(self))
 				GameTooltip:ClearLines()
 				GameTooltip:AddLine("Weapon Speed:", 0.4, 0.78, 1)
-				GameTooltip:AddLine("Main Hand Weapon: ", 0.4, 0.78, 1)
-				GameTooltip:AddLine("Offhand Weapon: ", 0.4, 0.78, 1)
+				GameTooltip:AddLine("Main Hand Weapon: ".. (mtext), 0.4, 0.78, 1)
+				GameTooltip:AddLine("Offhand Weapon: ".. (otext), 0.4, 0.78, 1)
 				GameTooltip:AddLine(" ")
 				GameTooltip:Show()
 			end
@@ -3006,7 +3004,7 @@ module.defaults = {
 		CombatLock = false,
 		Bags = {
 			Enable = true,
-			X = 200,
+			X = 160,
 			Y = 0,
 			InfoPanel = {
 				Horizontal = "Left",
@@ -3104,7 +3102,7 @@ module.defaults = {
 		-- },
 		Durability = {
 			Enable = true,
-			X = 350,
+			X = 365,
 			Y = 0,
 			InfoPanel = {
 				Horizontal = "Left",
@@ -3234,7 +3232,7 @@ module.defaults = {
 		},
 		Instance = {
 			Enable = false,
-			X = 60,
+			X = 80,
 			Y = 0,
 			InfoPanel = {
 				Horizontal = "Left",
@@ -3327,7 +3325,7 @@ module.defaults = {
 		Mail = {
 			Enable = true,
 			NewIndic = " *",
-			X = 275,
+			X = 265,
 			Y = 0,
 			InfoPanel = {
 				Horizontal = "Left",
@@ -4232,7 +4230,7 @@ function module:LoadOptions()
 			},
 		},
 		Instance = {
-			name = function(info) return NameLabel(info, "Instance Info") end,
+			name = function(info) return NameLabel(info, "Saved Instance Info") end,
 			type = "group",
 			order = 12,
 			args = {
@@ -4243,7 +4241,7 @@ function module:LoadOptions()
 				},
 				Enable = {
 					name = "Enable",
-					desc = "Whether you want to show your Instance Info or not.",
+					desc = "Whether you want to show your Saved Instance Info or not.",
 					type = "toggle",
 					width = "full",
 					get = function() return db.Instance.Enable end,
