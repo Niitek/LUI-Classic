@@ -34,6 +34,7 @@ local LUITooltipColors, LUITooltipBackdrop
 
 function module:UpdateTooltip()
 	for _, tt in pairs(Tooltips) do
+		Mixin(tt, BackdropTemplateMixin)
 		tt:SetBackdrop(LUITooltipBackdrop)
 	end
 end
@@ -69,7 +70,7 @@ function module:SetTooltip()
 		},
 	}
 
-	local LUITooltip = CreateFrame( "Frame", "tooltip", UIParent)
+	local LUITooltip = CreateFrame( "Frame", "tooltip", UIParent, BackdropTemplateMixin and "BackdropTemplate")
 
 	local _G = getfenv(0)
 
