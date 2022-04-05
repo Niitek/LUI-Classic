@@ -24,7 +24,7 @@
 -- function MyAddon:OnEnable()
 --   -- Register a bucket that listens to all the HP related events,
 --   -- and fires once per second
---   self:RegisterBucketEvent({"UNIT_HEALTH", "UNIT_MAXHEALTH"}, 1, "UpdateHealth")
+--   self:RegisterBucketEvent({"UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH"}, 1, "UpdateHealth")
 -- end
 --
 -- function MyAddon:UpdateHealth(units)

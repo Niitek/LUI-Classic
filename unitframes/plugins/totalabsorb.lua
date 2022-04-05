@@ -79,7 +79,7 @@ local function Enable(self)
 
 		-- self:RegisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
 		self:RegisterEvent('UNIT_MAXHEALTH', Path)
-		self:RegisterEvent('UNIT_HEALTH', Path)
+		self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
 
 		if(not ta.maxOverflow) then
           ta.maxOverflow = 1.05
@@ -98,7 +98,7 @@ local function Disable(self)
 	if(ta) then
 		-- self:UnregisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
 		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
-		self:UnregisterEvent('UNIT_HEALTH', Path)
+		self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
 		ta:Hide()
 	end
 end

@@ -436,7 +436,7 @@ function Fader:EventsRegister()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "EventHandler")
-	self:RegisterEvent("UNIT_HEALTH", "UnitEventHandler")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UnitEventHandler")
 	self:RegisterEvent("UNIT_POWER_UPDATE", "UnitEventHandler")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "UnitEventHandler")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "UnitEventHandler")
@@ -453,7 +453,7 @@ function Fader:EventsUnregister()
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UnregisterEvent("PLAYER_TARGET_CHANGED")
-	self:UnregisterEvent("UNIT_HEALTH")
+	self:UnregisterEvent("UNIT_HEALTH_FREQUENT")
 	self:UnregisterEvent("UNIT_POWER_UPDATE")
 	self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 	self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
@@ -493,7 +493,7 @@ function Fader:UnitEventHandler(event, unit)
 	if unit ~= "player" then return end
 
 	-- Collect info on states.
-	if event == "UNIT_HEALTH" then
+	if event == "UNIT_HEALTH_FREQUENT" then
 		local curHealth, maxHeatlh = UnitHealth("player"), UnitHealthMax("player")
 		self.Status.health = (curHealth < maxHeatlh) and (curHealth / maxHeatlh)
 	elseif event == "UNIT_MANA" or "UNIT_ENERGY" or "UNIT_RAGE" then

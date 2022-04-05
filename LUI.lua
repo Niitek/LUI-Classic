@@ -556,7 +556,7 @@ function LUI:Configure()
 		SetCVar("useUiScale", 1)
 		SetCVar("chatMouseScroll", 1)
 		SetCVar("chatStyle", "classic")
-		-- SetCVar("colorChatNamesByClass", 1)
+		SetCVar("colorChatNamesByClass", 1)
 
 		if LUI.db.global.luiconfig[ProfileName].Versions then
 			wipe(LUI.db.global.luiconfig[ProfileName].Versions)
@@ -569,6 +569,7 @@ function LUI:Configure()
 		LUI:InstallBartender()
 		-- LUI:InstallForte()
 		LUI:InstallDetails()
+		LUI:InstallVudho()
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		LUI.db.global.luiconfig[ProfileName].IsConfigured = true
@@ -1217,6 +1218,17 @@ local function getOptions()
 									end,
 									disabled = function() return not IsAddOnLoaded("Plexus") end,
 									hidden = function() return not IsAddOnLoaded("Plexus") end,
+								},
+								ResetVudho = {
+									order = 2,
+									type = "execute",
+									name = "Restore VuhDo",
+									func = function()
+										LUI.db.global.luiconfig[ProfileName].Versions.vudho = nil
+										LUI:InstallVudho()
+									end,
+									disabled = function() return not IsAddOnLoaded("Omen") end,
+									hidden = function() return not IsAddOnLoaded("Omen") end,
 								},
 								ResetOmen = {
 									order = 2,

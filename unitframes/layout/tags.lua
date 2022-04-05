@@ -179,7 +179,7 @@ oUF.Tags.Methods["NameLong"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["RaidName25"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["RaidName25"] = "UNIT_NAME_UPDATE UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["RaidName25"] = function(unit, realunit)
 	if module.db and module.db.Raid.Texts.Name.ShowDead then
 		if not UnitIsConnected(unit) then
@@ -197,7 +197,7 @@ oUF.Tags.Methods["RaidName25"] = function(unit, realunit)
 	return nameCache[name][1]
 end
 
-oUF.Tags.Events["RaidName40"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["RaidName40"] = "UNIT_NAME_UPDATE UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["RaidName40"] = function(unit, realunit)
 	if module.db and module.db.Raid.Texts.Name.ShowDead then
 		if not UnitIsConnected(unit) then
