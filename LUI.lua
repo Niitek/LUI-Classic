@@ -569,7 +569,7 @@ function LUI:Configure()
 		LUI:InstallBartender()
 		-- LUI:InstallForte()
 		LUI:InstallDetails()
-		LUI:InstallVudho()
+		-- LUI:InstallVudho()
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		LUI.db.global.luiconfig[ProfileName].IsConfigured = true
