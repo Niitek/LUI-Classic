@@ -14,7 +14,7 @@
 
 -- External references.
 local _, LUI = ...
-local module = LUI:Module("Minimap", "AceHook-3.0")
+local module = LUI:Module("Minimap", "AceHook-3.0", "AceEvent-3.0")
 local Themes = LUI:Module("Themes")
 local Media = LibStub("LibSharedMedia-3.0")
 local widgetLists = AceGUIWidgetLSMlists
@@ -270,15 +270,22 @@ function module:SetMinimap()
 	-- Hide Zone Frame
 	MinimapZoneTextButton:Hide()
 
-	-- Hide Zone Frame
-	MinimapToggleButton:Hide()
+	-- Hide World Map Button
+	MiniMapWorldMapButton:ClearAllPoints()
+	-- MiniMapWorldMapButton:SetPoint("TOPRIGHT", Minimap,100000, 1000000)
+	-- MiniMapWorldMapButton:Hide()
+	LUI:Kill(MiniMapWorldMapButton)
 
 	-- Hide Clock
 	TimeManagerClockButton:Hide()
 	LUI:Kill(TimeManagerClockButton)
 
- 	-- Hide Tracking Button
-	MiniMapTracking:Hide() -- uncommented for classic compatibility
+	-- MiniMapTracking:Hide() -- uncommented for classic compatibility
+	MiniMapTracking:ClearAllPoints()
+	MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, LUI:Scale(3), LUI:Scale(6))
+	if db.Minimap.General.TrackingHide == true then
+		MiniMapTracking:Hide()
+	else end
 
 	-- Hide Calendar Button
 	GameTimeFrame:Hide()
@@ -292,10 +299,6 @@ function module:SetMinimap()
 	-- Move battleground icon
 	MiniMapBattlefieldFrame:ClearAllPoints()   -- Changed QueueStatusMinimapButton to MiniMapBattlefieldFrame for classic compatibility
 	MiniMapBattlefieldFrame:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
-	-- Hide world map button
-	MiniMapWorldMapButton:Hide()
-
-
 
 --[[ 	local function UpdateLFG()
 		QueueStatusMinimapButton:ClearAllPoints()
@@ -487,6 +490,7 @@ local defaults = {
 			ShowTextures = true,
 			ShowBorder = true,
 			ShowCoord = true,
+			TrackingIcon = true,
 			MissionReport = true,
 		},
 		Font = {
@@ -496,6 +500,7 @@ local defaults = {
 		},
 		Icon = {
 			Mail = "BOTTOMLEFT", -- LFG and MAIL icon positions changed for better visibilty of the Tooltip
+			Tracking = "TOPLEFT",
 			BG = "BOTTOMRIGHT",
 			LFG = "TOPRIGHT", -- LFG and MAIL icon positions changed for better visibilty of the Tooltip
 			GMTicket = "TOPLEFT",
@@ -647,7 +652,7 @@ function module:LoadOptions()
 						},
 						AlwaysShow = {
 							name = "Always show Minimap text",
-							desc = "Whether or not the Minimap Location and Coords text to always be shown.\n",
+							desc = "Whether you want to show the Minimap Location and Coords Text or not.\n",
 							disabled = function() return not db.Minimap.Enable end,
 							type = "toggle",
 							width = "full",
@@ -668,7 +673,7 @@ function module:LoadOptions()
 						},
 						ShowCoord = {
 							name = "Show Coordinates",
-							desc = "Whether or not the Minimap Coordinates.\n",
+							desc = "Whether you want to show the Minimap Coordinates or not.\n",
 							disabled = function() return not db.Minimap.Enable end,
 							type = "toggle",
 							width = "full",
@@ -684,6 +689,23 @@ function module:LoadOptions()
 							end,
 							order = 4,
 						},
+						TrackingIcon = {
+							name = "Show Tracking Icon",
+							desc = "Whether you want to show the Tracking Icon or not.\n",
+							disabled = function() return not db.Minimap.Enable end,
+							type = "toggle",
+							width = "full",
+							get = function() return db.Minimap.General.TrackingIcon end,
+							set = function(_) 
+								db.Minimap.General.TrackingIcon = not db.Minimap.General.TrackingIcon
+								MiniMapTracking:Hide()
+								if db.Minimap.General.TrackingIcon then
+									MiniMapTracking:Show()
+								end
+							end,
+
+							order = 5,
+						},
 						Restore = LUI:NewExecute("Restore Default Position", "Restores Default Minimap Position", 8, function()
 							db.Minimap.General.Position.RelativePoint = LUI.defaults.profile.Minimap.General.Position.RelativePoint
 							db.Minimap.General.Position.Point = LUI.defaults.profile.Minimap.General.Position.Point
@@ -691,7 +713,6 @@ function module:LoadOptions()
 							db.Minimap.General.Position.Y = LUI.defaults.profile.Minimap.General.Position.Y
 							module:SetMinimapPosition()
 						end),
-
 						Unlocked = {
 							name = "Locked",
 							desc = "Weather or not the Minimap is locked or not.\n",

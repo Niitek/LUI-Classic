@@ -1,6 +1,6 @@
-## Interface: 20504
-## Version: 3.43
-## Title: LUI_tbcc
+## Interface: 30400
+## Version: 3.44
+## Title: LUI_WotLK
 ## Author: Siku, Mule, Nitsah
 ## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista
 ## Notes: User Interface Modification

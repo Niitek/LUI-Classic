@@ -121,8 +121,11 @@ module.defaults.profile.Colors = {
 		SolarBG = {0.36, 0.36, 0.27},
 	},
 	Runes = {
-		[1] = {0.84, 0.75, 0.65}, -- Death Rune
-	},
+		[1] = {0.69, 0.31, 0.31}, -- Blood Rune
+		[2] = {0.33, 0.59, 0.33}, -- Unholy Rune
+		[3] = {0.31, 0.45, 0.63}, -- Frost Rune
+		[4] = {0.84, 0.75, 0.65}, -- Death Rune
+		},
 	ComboPoints = {
 		[1] = {0.95, 0.86, 0.16},
 		[2] = {0.95, 0.86, 0.16},
@@ -293,7 +296,7 @@ function module:CreateColorOptions(order)
 			SHAMAN = self:NewColorNoAlpha("Shaman", "Shaman class", 8, false, "normal"),
 			WARLOCK = self:NewColorNoAlpha("Warlock", "Warlock class", 9, false, "normal"),
 			ROGUE = self:NewColorNoAlpha("Rogue", "Rogue class", 10, false, "normal"),
-			-- DEATHKNIGHT = self:NewColorNoAlpha("Death Knight", "Death Knight class", 11, false, "normal"),
+			DEATHKNIGHT = self:NewColorNoAlpha("Death Knight", "Death Knight class", 11, false, "normal"),
 			-- MONK = self:NewColorNoAlpha("Monk", "Monk class", 12, false, "normal"),
 			-- DEMONHUNTER = self:NewColorNoAlpha("Demon Hunter", "Demon Hunter class", 13, false, "normal"),
 			empty1 = self:NewDesc(" ", 14),
@@ -308,7 +311,7 @@ function module:CreateColorOptions(order)
 			RAGE = self:NewColorNoAlpha("Rage", "Rage ressource", 3, false, "full"),
 			-- FOCUS = self:NewColorNoAlpha("Focus", "Focus ressource", 4, false, "full"),
 			ENERGY = self:NewColorNoAlpha("Energy", "Energy ressource", 5, false, "full"),
-			--RUNES = self:NewColorNoAlpha("Runes", "Runes ressource", 6, false, "full"),
+			RUNES = self:NewColorNoAlpha("Runes", "Runes ressource", 6, false, "full"),
 			-- RUNIC_POWER = self:NewColorNoAlpha("Runic Power", "Runic Power ressource", 7, false, "full"),
 			AMMOSLOT = self:NewColorNoAlpha("Ammoslot", "Ammoslot ressource", 8, false, "full"),
 			-- FUEL = self:NewColorNoAlpha("Fuel", "Fuel ressource", 9, false, "full"),
@@ -405,7 +408,11 @@ function module:CreateColorOptions(order)
 		}),
 		Runes = self:NewGroup("Runes", 12, nil, nil, class ~= "DEATHKNIGHT" and class ~= "DEATH KNIGHT", {
 			header1 = self:NewHeader("Runes Colors", 1),
-			["1"] = self:NewColorNoAlpha("Death", "Runes", 5, false, "full"),
+			["1"] = self:NewColorNoAlpha("Blood", "Blood Runes", 2, false, "full"),
+			["2"] = self:NewColorNoAlpha("Unholy", "Unholy Runes", 3, false, "full"),
+			["3"] = self:NewColorNoAlpha("Frost", "Frost Runes", 4, false, "full"),
+			["4"] = self:NewColorNoAlpha("Death", "Death Runes", 5, false, "full"),
+			-- ["1"] = self:NewColorNoAlpha("Death", "Runes", 5, false, "full"),
 			empty1 = self:NewDesc(" ", 6),
 			Reset = self:NewExecute("Restore Defaults", nil, 7, function()
 				module.db.Colors.Runes = module.defaults.Colors.Runes

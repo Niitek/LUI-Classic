@@ -54,11 +54,13 @@ local barColors = {
 local barKeys = {
 	DruidMana = "DruidMana",
 	Energy = "ClassIcons",
+	Runes = "Runes"
 }
 
 local barNames = {
 	DruidMana = "Druid Mana",
 	Energy = "Energy",
+	Runes = "Runes"
 }
 
 local _, class = UnitClass("player")
@@ -320,18 +322,18 @@ function module:CreatePlayerBarOptions(barType, order)
 		if info[5] == "Enable" then
 			if Enable then
 				oUF_LUI_player:EnableElement(barKey)
-				-- if barType == "Runes" then
-				-- 	Blizzard:Hide("runebar")
-				-- elseif barType == "Totems" then
-				-- 	oUF_LUI_player[barKey]:Show()
-				-- end
+				if barType == "Runes" then
+					Blizzard:Hide("runebar")
+				elseif barType == "Totems" then
+					oUF_LUI_player[barKey]:Show()
+				end
 			else
 				oUF_LUI_player:DisableElement(barKey)
-				-- if barType == "Runes" then
-				-- 	Blizzard:Show("runebar")
-				-- elseif barType == "Totems" then
-				-- 	oUF_LUI_player[barKey]:Hide()
-				-- end
+				if barType == "Runes" then
+					Blizzard:Show("runebar")
+				elseif barType == "Totems" then
+					oUF_LUI_player[barKey]:Hide()
+				end
 			end
 		end
 		oUF_LUI_player:UpdateAllElements()
@@ -1114,7 +1116,7 @@ function module:CreateUnitOptions(unit, order)
 			HealPrediction = self.db[unit].Bars.HealPrediction and self:CreateHealPredictionOptions(unit, 4) or nil,
 			TotalAbsorb = self.db[unit].Bars.TotalAbsorb and self:CreateTotalAbsorbOptions(unit, 5) or nil,
 			DruidMana = ((class == "DRUID" or class == "PRIEST" or class == "SHAMAN") and unit == "Player") and self:CreatePlayerBarOverlappingOptions("DruidMana", 11) or nil,
-			-- Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
+			Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
 			Energy = ((class == "MONK" or class == "DRUID" or class == "ROGUE") and unit == "Player") and self:CreatePlayerBarOptions("Energy", 16) or nil,
 		}),
 		Texts = self:NewGroup("Texts", 4, "tab", nil, disabledFunc, {

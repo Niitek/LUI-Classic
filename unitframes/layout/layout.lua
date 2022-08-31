@@ -163,51 +163,51 @@ do
 		},
 	}
 
-	UnitPopupButtons["LUI_SET_FOCUS"] = {
-		text = L["Type %s to Set Focus"]:format(SLASH_FOCUS1),
-		tooltipText = L["Blizzard does not support right-click focus"],
-		dist = 0,
-	}
-	UnitPopupButtons["LUI_CLEAR_FOCUS"] = {
-		text = L["Type %s to Clear Focus"]:format(SLASH_CLEARFOCUS1),
-		tooltipText = L["Blizzard does not support right-click focus"],
-		dist = 0,
-	}
-	UnitPopupButtons["LUI_ROLE_CHECK"] = {
-		text = ROLE_POLL,
-		tooltipText = L["Initiate a role check"],
-		dist = 0,
-	}
-	UnitPopupButtons["LUI_READY_CHECK"] = {
-		text = READY_CHECK,
-		tooltipText = L["Initiate a ready check"],
-		dist = 0,
-	}
+	-- UnitPopupButtons["LUI_SET_FOCUS"] = {
+	-- 	text = L["Type %s to Set Focus"]:format(SLASH_FOCUS1),
+	-- 	tooltipText = L["Blizzard does not support right-click focus"],
+	-- 	dist = 0,
+	-- }
+	-- UnitPopupButtons["LUI_CLEAR_FOCUS"] = {
+	-- 	text = L["Type %s to Clear Focus"]:format(SLASH_CLEARFOCUS1),
+	-- 	tooltipText = L["Blizzard does not support right-click focus"],
+	-- 	dist = 0,
+	-- }
+	-- UnitPopupButtons["LUI_ROLE_CHECK"] = {
+	-- 	text = ROLE_POLL,
+	-- 	tooltipText = L["Initiate a role check"],
+	-- 	dist = 0,
+	-- }
+	-- UnitPopupButtons["LUI_READY_CHECK"] = {
+	-- 	text = READY_CHECK,
+	-- 	tooltipText = L["Initiate a ready check"],
+	-- 	dist = 0,
+	-- }
 
-	hooksecurefunc("UnitPopup_OnClick", function(self)
-		local button = self.value
-		if button == "LUI_ROLE_CHECK" then
-			InitiateRolePoll()
-		elseif button == "LUI_READY_CHECK" then
-			DoReadyCheck()
-		end
-	end)
+	-- hooksecurefunc("UnitPopup_OnClick", function(self)
+	-- 	local button = self.value
+	-- 	if button == "LUI_ROLE_CHECK" then
+	-- 		InitiateRolePoll()
+	-- 	elseif button == "LUI_READY_CHECK" then
+	-- 		DoReadyCheck()
+	-- 	end
+	-- end)
 
-	hooksecurefunc("UnitPopup_HideButtons", function()
-		local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
-		local inParty, inRaid, inBG, isLeader, isAssist = GetNumSubgroupMembers() > 0, GetNumGroupMembers() > 0, UnitInBattleground("player"), UnitIsGroupLeader("unit" or "player name"), UnitIsGroupAssistant("unit" or "player name")
-		if inRaid then
-			inParty = true
-		end
+	-- hooksecurefunc("UnitPopup_HideButtons", function()
+	-- 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
+	-- 	local inParty, inRaid, inBG, isLeader, isAssist = GetNumSubgroupMembers() > 0, GetNumGroupMembers() > 0, UnitInBattleground("player"), UnitIsGroupLeader("unit" or "player name"), UnitIsGroupAssistant("unit" or "player name")
+	-- 	if inRaid then
+	-- 		inParty = true
+	-- 	end
 
-		for i, v in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
-			if v == "LUI_ROLE_CHECK" or v == "LUI_READY_CHECK" then
-				if (not isLeader and not isAssist) or inBG or (not inParty and not inRaid) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
-				end
-			end
-		end
-	end)
+	-- 	for i, v in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
+	-- 		if v == "LUI_ROLE_CHECK" or v == "LUI_READY_CHECK" then
+	-- 			if (not isLeader and not isAssist) or inBG or (not inParty and not inRaid) then
+	-- 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end)
 
 	local dropdown = CreateFrame("Frame", "LUI_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 	--UnitPopupFrames[#UnitPopupFrames+1] = "LUI_UnitFrame_DropDown"
@@ -2039,20 +2039,36 @@ module.funcs = {
 		self.Runes:SetWidth(oufdb.Bars.Runes.Width)
 		self.Runes:ClearAllPoints()
 		self.Runes:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-
+		
+		local runePoints = {0, 1, 6, 3, 2, 5}
+		
 		for i = 1, 6 do
 			self.Runes[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.Runes.Texture))
-			self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[1]))
+			self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[math.floor((i+1)/2)]))
 			self.Runes[i]:SetSize(((oufdb.Bars.Runes.Width - 5 * oufdb.Bars.Runes.Padding) / 6), oufdb.Bars.Runes.Height)
 
 			self.Runes[i]:ClearAllPoints()
-			if i == 1 then
+			if runePoints[i] == 0 then
 				self.Runes[i]:SetPoint("LEFT", self.Runes, "LEFT", 0, 0)
 			else
-				self.Runes[i]:SetPoint("LEFT", self.Runes[i-1], "RIGHT", oufdb.Bars.Runes.Padding, 0)
+				self.Runes[i]:SetPoint("LEFT", self.Runes[runePoints[i]], "RIGHT", oufdb.Bars.Runes.Padding, 0)
 			end
 		end
 	end,
+
+	-- 	for i = 1, 6 do
+	-- 		self.Runes[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.Runes.Texture))
+	-- 		self.Runes[i]:SetStatusBarColor(unpack(module.colors.Runes[1]))
+	-- 		self.Runes[i]:SetSize(((oufdb.Bars.Runes.Width - 5 * oufdb.Bars.Runes.Padding) / 6), oufdb.Bars.Runes.Height)
+
+	-- 		self.Runes[i]:ClearAllPoints()
+	-- 		if i == 1 then
+	-- 			self.Runes[i]:SetPoint("LEFT", self.Runes, "LEFT", 0, 0)
+	-- 		else
+	-- 			self.Runes[i]:SetPoint("LEFT", self.Runes[i-1], "RIGHT", oufdb.Bars.Runes.Padding, 0)
+	-- 		end
+	-- 	end
+	-- end,
 	ClassIcons = function(self, unit, oufdb)
 		local _, class = UnitClass("player")
 		local BASE_COUNT = {
@@ -2124,7 +2140,7 @@ module.funcs = {
 					self.ClassIcons[i]:SetPoint("LEFT", self.ClassIcons[i-1], "RIGHT", oufdb.Bars.ClassIcons.Padding, 0)
 				end
 				--LUI:Print("ClassIcon["..i.."] Is Shown")
-				self.ClassIcons[i]:Show()
+				--self.ClassIcons[i]:Show()
 				if i > self.ClassIcons.Count then
 					self.ClassIcons[i]:Hide()
 				end
@@ -2944,7 +2960,6 @@ local SetStyle = function(self, unit, isSingle)
 		module.funcs.V2Textures(self, _G["oUF_LUI_"..unit:match("%a+%d")])
 	elseif unit == "partytarget" and module.db.Settings.ShowV2PartyTextures then
 		module.funcs.V2Textures(self, self:GetParent())
-
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

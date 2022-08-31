@@ -912,16 +912,16 @@ module.ApplySettings = function(unit)
 					end
 				end
 
-				-- runes
-				-- if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
-				-- 	module.funcs.Runes(frame, frame.__unit, module.db.Player)
-				-- 	if module.db[unit].Bars.Runes.Enable then
-				-- 		frame:EnableElement("Runes")
-				-- 	else
-				-- 		frame:DisableElement("Runes")
-				-- 		frame.Runes:Hide()
-				-- 	end
-				-- end
+				 -- runes
+				 if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
+				 	module.funcs.Runes(frame, frame.__unit, module.db.Player)
+				 	if module.db[unit].Bars.Runes.Enable then
+				 		frame:EnableElement("Runes")
+				 	else
+				 		frame:DisableElement("Runes")
+				 		frame.Runes:Hide()
+				 	end
+				 end
 
 				-- druid mana bar
 				if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
