@@ -1,4 +1,4 @@
-# LUI-tbcc
+# LUI-WotLK
 Fork of LUI v3, meant to be used on The Burning Crusade Classic
 
 This is the core addon, for updates only, if you do not currently have LUI installed, you want to get the full package at LUI on WoWInterface to be able to install the whole project without any troublesome problems.
