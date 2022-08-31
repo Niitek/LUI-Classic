@@ -1,5 +1,5 @@
 # LUI-WotLK
-Fork of LUI v3, meant to be used on The Burning Crusade Classic
+Fork of LUI v3, meant to be used on Wrath of the Lich King.
 
 This is the core addon, for updates only, if you do not currently have LUI installed, you want to get the full package at LUI on WoWInterface to be able to install the whole project without any troublesome problems.
 LUI is a Next Generation World of Warcraft User Interface dedicated to replace the standard Blizzard UI in a way you cannot imagine. I'm very proud to present you LUI v3 one of the most advanced and elaborate User Interfaces ever made. This project was first engineered by Loui, and has evolved to have a developpment team, recently Loui decided to step down. The rest of the developpment team is still working on this project, with his approval.
