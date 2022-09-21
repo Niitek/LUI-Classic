@@ -232,7 +232,10 @@ function module:SetMinimap()
 	--MiniMap TrackingIcon
 	MiniMapTracking:Hide()
 	if db.Minimap.General.TrackingIcon then
+		MiniMapTracking:ClearAllPoints()
+		MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
 		MiniMapTracking:Show()
+		MiniMapTrackingButtonBorder:Hide()
 	end
 	-- Hide Border
 	MinimapBorder:Hide()
@@ -263,7 +266,7 @@ function module:SetMinimap()
 	if (LUI.IsRetail) then
 		QueueStatusMinimapButton:ClearAllPoints()
 		QueueStatusMinimapButton:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
-		QueueStatusMinimapButtonBorder:Hide()
+		-- QueueStatusMinimapButtonBorder:Hide()
 	end
 
 	MiniMapMailFrame:HookScript("OnShow", function()
@@ -277,9 +280,10 @@ function module:SetMinimap()
 	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 
 	local function UpdateLFG()
-		QueueStatusMinimapButton:ClearAllPoints()
-		QueueStatusMinimapButton:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
-		QueueStatusMinimapButtonBorder:Hide()
+		MiniMapLFGFrame:ClearAllPoints()
+		MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
+		-- MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
+		MiniMapLFGFrameBorder:Hide()
 	end
 	hooksecurefunc("EyeTemplate_OnUpdate", UpdateLFG)
 
