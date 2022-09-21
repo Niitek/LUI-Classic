@@ -128,10 +128,6 @@ do
 			RuneFrame:UnregisterAllEvents()
 			RuneFrame:Hide()
 		end,
-		altpower = function()
-			PlayerPowerBarAlt:UnregisterAllEvents()
-			PlayerPowerBarAlt:Hide()
-		end,
 		aura = function()
 			BuffFrame:Hide()
 			TemporaryEnchantFrame:Hide()
@@ -248,10 +244,6 @@ do
 			end
 			RuneFrame:GetScript("OnLoad")(RuneFrame)
 			RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
-		end,
-		altpower = function()
-			PlayerPowerBarAlt:GetScript("OnLoad")(PlayerPowerBarAlt)
-			UnitPowerBarAlt_UpdateAll(PlayerPowerBarAlt)
 		end,
 		aura = function()
 			BuffFrame:Show()
