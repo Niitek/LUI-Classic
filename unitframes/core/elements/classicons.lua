@@ -235,7 +235,7 @@ do
 
 		if(PlayerClass == 'DRUID') then
 			RequireForm = CAT_FORM
-			RequireSpell = 5221 -- Shred
+			-- RequireSpell = 5221 -- Shred
 		end
 	elseif(PlayerClass == 'MAGE') then
 		ClassPowerID = Enum.PowerType.ArcaneCharges or 16
