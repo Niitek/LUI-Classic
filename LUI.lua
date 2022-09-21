@@ -15,6 +15,11 @@ local AceAddon = LibStub("AceAddon-3.0")
 _G.LUI = LUI
 _G.oUF = LUI.oUF
 
+LUI.IsRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
+LUI.IsClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
+LUI.IsBCC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+LUI.IsWrath = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
+
 local Media = LibStub("LibSharedMedia-3.0")
 local Profiler = LUI.Profiler
 local widgetLists = AceGUIWidgetLSMlists
@@ -487,10 +492,10 @@ function LUI:Update()
 			LUI.db.global.luiconfig[ProfileName].Versions.omen = nil
 			LUI:InstallOmen()
 		end
-		
-		if IsAddOnLoaded("Forte_Timer") then
-			LUI.db.global.luiconfig[ProfileName].Versions.forte = nil
-			LUI:InstallForte()
+
+		if IsAddOnLoaded("VuhDo") then
+			LUI.db.global.luiconfig[ProfileName].Versions.vudho = nil
+			LUI:InstallVudho()
 		end
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
@@ -567,7 +572,6 @@ function LUI:Configure()
 		LUI:InstallRecount()
 		LUI:InstallOmen()
 		LUI:InstallBartender()
-		-- LUI:InstallForte()
 		LUI:InstallDetails()
 		-- LUI:InstallVudho()
 
@@ -1183,18 +1187,6 @@ local function getOptions()
 									disabled = function() return not IsAddOnLoaded("Bartender4") end,
 									hidden = function() return not IsAddOnLoaded("Bartender4") end,
 								},
-								ResetForte = {
-									order = 2,
-									type = "execute",
-									name = "Restore ForteXorcist",
-									func = function()
-										LUI.db.global.luiconfig[ProfileName].Versions.forte = nil
-										LUI:InstallForte()
-										StaticPopup_Show("RELOAD_UI")
-									end,
-									disabled = function() return not IsAddOnLoaded("Forte_Timer") end,
-									hidden = function() return not IsAddOnLoaded("Forte_Timer") end,
-								},
 								ResetGrid = {
 									order = 2,
 									type = "execute",
@@ -1226,9 +1218,10 @@ local function getOptions()
 									func = function()
 										LUI.db.global.luiconfig[ProfileName].Versions.vudho = nil
 										LUI:InstallVudho()
+										StaticPopup_Show("RELOAD_UI")
 									end,
-									disabled = function() return not IsAddOnLoaded("Omen") end,
-									hidden = function() return not IsAddOnLoaded("Omen") end,
+									disabled = function() return not IsAddOnLoaded("VuhDo") end,
+									hidden = function() return not IsAddOnLoaded("VuhDo") end,
 								},
 								ResetOmen = {
 									order = 2,
