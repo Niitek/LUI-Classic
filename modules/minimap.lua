@@ -26,14 +26,12 @@ local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end
 	self:SecureHook(DurabilityFrame, "SetPoint", "DurabilityFrame_SetPoint")
-	-- self:SecureHook(VehicleSeatIndicator, "SetPoint", "VehicleSeatIndicator_SetPoint")
-	-- self:SecureHook(ObjectiveTrackerFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
-	-- self:SecureHook(UIWidgetTopCenterContainerFrame, "SetPoint", "AlwaysUpFrame_SetPoint")
+	self:SecureHook(WatchFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
+	self:SecureHook(UIWidgetTopCenterContainerFrame, "SetPoint", "AlwaysUpFrame_SetPoint")
 	self:SecureHook(TicketStatusFrame, "SetPoint", "TicketStatus_SetPoint")
 	self:SecureHook(UIWidgetBelowMinimapContainerFrame, "SetPoint", "CaptureBar_SetPoint")
-	-- self:SecureHook(PlayerPowerBarAlt, "SetPoint", "PlayerPowerBarAlt_SetPoint")
-	-- self:SecureHook(GroupLootContainer, "SetPoint", "GroupLootContainer_SetPoint") -- uncommented for classic testing
-	
+	self:SecureHook(GroupLootContainer, "SetPoint", "GroupLootContainer_SetPoint")
+
 end
 
 function module:SetPosition(frame)
@@ -41,24 +39,18 @@ function module:SetPosition(frame)
 	if frame == "AlwaysUpFrame" and db.Minimap.Frames.SetAlwaysUpFrame then
 		UIWidgetTopCenterContainerFrame:ClearAllPoints()
 		UIWidgetTopCenterContainerFrame:SetPoint("TOP", UIParent, "TOP", db.Minimap.Frames.AlwaysUpFrameX, db.Minimap.Frames.AlwaysUpFrameY)
---[[ 	elseif frame == "VehicleSeatIndicator" and db.Minimap.Frames.SetVehicleSeatIndicator then
-		VehicleSeatIndicator:ClearAllPoints()
-		VehicleSeatIndicator:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.VehicleSeatIndicatorX, db.Minimap.Frames.VehicleSeatIndicatorY) ]] -- uncommented for classic compatibility
 	elseif frame == "DurabilityFrame" and db.Minimap.Frames.SetDurabilityFrame then
 		DurabilityFrame:ClearAllPoints()
 		DurabilityFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.DurabilityFrameX, db.Minimap.Frames.DurabilityFrameY)
---[[ 	elseif frame == "ObjectiveTrackerFrame" and db.Minimap.Frames.SetObjectiveTrackerFrame then
-		--ObjectiveTrackerFrame:ClearAllPoints() -- Cause a lot of odd behaviors with the quest tracker.
-		ObjectiveTrackerFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.ObjectiveTrackerFrameX, db.Minimap.Frames.ObjectiveTrackerFrameY) ]] -- uncommented for classic compatibility
+	elseif frame == "ObjectiveTrackerFrame" and db.Minimap.Frames.SetObjectiveTrackerFrame then
+		WatchFrame:ClearAllPoints() -- Cause a lot of odd behaviors with the quest tracker.
+		WatchFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.ObjectiveTrackerFrameX, db.Minimap.Frames.ObjectiveTrackerFrameY) -- uncommented for classic compatibility
 	elseif frame == "TicketStatus" and db.Minimap.Frames.SetTicketStatus then
 		TicketStatusFrame:ClearAllPoints()
 		TicketStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.TicketStatusX, db.Minimap.Frames.TicketStatusY)
 	elseif frame == "CaptureBar" and db.Minimap.Frames.SetCaptureBar then
 		UIWidgetBelowMinimapContainerFrame:ClearAllPoints()
 		UIWidgetBelowMinimapContainerFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.CaptureBarX, db.Minimap.Frames.CaptureBarY)
---[[ 	elseif frame == "PlayerPowerBarAlt" and db.Minimap.Frames.SetPlayerPowerBarAlt then
-		PlayerPowerBarAlt:ClearAllPoints()
-		PlayerPowerBarAlt:SetPoint("BOTTOM", UIParent, "BOTTOM", db.Minimap.Frames.PlayerPowerBarAltX, db.Minimap.Frames.PlayerPowerBarAltY) ]]
 	elseif frame == "GroupLootContainer" and db.Minimap.Frames.SetGroupLootContainer then
 		GroupLootContainer:ClearAllPoints()
 		GroupLootContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", db.Minimap.Frames.GroupLootContainerX, db.Minimap.Frames.GroupLootContainerY)
@@ -96,11 +88,6 @@ function module:GroupLootContainer_SetPoint()
 	if shouldntSetPoint then return end
 	self:SetPosition('GroupLootContainer')
 end
-
---[[ function module:PlayerPowerBarAlt_SetPoint()
-	if shouldntSetPoint then return end
-	self:SetPosition('PlayerPowerBarAlt')
-end ]]
 
 function module:TicketStatus_SetPoint()
 	if shouldntSetPoint then return end
@@ -232,7 +219,6 @@ function module:SetMinimap()
 	self:SetMinimapSize()
 	self:SetPosition('DurabilityFrame')
 	self:SetPosition('ObjectiveTrackerFrame')
-	self:SetPosition('VehicleSeatIndicator')
 	self:SetPosition('AlwaysUpFrame')
 	self:SetPosition('CaptureBar')
 	self:SetPosition('TicketStatus')
@@ -243,6 +229,11 @@ function module:SetMinimap()
 	-- MINIMAP SETTINGS
 	--------------------------------------------------------------------
 
+	--MiniMap TrackingIcon
+	MiniMapTracking:Hide()
+	if db.Minimap.General.TrackingIcon then
+		MiniMapTracking:Show()
+	end
 	-- Hide Border
 	MinimapBorder:Hide()
 	MinimapBorderTop:Hide()
@@ -251,44 +242,16 @@ function module:SetMinimap()
 	MinimapZoomIn:Hide()
 	MinimapZoomOut:Hide()
 
---[[ 	-- GuildInstanceDifficulty
-	GuildInstanceDifficulty:UnregisterAllEvents()
-	GuildInstanceDifficulty.NewShow = MiniMapInstanceDifficulty.Show
-	GuildInstanceDifficulty.Show = GuildInstanceDifficulty.Hide
-	GuildInstanceDifficulty:Hide()
-
+	-- MiniMapInstanceDifficulty
 	MiniMapInstanceDifficulty.NewShow = MiniMapInstanceDifficulty.Show
 	MiniMapInstanceDifficulty.Show = MiniMapInstanceDifficulty.Hide
-	MiniMapInstanceDifficulty:Hide() ]] -- uncommented for classic compatibility
+	MiniMapInstanceDifficulty:Hide()
 
-	-- Hide Voice Chat Frame
-	--MiniMapVoiceChatFrame:Hide()
-
-	-- Hide North texture at top
-	MinimapNorthTag:SetTexture(nil)
-
-	-- Hide Zone Frame
-	MinimapZoneTextButton:Hide()
-
-	-- Hide World Map Button
-	MiniMapWorldMapButton:ClearAllPoints()
-	-- MiniMapWorldMapButton:SetPoint("TOPRIGHT", Minimap,100000, 1000000)
-	-- MiniMapWorldMapButton:Hide()
-	LUI:Kill(MiniMapWorldMapButton)
-
-	-- Hide Clock
-	TimeManagerClockButton:Hide()
-	LUI:Kill(TimeManagerClockButton)
-
-	-- MiniMapTracking:Hide() -- uncommented for classic compatibility
-	MiniMapTracking:ClearAllPoints()
-	MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, LUI:Scale(3), LUI:Scale(6))
-	if db.Minimap.General.TrackingHide == true then
-		MiniMapTracking:Hide()
-	else end
-
-	-- Hide Calendar Button
-	GameTimeFrame:Hide()
+	MinimapNorthTag:SetTexture(nil) -- Hide North texture at top
+	LUI:Kill(MiniMapWorldMapButton) -- Hide world map button
+	LUI:Kill(MinimapZoneTextButton) -- Hide Zone Frame
+	LUI:Kill(TimeManagerClockButton) -- Hide Clock
+	LUI:Kill(GameTimeFrame)	-- Hide Calendar Button
 
 	-- Move Mail icon
 	MiniMapMailFrame:ClearAllPoints()
@@ -297,15 +260,28 @@ function module:SetMinimap()
 	MiniMapMailIcon:SetTexture(LUI.Media.mail)
 
 	-- Move battleground icon
-	MiniMapBattlefieldFrame:ClearAllPoints()   -- Changed QueueStatusMinimapButton to MiniMapBattlefieldFrame for classic compatibility
-	MiniMapBattlefieldFrame:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
+	if (LUI.IsRetail) then
+		QueueStatusMinimapButton:ClearAllPoints()
+		QueueStatusMinimapButton:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
+		QueueStatusMinimapButtonBorder:Hide()
+	end
 
---[[ 	local function UpdateLFG()
+	MiniMapMailFrame:HookScript("OnShow", function()
+	end)
+	MiniMapMailFrame:HookScript("OnHide", function()
+	end)
+
+	-- shitty 3.3 flag to move
+	MiniMapInstanceDifficulty:ClearAllPoints()
+	MiniMapInstanceDifficulty:SetParent(Minimap)
+	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+
+	local function UpdateLFG()
 		QueueStatusMinimapButton:ClearAllPoints()
 		QueueStatusMinimapButton:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
 		QueueStatusMinimapButtonBorder:Hide()
 	end
-	hooksecurefunc("EyeTemplate_OnUpdate", UpdateLFG) ]] -- uncommented for classic compatibility
+	hooksecurefunc("EyeTemplate_OnUpdate", UpdateLFG)
 
 	-- Enable mouse scrolling
 	Minimap:EnableMouseWheel(true)
@@ -407,7 +383,7 @@ function module:SetMinimap()
 
 	m_coord:SetScript("OnUpdate", function()
 		local uiMap = C_Map.GetBestMapForUnit("player")
-		if uiMap then 
+		if uiMap then
 			local position = C_Map.GetPlayerMapPosition(uiMap, "player")
 			if position then
 				local x, y = position:GetXY()
@@ -474,6 +450,23 @@ function module:GetMinimapPosition()
 	db.Minimap.General.Position.Y = yOfs
 end
 
+function module:ToggleMissionReport()
+	local button = GarrisonLandingPageMinimapButton
+	if button:IsShown() and not defaultGarrisonState then
+		button:Hide()
+		return
+	elseif not defaultGarrisonState then
+		return
+	end
+	if db.Minimap.General.MissionReport then
+		button.Show = nil
+		button:Show()
+	else
+		button.Show = button.Hide
+		button:Hide()
+	end
+end
+
 local defaults = {
 	Minimap = {
 		Enable = true,
@@ -508,8 +501,6 @@ local defaults = {
 		Frames = {
 			AlwaysUpFrameX = "300",
 			AlwaysUpFrameY = "-35",
-			VehicleSeatIndicatorX = "-10",
-			VehicleSeatIndicatorY = "-260",
 			DurabilityFrameX = "-20",
 			DurabilityFrameY = "-260",
 			ObjectiveTrackerFrameX = "-150",
@@ -518,17 +509,13 @@ local defaults = {
 			CaptureBarY = "-235",
 			TicketStatusX = "-175",
 			TicketStatusY = "-70",
-			PlayerPowerBarAltX = "0",
-			PlayerPowerBarAltY = "160",
 			GroupLootContainerX = "0",
 			GroupLootContainerY = "120",
 			SetAlwaysUpFrame = true,
-			SetVehicleSeatIndicator = true,
 			SetDurabilityFrame = true,
 			SetObjectiveTrackerFrame = true,
 			SetCaptureBar = true,
 			SetTicketStatus = true,
-			SetPlayerPowerBarAlt = false,
 			SetGroupLootContainer = false,
 		},
 	},
@@ -537,7 +524,7 @@ local defaults = {
 module.conflicts = "SexyMap"
 
 function module:LoadOptions()
-	
+
 	-- Template Function to ease up maintenance
 	local function createTemplate(frameName, orderNum, friendlyName, frameDesc, extraTables)
 		local frameSet = "Set"..frameName
@@ -703,8 +690,40 @@ function module:LoadOptions()
 									MiniMapTracking:Show()
 								end
 							end,
-
+							order = 4.5,
+						},
+						header1 = {
+							name = "Position",
+							type = "header",
 							order = 5,
+						},
+						PosX = {
+							name = "X Value",
+							desc = "X Value for your Minimap.\n\nNote:\nPositive values = right\nNegative values = left\nDefault: "..LUI.defaults.profile.Minimap.General.Position.X,
+							type = "input",
+							get = function() return tostring(db.Minimap.General.Position.X) end,
+							set = function(_,PosX)
+									if PosX == nil or PosX == "" then
+										PosX = "-24"
+									end
+									db.Minimap.General.Position.X = tonumber(PosX)
+									module:SetMinimapPosition()
+								end,
+							order = 6,
+						},
+						PosY = {
+							name = "Y Value",
+							desc = "Y Value for your Minimap.\n\nNote:\nPositive values = up\nNegative values = down\nDefault: "..LUI.defaults.profile.Minimap.General.Position.Y,
+							type = "input",
+							get = function() return tostring(db.Minimap.General.Position.Y) end,
+							set = function(_,PosY)
+									if PosY == nil or PosY == "" then
+										PosY = "-80"
+									end
+									db.Minimap.General.Position.Y = tonumber(PosY)
+									module:SetMinimapPosition()
+								end,
+							order = 7,
 						},
 						Restore = LUI:NewExecute("Restore Default Position", "Restores Default Minimap Position", 8, function()
 							db.Minimap.General.Position.RelativePoint = LUI.defaults.profile.Minimap.General.Position.RelativePoint
@@ -821,9 +840,6 @@ function module:LoadOptions()
 				ObjectiveTrackerFrame = createTemplate("ObjectiveTrackerFrame", 1, "Objectives Tracker",
 					"This Frame occurs when tracking Quests and Achievements."
 				),
-				--[[ PlayerPowerBarAlt = createTemplate("PlayerPowerBarAlt", 2, "Alternate Power Bar",
-					"This Frame is the special bar that appears during certain fights or events. Example: Sanity bar during Visions."
-				), ]]
 				GroupLootContainer = createTemplate("GroupLootContainer", 3, "Group Loot Container",
 					"This Frame is the anchor point for many Loot-based frames such as the Need/Greed and Bonus Roll frames."
 				),
@@ -832,9 +848,6 @@ function module:LoadOptions()
 				),
 				CaptureBar = createTemplate("CaptureBar", 5, "Capture Bar",
 					"This Frame occurs when trying to capture a pvp objective."
-				),
-				VehicleSeatIndicator = createTemplate("VehicleSeatIndicator", 6, "Vehicle Seat Indicator",
-					"This Frame occurs in some special Mounts and Vehicles. Example: Traveler's Tundra Mammoth."
 				),
 				DurabilityFrame = createTemplate("DurabilityFrame", 7, "Durability Frame",
 					"This Frame occurs when your gear is damaged or broken."
