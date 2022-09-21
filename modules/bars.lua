@@ -2,12 +2,11 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: bars.lua
 	Description: Bars Module
-]] 
+]]
 
 local addonname, LUI = ...
 local module = LUI:Module("Bars", "AceHook-3.0", "AceEvent-3.0")
 local Themes = LUI:Module("Themes")
-local Forte = LUI:Module("Forte")
 local Masque = LibStub("Masque", true)
 local Media = LibStub("LibSharedMedia-3.0")
 local LibKeyBound = LibStub("LibKeyBound-1.0")
@@ -16,13 +15,12 @@ local widgetLists = AceGUIWidgetLSMlists
 local L = LUI.L
 local db, dbd
 
-LUI.Versions.bars = 2.4
-
-local _, class = UnitClass("player")
+LUI.Versions.bars = 2.5
 
 local buttonlist = {}
 local bars = {}
 local sidebars = {}
+local _, class = UnitClass("Player")
 
 local PRESET_BAR_ANCHORS = {
 	"BT4Bar1",
@@ -53,33 +51,6 @@ local g_pointList = {"CENTER", "TOP", "BOTTOM", "LEFT", "RIGHT", "TOPLEFT", "TOP
 
 local g_stateText = {"Default"}
 
--- local statetexts = setmetatable({
--- 	["DRUID"] = {"Default", "Bear Form", "Cat Form", "Cat Form (Prowl)", "Moonkin Form", "Tree of Life Form"},
--- 	["WARRIOR"] = {"Default", "Battle Stance", "Defensive Stance", "Berserker Stance"},
--- 	["PRIEST"] = {"Default", "Shadow Form"},
--- 	["ROGUE"] = {"Default", "Stealth", "Shadowdance"},
--- 	["DEFAULT"] = {"Default"},
--- }, {
--- 	__index = function(t, k)
--- 		return t["DEFAULT"]
--- 	end,
--- })
--- local statetext = statetexts[class]
-
--- local defaultstates = setmetatable({
--- 	["DRUID"] = {"1", "3", "5", "5", "4", "6"},
--- 	["WARRIOR"] = {"1", "3", "5", "4"},
--- 	["PRIEST"] = {"1", "3"},
--- 	["ROGUE"] = {"1", "3", "5"},
--- 	["DEFAULT"] = {"1"}
--- }, {
--- 	__index = function(t, k)
--- 		if type(k) == "number" then
--- 			return {tostring(k)}
--- 		end
--- 		return t["DEFAULT"]
--- 	end,
--- })
 local g_defaultStates = {
 	Bottombar1 = {"1"},
 	Bottombar2 = {"2"},
@@ -101,32 +72,7 @@ do
 		g_stateText = {"Default", "Stealth"}
 		g_defaultStates.Bottombar1 = {"1", "7"}
 	end
--- local blizzstates = setmetatable({
--- 	["DRUID"] = {"1", "7", "8", "8", "9", "10"},
--- 	["WARRIOR"] = {"1", "7", "8", "9"},
--- 	["PRIEST"] = {"1", "7"},
--- 	["ROGUE"] = {"1", "7", "8"},
--- 	["DEFAULT"] = {"1"}
--- }, {
--- 	__index = function(t, k)
--- 		if type(k) == "number" then
--- 			return {tostring(k)}
-		end
--- 		return t["DEFAULT"]
--- 	end,
--- })
--- local blizzstate = {
--- 	Bottombar1 = blizzstates[class],
--- 	Bottombar2 = blizzstates[6],
--- 	Bottombar3 = blizzstates[5],
--- 	Bottombar4 = blizzstates[7],
--- 	Bottombar5 = blizzstates[8],
--- 	Bottombar6 = blizzstates[9],
--- 	SidebarLeft1 = blizzstates[3],
--- 	SidebarLeft2 = blizzstates[1],
--- 	SidebarRight1 = blizzstates[4],
--- 	SidebarRight2 = blizzstates[2],
--- }
+end
 
 local Page = {
 	["DRUID"] = {
@@ -134,20 +80,58 @@ local Page = {
 		"[bonusbar:1,nostealth] %s; ", -- Cat Form
 		"[bonusbar:1,stealth] %s; ", -- Cat Form (prowling)
 		"[bonusbar:4] %s; ", -- Moonkin Form
-	-- 	"[bonusbar:2] %s; ", -- Tree of Life Form
-	-- },
-	-- ["WARRIOR"] = {
-	-- 	"[bonusbar:1] %s; ", -- Battle Stance
-	-- 	"[bonusbar:2] %s; ", -- Berserker Stance
-	-- 	"[bonusbar:3] %s; ", -- Defensive Stance
-	-- },
-	-- ["PRIEST"] = {
-	-- 	"[bonusbar:1] %s; " -- Shadow Form
+		"[bonusbar:2] %s; ", -- Tree of Life Form
+	},
+	["WARRIOR"] = {
+		"[bonusbar:1] %s; ", -- Battle Stance
+		"[bonusbar:2] %s; ", -- Berserker Stance
+		"[bonusbar:3] %s; ", -- Defensive Stance
+	},
+	["PRIEST"] = {
+		"[bonusbar:1] %s; " -- Shadow Form
 	},
 	["ROGUE"] = {
 		"[bonusbar:1] %s; ", -- Stealth
+		"[form:3] %s; " -- Shadowdance
+	},
+	["WARLOCK"] = {
+		"[form:2] %s; " -- Metamorphosis
 	},
 }
+
+local toggleDummyBar
+do
+	local function playerRegenDisabled(bar, event)
+		module:UnregisterEvent(event)
+
+		toggleDummyBar(bar, false)
+		LUI:Print("Dummy "..bar:GetName().." hidden due to combat.")
+	end
+
+	toggleDummyBar = function(bar, force)
+		local show = not bar:IsShown()
+		if force then show = force end
+
+		local parent = LUIExtraActionBar
+		if not parent.SetBackdrop then Mixin(parent, BackdropTemplateMixin) end
+
+		if show then
+			parent:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
+			bar.button:Show()
+			bar:Show()
+			bar.outro:Stop()
+			bar.intro:Play()
+
+			module:RegisterEvent("PLAYER_REGEN_DISABLED", playerRegenDisabled, bar)
+		else
+			if parent.SetBackdrop then parent:SetBackdrop({}) end
+			bar.intro:Stop()
+			if not HasExtraActionBar() then
+				bar:Hide()
+			end
+		end
+	end
+end
 
 local last = "HIDEGRID"
 local function HookGrid(self, event)
@@ -187,10 +171,26 @@ local function LoadStates(data)
 	db.StatesLoaded = true
 end
 
+local function ValidateStates()
+	local invalid = false
+	if not db.StatesLoaded then invalid = true
+	-- If settings from a different class is imported, it can lead to bars being set to an invalid state.
+	elseif (class == DRUID) and db.Bottombar1.State[3] == "0" then invalid = true
+	elseif (class == ROGUE) and db.Bottombar1.State[2] == "0" then invalid = true
+	elseif (class == ROGUE) and db.Bottombar1.State[3] == "7" then invalid = true -- Importing Druid settings on Rogue
+	end
+
+	if invalid then
+		if db.StatesLoaded then LUI:Print("Bars State Configuration was reset") end
+		LoadStates(g_defaultStates)
+	end
+
+end
+
 local function GetAnchor(anchor)
 	if string.find(anchor, "Dominos") then
-		if IsAddOnLoaded("Dominos") then
-			return Dominos.ActionBar:Get(string.match(anchor, "%d+"))
+		if _G.IsAddOnLoaded("Dominos") then
+			return _G.Dominos.ActionBar:Get(string.match(anchor, "%d+"))
 		end
 	else
 		return _G[anchor]
@@ -299,7 +299,7 @@ local function Configure(bar, numButtons, numPerRow)
 			else
 				buttons[i]:SetAttribute("statehidden", nil)
 				buttons[i]:Show()
-				ActionButton_Update(buttons[i])
+				if LUI.IsRetail then buttons[i]:Update() end
 			end
 		end
 	end
@@ -307,7 +307,7 @@ end
 
 local function GetBarState(id)
 	local bardb = db["Bottombar"..id]
-	local condition = id == 1 and "[vehicleui] 12; [overridebar] 14; [bonusbar:5] 11; " or ""
+	local condition = id == 1 and "[vehicleui] 12; [overridebar] 14; [possessbar] [@vehicle, exists] 12; [bonusbar:5] 11; " or ""
 
 	if bardb.State.Alt ~= bardb.State[1] then
 		condition = condition.."[mod:alt] "..bardb.State.Alt.."; "
@@ -330,8 +330,6 @@ end
 local function CreateButton(bar, barid, barpos, buttonid)
 	local button = CreateFrame("CheckButton", format("LUIBar%s%sButton%s", barpos, barid, buttonid), bar, "ActionBarButtonTemplate")
 	button:SetID(buttonid)
-
-	-- module:HookActionButton(button)
 	return button
 end
 
@@ -353,7 +351,7 @@ local function UpdateUIPanelOffset(isLeft)
 	if isLeft then
 		local left1 = (sidebars.Left1 and db.SidebarLeft1.Enable) and sidebars.Left1.ButtonAnchor:GetRight() or 16
 		local left2 = (sidebars.Left2 and db.SidebarLeft2.Enable) and sidebars.Left2.ButtonAnchor:GetRight() or 16
-		UIParent:SetAttribute("LEFT_OFFSET", ceil(max(left1, left2)))
+		UIParent:SetAttribute("LEFT_OFFSET", math.ceil(math.max(left1, left2)))
 	end
 end
 
@@ -614,7 +612,7 @@ function module:CreateSidebarSlider(side, id)
 	end
 end
 
-local function SetOnStatePage(bar) 
+local function SetOnStatePage(bar)
 	bar:Execute([[
 		buttons = table.new()
 		for i = 1, 12 do
@@ -634,6 +632,7 @@ function module:SetBottomBar(id)
 
 	if not bars[id] then
 		local bar = CreateFrame("Frame", "LUIBar"..id, UIParent, "SecureHandlerStateTemplate")
+		local group = Masque and Masque:Group("LUI", "Bottom Bar "..id)
 		bar.buttons = {}
 
 		for i = 1, 12 do
@@ -648,6 +647,13 @@ function module:SetBottomBar(id)
 			bar:SetFrameRef("Button"..i, button)
 			bar.buttons[i] = button
 			button.__IAB = true
+
+			if group then
+				group:AddButton(button)
+				button.__MSQ = group
+			end
+
+			module:HookActionButton(button)
 			if button:GetName():find("LUI") then button.buttonType = "LUIBar"..id.."Button" end
 		end
 
@@ -664,13 +670,6 @@ function module:SetBottomBar(id)
 		-- if bardb.Fader.Enable then
 		-- 	Fader:RegisterFrame(bar, bardb.Fader, true)
 		-- end
-
-		if Masque then
-			local group = Masque:Group("LUI", "Bottom Bar "..id)
-			for _, button in pairs(bar.buttons) do
-				group:AddButton(button)
-			end
-		end
 
 		bars[id] = bar
 	end
@@ -704,6 +703,7 @@ function module:SetSideBar(side, id)
 
 	if not bars[sideID] then
 		local bar = CreateFrame("Frame", "LUIBar"..sideID, UIParent, "SecureHandlerStateTemplate")
+		local group = Masque and Masque:Group("LUI", side.." Sidebar "..id)
 		bar:SetWidth(1) -- because of way LUI handles
 		bar:SetHeight(1) -- sidebar position calculation
 		bar.buttons = {}
@@ -721,7 +721,14 @@ function module:SetSideBar(side, id)
 			bar:SetFrameRef("Button"..i, button)
 			bar.buttons[i] = button
 			if button:GetName():find("LUI") then button.buttonType = "LUIBar"..sideID.."Button" end
-			-- button:SetAttribute("flyoutDirection", side == "Left" and "RIGHT" or "LEFT")
+			button:SetAttribute("flyoutDirection", side == "Left" and "RIGHT" or "LEFT")
+			
+			if group then
+				group:AddButton(button)
+				button.__MSQ = group
+			end
+
+			module:HookActionButton(button)
 		end
 
 		bar:RegisterEvent("ACTIONBAR_SHOWGRID")
@@ -733,13 +740,6 @@ function module:SetSideBar(side, id)
 
 		SetOnStatePage(bar)
 		RegisterStateDriver(bar, "page", bardb.State[1])
-
-		if Masque then
-			local group = Masque:Group("LUI", side.." Sidebar "..id)
-			for _, button in pairs(bar.buttons) do
-				group:AddButton(button)
-			end
-		end
 
 		bars[sideID] = bar
 	end
@@ -780,7 +780,9 @@ function module:SetPetBar()
 		if Masque then
 			local group = Masque:Group("LUI", "Pet Bar")
 			for i = 1, 10 do
-				group:AddButton(_G["PetActionButton"..i])
+				local button = _G["PetActionButton"..i]
+				group:AddButton(button)
+				button.__MSQ = group
 			end
 		end
 	end
@@ -828,7 +830,9 @@ function module:SetStanceBar()
 		if Masque then
 			local group = Masque:Group("LUI", "Stance Bar")
 			for i = 1, 10 do
-				group:AddButton(_G['StanceButton'..i])
+				local button = _G['StanceButton'..i]
+				group:AddButton(button)
+				button.__MSQ = group
 			end
 		end
 	end
@@ -840,6 +844,70 @@ function module:SetStanceBar()
 
 	Configure(LUIStanceBar, 10, db.StanceBar.NumPerRow)
 	ShowIf(LUIStanceBar, db.StanceBar.Enable and GetNumShapeshiftForms() > 0)
+end
+
+function module:SetTotemBar()
+	if not LUITotemBar then
+		local bar = CreateFrame("Frame", "LUITotemBar", UIParent, "SecureHandlerStateTemplate")
+		bar.buttons = {}
+		
+		MultiCastActionBarFrame:SetParent(bar)
+		MultiCastActionBarFrame:SetAllPoints(bar)
+		MultiCastActionBarFrame.ClearAllPoints = function() end
+		MultiCastActionBarFrame.SetPoint = function() end
+		MultiCastActionBarFrame.SetAllPoints = function() end
+		
+		MultiCastSummonSpellButton:ClearAllPoints()
+		MultiCastSummonSpellButton:SetPoint("TOPLEFT", bar, "TOPLEFT", 0, 0)
+		bar.buttons[1] = MultiCastSummonSpellButton
+		
+		for i = 1, 4 do
+			local button = _G["MultiCastSlotButton"..i]
+			bar.buttons[i+1] = button
+		end
+
+		bar.buttons[6] = MultiCastRecallSpellButton
+		
+		local lookup = {2, 1, 3, [0] = 4}
+		
+		local function TotemDestroy(self, button)
+			if button ~= "RightButton" then return end
+			DestroyTotem(lookup[self:GetName():match("MultiCastActionButton(%d)") % 4])
+		end
+		
+		for i = 1, 12 do
+			local button = _G["MultiCastActionButton"..i]
+			local anchor = _G["MultiCastSlotButton"..(i % 4 == 0 and 4 or i % 4)]
+			button:ClearAllPoints()
+			button:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+			button:HookScript("OnClick", TotemDestroy)
+		end
+		if Masque then
+			local group = Masque:Group("LUI", "Totem Bar")
+			for i = 1, 12 do
+				local button = _G['MultiCastActionButton'..i]
+				group:AddButton(button)
+				button.__MSQ = group
+			end
+		end
+	end
+	
+	local s = db.TotemBar.Scale
+	LUITotemBar:ClearAllPoints()
+	LUITotemBar:SetPoint(db.TotemBar.Point, UIParent, db.TotemBar.Point, db.TotemBar.X / s, db.TotemBar.Y / s)
+	LUITotemBar:SetScale(s)
+	
+	LUITotemBar:SetWidth(190)
+	LUITotemBar:SetHeight(30)
+	
+	Configure(LUITotemBar, 6, 6)
+
+	if db.TotemBar.Fader.Enable then
+		Fader:RegisterFrame(LUITotemBar, db.TotemBar.Fader, true)
+	end
+
+	LUITotemBar[db.TotemBar.Enable and "Show" or "Hide"](LUITotemBar)
+	ShowIf(LUITotemBar, db.TotemBar.Enable)
 end
 
 function module:SetVehicleExit()
@@ -858,7 +926,7 @@ function module:SetVehicleExit()
 		veb:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 		veb:SetScript("OnClick", function(self) VehicleExit() end)
 
-		-- if not UnitInVehicle("player") then bar:Hide() end
+		if LUI.IsRetail or LUI.IsWrath and not UnitInVehicle("player") then bar:Hide() end
 	end
 
 	local scale = db.VehicleExit.Scale
@@ -867,6 +935,41 @@ function module:SetVehicleExit()
 	LUIVehicleExit:SetScale(scale)
 
 	ShowIf(LUIVehicleExit, db.VehicleExit.Enable)
+end
+
+function module:SetExtraActionBar()
+	if not LUI.IsRetail then return end
+	local bar = LUIExtraActionBar
+	local eadb = db.ExtraActionBar
+	if not bar then
+		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
+		bar:SetSize(128, 128)
+
+		bar.content = ExtraAbilityContainer
+		bar.content.ignoreFramePositionManager = true
+		bar.content:SetToplevel(false)
+		bar.content:SetParent(bar)
+
+		bar.content:ClearAllPoints()
+		bar.content:SetPoint("CENTER", bar, "TOPLEFT", 64, -64)
+		-- module:SecureHook("ExtraActionBar_Update", function()
+		-- 	if HasExtraActionBar() then
+		-- 		ExtraActionBarFrame.button.style:SetShown(not eadb.HideTextures)
+		-- 	end
+		-- end)
+
+		module:SecureHook(ZoneAbilityFrame, "UpdateDisplayedZoneAbilities", function()
+			ZoneAbilityFrame.Style:SetShown(not eadb.HideTextures)
+		end)
+	end
+
+	bar:ClearAllPoints()
+	bar:SetPoint(eadb.Point, UIParent, eadb.Point, eadb.X / eadb.Scale, eadb.Y / eadb.Scale)
+	bar:SetScale(eadb.Scale)
+
+	ShowIf(ExtraActionBarFrame.button.style, not eadb.HideTextures)
+	ShowIf(ZoneAbilityFrame.Style, not eadb.HideTextures)
+	ShowIf(bar, eadb.Enable)
 end
 
 function module:HideBlizzard()
@@ -886,6 +989,10 @@ function module:HideBlizzard()
 		end
 	end)
 
+	PossessBarFrame:SetScale(0.00001)
+	PossessBarFrame:EnableMouse(false)
+	PossessBarFrame:SetAlpha(0)
+
 	PetActionBarFrame:SetScale(0.00001)
 	PetActionBarFrame:EnableMouse(false)
 	PetActionBarFrame:SetAlpha(0)
@@ -897,6 +1004,7 @@ function module:HideBlizzard()
 	local FramesToHide = {
 		MainMenuBarArtFrame,
 		BonusActionBarFrame,
+		PossessBarFrame,
 	}
 
 	for _, frame in pairs(FramesToHide) do
@@ -905,22 +1013,26 @@ function module:HideBlizzard()
 		end
 		frame:Hide()
 	end
+
+	module:SecureHook("TalentFrame_LoadUI", function()
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	end)
 end
 
-	local function StyleButton(button)
-		if InCombatLockdown() then return end
-		if not button then return end
+local function StyleButton(button)
+	if InCombatLockdown() then return end
+	if not button then return end
 
-		local normTex = [[Interface\AddOns\LUI\media\textures\buttons2\Normal.tga]]
-		local backdropTex = [[Interface\AddOns\LUI\media\textures\buttons2\Backdrop.tga]]
-		local glossTex = [[Interface\AddOns\LUI\media\textures\buttons2\Gloss.tga]]
-		local pushedTex = [[Interface\AddOns\LUI\media\textures\buttons2\Normal.tga]]
-		local checkedTex = [[Interface\AddOns\LUI\media\textures\buttons2\Highlight.tga]]
-		local highlightTex = [[Interface\AddOns\LUI\media\textures\buttons2\Highlight.tga]]
-		local flashTex = [[Interface\AddOns\LUI\media\textures\buttons2\Overlay.tga]]
-		local borderTex = [[Interface\AddOns\LUI\media\textures\buttons2\Border.tga]]
-		local font = [[Interface\Addons\LUI\media\fonts\vibrocen.ttf]]
-		local dummy = function() end
+	local normTex = [[Interface\AddOns\LUI\media\textures\buttons2\Normal.tga]]
+	local backdropTex = [[Interface\AddOns\LUI\media\textures\buttons2\Backdrop.tga]]
+	local glossTex = [[Interface\AddOns\LUI\media\textures\buttons2\Gloss.tga]]
+	local pushedTex = [[Interface\AddOns\LUI\media\textures\buttons2\Normal.tga]]
+	local checkedTex = [[Interface\AddOns\LUI\media\textures\buttons2\Highlight.tga]]
+	local highlightTex = [[Interface\AddOns\LUI\media\textures\buttons2\Highlight.tga]]
+	local flashTex = [[Interface\AddOns\LUI\media\textures\buttons2\Overlay.tga]]
+	local borderTex = [[Interface\AddOns\LUI\media\textures\buttons2\Border.tga]]
+	local font = [[Interface\Addons\LUI\media\fonts\vibrocen.ttf]]
+	local dummy = function() end
 		-- LibKeyBound stuff
 		local function GetHotkey(button) return GetBindingKey("CLICK "..button:GetName()..":LeftButton") end
 
@@ -929,364 +1041,391 @@ end
 				LibKeyBound:Set(button)
 			end
 		end
-	
-		if button:GetNormalTexture() then
-			button:GetNormalTexture():SetAlpha(0)
-		end
-	
-		if button:GetParent() then
-			if button:GetParent().HideEmpty and not HasAction(button.action) then
-				button:SetAlpha(0)
-			else
-				button:SetAlpha(1)
-			end
-		end
-	
-		if button.__Styled then return end
-	
-		table.insert(buttonlist, button)
-		button.__Styled = true
 
-		local parent = button:GetParent()
-		if parent then
-			parent = parent:GetName()
-
-			if parent == "MultiCastActionBarFrame" then return end
-			if parent == "MultiCastActionPage1" then return end
-			if parent == "MultiCastActionPage2" then return end
-			if parent == "MultiCastActionPage3" then return end
-			end
-
-		local name = button:GetName()
-		local size = button:GetWidth()
-		local scale = size / 36
-
-		-- first style texts / equipped border, then check for BF/Masque, if not loaded, proceed!
-		-- hotkey
-		local hotkey = _G[name.."HotKey"]
-		hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
-		hotkey:SetDrawLayer("OVERLAY")
-		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPRIGHT", button, "TOPRIGHT", -1, -4)
-		hotkey:SetWidth(40)
-		hotkey:SetHeight(10)
-
-		hotkey.Show_ = hotkey.Show
-		hotkey.Show = function()
-			if db.General.ShowHotkey and hotkey:GetText() ~= RANGE_INDICATOR then
-				hotkey:Show_()
-			end
-		end
-
-		if not db.General.ShowHotkey then hotkey:Hide() end
-
-		-- macro
-		local macro = _G[name.."Name"]
-		macro:SetFont(Media:Fetch("font", db.General.MacroFont), db.General.MacroSize, db.General.MacroOutline)
-		macro:SetDrawLayer("OVERLAY")
-		macro:ClearAllPoints()
-		macro:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 4)
-		macro:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 0, 4)
-		macro:SetHeight(10)
-
-		if not db.General.ShowMacro then macro:Hide() end
-
-		-- count
-		local count = _G[name.."Count"]
-		count:SetFont(Media:Fetch("font", db.General.CountFont), db.General.CountSize, db.General.CountOutline)
-		count:SetDrawLayer("OVERLAY")
-		count:ClearAllPoints()
-		count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 6)
-		count:SetWidth(40)
-		count:SetHeight(10)
-
-		if not db.General.ShowCount then count:Hide() end
-
-		-- border (show/hide functionality)
-		local border = _G[name.."Border"]
-
-		border.Show_ = border.Show
-		border.Show = function() if db.General.ShowEquipped then border:Show_() end end
-
-		if not db.General.ShowEquipped then border:Hide() end
-
-		button.GetHotkey = GetHotkey
-		button:HookScript("OnEnter", Button_OnEnter)
-	
-			if Masque then return end
-
-		-- normal
-		local normal = button:GetNormalTexture()
-		normal:SetTexture("")
-		normal.SetTextureOrig = normal.SetTexture
-		normal.SetTexture = function(self) self:SetTextureOrig("") end
-			normal:Hide()
-		normal.Show = normal.Hide
-		button.SetNormalTexture = dummy
-
-		local newnormal = button:CreateTexture(name.."Normal", "BACKGROUND", 0)
-		newnormal:SetTexture(normTex)
-		newnormal:SetDrawLayer("BORDER", 0)
-		newnormal:SetBlendMode("BLEND")
-		newnormal:SetVertexColor(0.133, 0.133, 0.133, 0.95)
-		newnormal:SetWidth(40 * scale)
-		newnormal:SetHeight(40 * scale)
-		newnormal:ClearAllPoints()
-		newnormal:SetPoint("CENTER", button, "CENTER", 0, 0)
-
-		-- backdrop
-		local backdrop = button:CreateTexture(name.."Backdrop", "BACKGROUND", 0)
-		backdrop:SetParent(button)
-		backdrop:SetTexture(backdropTex)
-		backdrop:SetBlendMode("BLEND")
-		backdrop:SetVertexColor(0.11, 0.11, 0.11, 1)
-		backdrop:SetWidth(40 * scale)
-		backdrop:SetHeight(40 * scale)
-		backdrop:ClearAllPoints()
-		backdrop:SetPoint("CENTER", button, "CENTER", 0, 0)
-
-		-- gloss
-		local gloss = button:CreateTexture(name.."Gloss", "OVERLAY", 0)
-		gloss:SetTexture(glossTex)
-		gloss:SetBlendMode("BLEND")
-		gloss:SetVertexColor(1, 1, 1, 1)
-		gloss:SetAlpha(0.5)
-		gloss:SetWidth(40 * scale)
-		gloss:SetHeight(40 * scale)
-		gloss:ClearAllPoints()
-		gloss:SetPoint("CENTER", button, "CENTER", 0, 0)
-
-		-- cooldown
-		local cooldown = _G[name.."Cooldown"]
-		cooldown:SetWidth(33 * scale)
-		cooldown:SetHeight(33 * scale)
-		cooldown:ClearAllPoints()
-		cooldown:SetPoint("CENTER", button, "CENTER", 0, 0)
-
-		-- pushed
-		local pushed = button:GetPushedTexture()
-		pushed:SetTexture(pushedTex)
-		pushed:SetDrawLayer("BORDER", 5)
-		pushed:SetBlendMode("ALPHAKEY")
-		pushed:SetVertexColor(0.32, 0.32, 0.32, 1)
-		pushed:SetWidth(40 * scale)
-		pushed:SetHeight(40 * scale)
-		pushed:ClearAllPoints()
-		pushed:SetPoint("CENTER", button, "CENTER", 0, 0)
-		button.SetPushedTexture = dummy
-
-		-- checked
-		local checked = button:GetCheckedTexture()
-		checked:SetTexture(checkedTex)
-		checked:SetDrawLayer("BORDER", 2)
-		checked:SetBlendMode("ADD")
-		checked:SetVertexColor(0.4, 0.4, 0.4, 1)
-		checked:SetWidth(40 * scale)
-		checked:SetHeight(40 * scale)
-		checked:ClearAllPoints()
-		checked:SetPoint("CENTER", button, "CENTER", 0, 0)
-		button.SetCheckedTexture = dummy
-
-		-- highlight
-		local highlight = button:GetHighlightTexture()
-		highlight:SetTexture(highlightTex)
-		highlight:SetDrawLayer("HIGHLIGHT", 0)
-		highlight:SetBlendMode("ADD")
-		highlight:SetVertexColor(0.4, 0.4, 0.4, 1)
-		highlight:SetWidth(40 * scale)
-		highlight:SetHeight(40 * scale)
-		highlight:ClearAllPoints()
-		highlight:SetPoint("CENTER", button, "CENTER", 0, 0)
-		button.SetHightlightTexture = dummy
-
-		-- icon
-		local icon = _G[name.."Icon"]
-		icon:SetParent(button)
-		icon:SetDrawLayer("BORDER", -5)
-		icon:SetBlendMode("BLEND")
-		icon:SetWidth(34 * scale)
-		icon:SetHeight(34 * scale)
-		icon:ClearAllPoints()
-		icon:SetPoint("CENTER", button, "CENTER", 0, 0)
-
-		-- flash
-		local flash = _G[name.."Flash"]
-		flash:SetTexture(flashTex)
-		flash:SetDrawLayer("ARTWORK", 0)
-		flash:SetBlendMode("BLEND")
-		flash:SetVertexColor(1, 0, 0, 1)
-		flash:SetWidth(40 * scale)
-		flash:SetHeight(40 * scale)
-		flash:ClearAllPoints()
-		flash:SetPoint("CENTER", button, "CENTER", 0, 0)
-		flash.SetTexture = dummy
-
-		-- border (styling)
-		border:SetTexture(borderTex)
-		border.SetTexture = dummy
-		border:SetDrawLayer("ARTWORK", 0)
-		border:SetBlendMode("ADD")
-		border:SetWidth(40 * scale)
-		border:SetHeight(40 * scale)
-		border:ClearAllPoints()
-		border:SetPoint("CENTER", button, "CENTER", 0, 0)
-
-		-- autocast
-		local autocast = _G[name.."Shine"]
-		if autocast then
-			autocast:SetWidth(34 * scale)
-			autocast:SetHeight(34 * scale)
-			autocast:ClearAllPoints()
-			autocast:SetPoint("CENTER", button, "CENTER", 0, 0)
-		end
-
-		button.SetFrameLevel = dummy
-	end
-	module:SecureHook("ActionButton_Update", StyleButton)
-
-	local function StylePetButtons()
-		for i = 1, 10 do
-			StyleButton(_G["PetActionButton"..i])
-		end
-	end
-	module:SecureHook("PetActionBar_Update", StylePetButtons)
-
-	local function StyleStanceButtons()
-		for i = 1, 10 do
-			StyleButton(_G['StanceButton'..i])
-		end
+	if button:GetNormalTexture() then
+		button:GetNormalTexture():SetAlpha(0)
 	end
 
-	module:SecureHook("StanceBar_Update", StyleStanceButtons)
-	module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
-
-	local flyoutButtons = 0
-	-- local function StyleFlyout(self)
-	-- 	if not self.FlyoutArrow then return end
-	
-	-- 	self.FlyoutBorder:SetAlpha(0)
-	-- 	self.FlyoutBorderShadow:SetAlpha(0)
-	
-	-- 	SpellFlyoutHorizontalBackground:SetAlpha(0)
-	-- 	SpellFlyoutVerticalBackground:SetAlpha(0)
-	-- 	SpellFlyoutBackgroundEnd:SetAlpha(0)
-	
-	-- 	for i = 1, GetNumFlyouts() do
-	-- 		local _, _, numSlots, isKnown = GetFlyoutInfo(GetFlyoutID(i))
-	-- 		if isKnown then
-	-- 			flyoutButtons = numSlots
-	-- 			break
-	-- 		end
-	-- 	end
-	
-	-- 	local arrowDistance
-	-- 	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
-	-- 		arrowDistance = 5
-	-- 	else
-	-- 		arrowDistance = 2
-	-- 	end
-	-- end
-	
-	-- local function StyleFlyoutButton()
-	-- 	for i = 1, flyoutButtons do
-	-- 		if _G["SpellFlyoutButton"..i] then
-	-- 			StyleButton(_G["SpellFlyoutButton"..i])
-	-- 		end
-	-- 	end
-	-- end
-	
-		local function UpdateHotkey(self, abt)
-		local gsub = string.gsub
-		local hotkey = _G[self:GetName().."HotKey"]
-		local text = hotkey:GetText()
-
-		if text == nil then text = "" end
-
-		text = gsub(text, "(s%-)", "S")
-		text = gsub(text, "(a%-)", "A")
-		text = gsub(text, "(c%-)", "C")
-		text = gsub(text, "(Mouse Button )", "M")
-		text = gsub(text, "(Middle Mouse)", "M3")
-		text = gsub(text, "(Mouse Wheel Down)", "MWD")
-		text = gsub(text, "(Mouse Wheel Up)", "MWU")
-		text = gsub(text, "(Num Pad )", "N")
-		text = gsub(text, "(Page Up)", "PU")
-		text = gsub(text, "(Page Down)", "PD")
-		text = gsub(text, "(Spacebar)", "SpB")
-		text = gsub(text, "(Insert)", "Ins")
-		text = gsub(text, "(Home)", "Hm")
-		text = gsub(text, "(Delete)", "Del")
-
-		if hotkey:GetText() == _G["RANGE_INDICATOR"] then
-			hotkey:SetText()
+	if button:GetParent() then
+		if button:GetParent().HideEmpty and not HasAction(button.action) then
+			button:SetAlpha(0)
 		else
-			hotkey:SetText(text)
+			button:SetAlpha(1)
 		end
 	end
-	module:SecureHook("ActionButton_UpdateHotkeys", UpdateHotkey)
 
-	local function Button_UpdateUsable(button)
-		local icon = _G[button:GetName().."Icon"]
-		local isUsable, notEnoughMana = IsUsableAction(button.action)
+	if button.__Styled then return end
 
-		if IsActionInRange(button.action) ~= 0 then
-			if isUsable then
-				icon:SetVertexColor(1.0, 1.0, 1.0)
-			elseif notEnoughMana then
-				icon:SetVertexColor(0.5, 0.5, 1.0)
-			else
-				icon:SetVertexColor(0.4, 0.4, 0.4)
-			end
+	table.insert(buttonlist, button)
+	button.__Styled = true
+
+	local parent = button:GetParent()
+	if parent then
+		parent = parent:GetName()
+
+		if parent == "MultiCastActionBarFrame" then return end
+		if parent == "MultiCastActionPage1" then return end
+		if parent == "MultiCastActionPage2" then return end
+		if parent == "MultiCastActionPage3" then return end
+		if parent == "ExtraActionBarFrame" then return end
+	end
+
+	local name = button:GetName()
+	local size = button:GetWidth()
+	local scale = size / 36
+
+	-- first style texts / equipped border, then check for BF/Masque, if not loaded, proceed!
+	-- hotkey
+	local hotkey = _G[name.."HotKey"]
+	hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
+	hotkey:SetDrawLayer("OVERLAY")
+	hotkey:ClearAllPoints()
+	hotkey:SetPoint("TOPRIGHT", button, "TOPRIGHT", -1, -4)
+	hotkey:SetWidth(40)
+	hotkey:SetHeight(10)
+
+	hotkey.Show_ = hotkey.Show
+	hotkey.Show = function()
+		if db.General.ShowHotkey and hotkey:GetText() ~= RANGE_INDICATOR then
+			hotkey:Show_()
+		end
+	end
+
+	if not db.General.ShowHotkey then hotkey:Hide() end
+
+	-- macro
+	local macro = _G[name.."Name"]
+	macro:SetFont(Media:Fetch("font", db.General.MacroFont), db.General.MacroSize, db.General.MacroOutline)
+	macro:SetDrawLayer("OVERLAY")
+	macro:ClearAllPoints()
+	macro:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 4)
+	macro:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 0, 4)
+	macro:SetHeight(10)
+
+	if not db.General.ShowMacro then macro:Hide() end
+
+	-- count
+	local count = _G[name.."Count"]
+	count:SetFont(Media:Fetch("font", db.General.CountFont), db.General.CountSize, db.General.CountOutline)
+	count:SetDrawLayer("OVERLAY")
+	count:ClearAllPoints()
+	count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 6)
+	count:SetWidth(40)
+	count:SetHeight(10)
+
+	if not db.General.ShowCount then count:Hide() end
+
+	-- border (show/hide functionality)
+	local border = _G[name.."Border"]
+
+	border.Show_ = border.Show
+	border.Show = function() if db.General.ShowEquipped then border:Show_() end end
+
+	if not db.General.ShowEquipped then border:Hide() end
+
+	button.GetHotkey = function(button) return GetBindingKey("CLICK "..button:GetName()..":LeftButton") end
+	button:HookScript("OnEnter", function(button)
+		if button.GetHotkey then
+			LibKeyBound:Set(button)
+		end
+	end)
+
+	--if Masque then return end
+	if Masque and button.__MSQ and not button.__MSQ.db.Disabled then return end
+
+	-- normal
+	local normal = button:GetNormalTexture()
+	normal:SetTexture("")
+	normal.SetTextureOrig = normal.SetTexture
+	normal.SetTexture = function(self) self:SetTextureOrig("") end
+	normal:Hide()
+	normal.Show = normal.Hide
+	button.SetNormalTexture = dummy
+
+	local newnormal = button:CreateTexture(name.."Normal", "BACKGROUND", 0)
+	newnormal:SetTexture(normTex)
+	newnormal:SetDrawLayer("BORDER", 0)
+	newnormal:SetBlendMode("BLEND")
+	newnormal:SetVertexColor(0.133, 0.133, 0.133, 0.95)
+	newnormal:SetWidth(40 * scale)
+	newnormal:SetHeight(40 * scale)
+	newnormal:ClearAllPoints()
+	newnormal:SetPoint("CENTER", button, "CENTER", 0, 0)
+
+	-- backdrop
+	local backdrop = button:CreateTexture(name.."Backdrop", "BACKGROUND", 0)
+	backdrop:SetParent(button)
+	backdrop:SetTexture(backdropTex)
+	backdrop:SetBlendMode("BLEND")
+	backdrop:SetVertexColor(0.11, 0.11, 0.11, 1)
+	backdrop:SetWidth(40 * scale)
+	backdrop:SetHeight(40 * scale)
+	backdrop:ClearAllPoints()
+	backdrop:SetPoint("CENTER", button, "CENTER", 0, 0)
+
+	-- gloss
+	local gloss = button:CreateTexture(name.."Gloss", "OVERLAY", 0)
+	gloss:SetTexture(glossTex)
+	gloss:SetBlendMode("BLEND")
+	gloss:SetVertexColor(1, 1, 1, 1)
+	gloss:SetAlpha(0.5)
+	gloss:SetWidth(40 * scale)
+	gloss:SetHeight(40 * scale)
+	gloss:ClearAllPoints()
+	gloss:SetPoint("CENTER", button, "CENTER", 0, 0)
+
+	-- cooldown
+	local cooldown = _G[name.."Cooldown"]
+	cooldown:SetWidth(33 * scale)
+	cooldown:SetHeight(33 * scale)
+	cooldown:ClearAllPoints()
+	cooldown:SetPoint("CENTER", button, "CENTER", 0, 0)
+
+	-- pushed
+	local pushed = button:GetPushedTexture()
+	pushed:SetTexture(pushedTex)
+	pushed:SetDrawLayer("BORDER", 5)
+	pushed:SetBlendMode("ALPHAKEY")
+	pushed:SetVertexColor(0.32, 0.32, 0.32, 1)
+	pushed:SetWidth(40 * scale)
+	pushed:SetHeight(40 * scale)
+	pushed:ClearAllPoints()
+	pushed:SetPoint("CENTER", button, "CENTER", 0, 0)
+	button.SetPushedTexture = dummy
+
+	-- checked
+	local checked = button:GetCheckedTexture()
+	checked:SetTexture(checkedTex)
+	checked:SetDrawLayer("BORDER", 2)
+	checked:SetBlendMode("ADD")
+	checked:SetVertexColor(0.4, 0.4, 0.4, 1)
+	checked:SetWidth(40 * scale)
+	checked:SetHeight(40 * scale)
+	checked:ClearAllPoints()
+	checked:SetPoint("CENTER", button, "CENTER", 0, 0)
+	button.SetCheckedTexture = dummy
+
+	-- highlight
+	local highlight = button:GetHighlightTexture()
+	highlight:SetTexture(highlightTex)
+	highlight:SetDrawLayer("HIGHLIGHT", 0)
+	highlight:SetBlendMode("ADD")
+	highlight:SetVertexColor(0.4, 0.4, 0.4, 1)
+	highlight:SetWidth(40 * scale)
+	highlight:SetHeight(40 * scale)
+	highlight:ClearAllPoints()
+	highlight:SetPoint("CENTER", button, "CENTER", 0, 0)
+	button.SetHightlightTexture = dummy
+
+	-- icon
+	local icon = _G[name.."Icon"]
+	icon:SetParent(button)
+	icon:SetDrawLayer("BORDER", -5)
+	icon:SetBlendMode("BLEND")
+	icon:SetWidth(34 * scale)
+	icon:SetHeight(34 * scale)
+	icon:ClearAllPoints()
+	icon:SetPoint("CENTER", button, "CENTER", 0, 0)
+
+	-- flash
+	local flash = _G[name.."Flash"]
+	flash:SetTexture(flashTex)
+	flash:SetDrawLayer("ARTWORK", 0)
+	flash:SetBlendMode("BLEND")
+	flash:SetVertexColor(1, 0, 0, 1)
+	flash:SetWidth(40 * scale)
+	flash:SetHeight(40 * scale)
+	flash:ClearAllPoints()
+	flash:SetPoint("CENTER", button, "CENTER", 0, 0)
+	flash.SetTexture = dummy
+
+	-- border (styling)
+	border:SetTexture(borderTex)
+	border.SetTexture = dummy
+	border:SetDrawLayer("ARTWORK", 0)
+	border:SetBlendMode("ADD")
+	border:SetWidth(40 * scale)
+	border:SetHeight(40 * scale)
+	border:ClearAllPoints()
+	border:SetPoint("CENTER", button, "CENTER", 0, 0)
+
+	-- autocast
+	local autocast = _G[name.."Shine"]
+	if autocast then
+		autocast:SetWidth(34 * scale)
+		autocast:SetHeight(34 * scale)
+		autocast:ClearAllPoints()
+		autocast:SetPoint("CENTER", button, "CENTER", 0, 0)
+	end
+
+	button.SetFrameLevel = dummy
+end
+
+local function StylePetButtons()
+	for i = 1, 10 do
+		StyleButton(_G["PetActionButton"..i])
+	end
+end
+
+local function StyleStanceButtons()
+	for i = 1, 10 do
+		StyleButton(_G['StanceButton'..i])
+	end
+end
+
+	-- module:SecureHook("StanceBar_Update", StyleStanceButtons)
+	-- module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
+local flyoutButtons = 0
+local function StyleFlyout(self)
+	if not LUI.IsRetail then return end
+	if not self.FlyoutArrow then return end
+
+	self.FlyoutBorder:SetAlpha(0)
+	self.FlyoutBorderShadow:SetAlpha(0)
+
+	SpellFlyoutHorizontalBackground:SetAlpha(0)
+	SpellFlyoutVerticalBackground:SetAlpha(0)
+	SpellFlyoutBackgroundEnd:SetAlpha(0)
+
+	for i = 1, GetNumFlyouts() do
+		local _, _, numSlots, isKnown = GetFlyoutInfo(GetFlyoutID(i))
+		if isKnown then
+			flyoutButtons = numSlots
+			break
+		end
+	end
+
+	local arrowDistance
+	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
+		arrowDistance = 5
+	else
+		arrowDistance = 2
+	end
+end
+
+local function StyleFlyoutButton()
+	for i = 1, flyoutButtons do
+		if _G["SpellFlyoutButton"..i] then
+			StyleButton(_G["SpellFlyoutButton"..i])
+		end
+	end
+end
+
+local function UpdateHotkey(self, abt)
+	local gsub = string.gsub
+	local hotkey = _G[self:GetName().."HotKey"]
+	local text = hotkey:GetText()
+
+	if text == nil then text = "" end
+
+	text = gsub(text, "(s%-)", "S")
+	text = gsub(text, "(a%-)", "A")
+	text = gsub(text, "(c%-)", "C")
+	text = gsub(text, "(Mouse Button )", "M")
+	text = gsub(text, "(Middle Mouse)", "M3")
+	text = gsub(text, "(Mouse Wheel Down)", "MWD")
+	text = gsub(text, "(Mouse Wheel Up)", "MWU")
+	text = gsub(text, "(Num Pad )", "N")
+	text = gsub(text, "(Page Up)", "PU")
+	text = gsub(text, "(Page Down)", "PD")
+	text = gsub(text, "(Spacebar)", "SpB")
+	text = gsub(text, "(Insert)", "Ins")
+	text = gsub(text, "(Home)", "Hm")
+	text = gsub(text, "(Delete)", "Del")
+
+	if hotkey:GetText() == _G["RANGE_INDICATOR"] then
+		hotkey:SetText()
+	else
+		hotkey:SetText(text)
+	end
+end
+
+local function Button_UpdateUsable(button)
+	local icon = _G[button:GetName().."Icon"]
+	local isUsable, notEnoughMana = IsUsableAction(button.action)
+
+	if IsActionInRange(button.action) ~= 0 then
+		if isUsable then
+			icon:SetVertexColor(1.0, 1.0, 1.0)
+		elseif notEnoughMana then
+			icon:SetVertexColor(0.5, 0.5, 1.0)
 		else
-			icon:SetVertexColor(0.8, 0.1, 0.1)
+			icon:SetVertexColor(0.4, 0.4, 0.4)
 		end
+	else
+		icon:SetVertexColor(0.8, 0.1, 0.1)
 	end
-	module:SecureHook("ActionButton_UpdateUsable", Button_UpdateUsable)
+end
 
-	local function Button_OnUpdate(button, elapsed)
-		button.__elapsed = (button.__elapsed or 0) + elapsed
+local function Button_OnUpdate(button, elapsed)
+	button.__elapsed = (button.__elapsed or 0) + elapsed
 
-		if button.__elapsed > 0.2 then
-			button.__elapsed = nil
-			Button_UpdateUsable(button)
-		end
+	if button.__elapsed > 0.2 then
+		button.__elapsed = nil
+		Button_UpdateUsable(button)
 	end
-	module:SecureHook("ActionButton_OnUpdate", Button_OnUpdate)
+end
 
+function module:HookActionButton(button)
+	if button then
+		-- module:SecureHook(button, "Update", StyleButton)
+		-- module:SecureHook(button, "OnUpdate", Button_OnUpdate)
+		-- module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
+		-- module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
+	end
+	--Prevent rehooking.
+	if not module:IsHooked("StanceBar_Update") then
+		module:SecureHook("StanceBar_Update", StyleStanceButtons)
+		module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
+		module:SecureHook("PetActionBar_Update", StylePetButtons)
+		-- if LUI.IsRetail then
+			module:SecureHook("ActionButton_UpdateFlyout", StyleFlyout)
+			-- SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
+		-- end
+	end
+end
 
-	function module:SetLibKeyBound()
-		function self:LIBKEYBOUND_ENABLED() self.keyBoundMode = true end
+function module:LIBKEYBOUND_ENABLED()
+	module.keyBoundMode = true
+end
+function module:LIBKEYBOUND_DISABLED()
+	module.keyBoundMode = nil
+end
 
-		function self:LIBKEYBOUND_DISABLED() self.keyBoundMode = nil end
-	
+function module:SetLibKeyBound()
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_ENABLED")
 	LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_DISABLED")
-	-- LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
+	--LibKeyBound.RegisterCallback(self, "LIBKEYBOUND_MODE_COLOR_CHANGED")
 end
 
 function module:SetBars()
 	if not (IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Dominos") or IsAddOnLoaded("Macaroon")) and db.General.Enable then
-		if not db.StatesLoaded then LoadStates(g_defaultStates) end
+		ValidateStates()
 
-		self:SetLibKeyBound()
+		module:SetLibKeyBound()
 
 		for i = 1, 6 do
-			self:SetBottomBar(i)
+			module:SetBottomBar(i)
 		end
 
 		for i = 1, 2 do
-			self:SetSideBar("Left", i)
-			self:SetSideBar("Right", i)
+			module:SetSideBar("Left", i)
+			module:SetSideBar("Right", i)
 		end
 
-		self:SetPetBar()
-		self:SetStanceBar()
-		self:SetVehicleExit()
+		module:SetPetBar()
+		module:SetStanceBar()
+		module:SetVehicleExit()
+		module:SetTotemBar()
+		module:SetExtraActionBar()
 
-		self:HideBlizzard()
+		module:HideBlizzard()
+		module:HookActionButton()
 
+		-- because of an ugly bug...
+		module:SecureHook(CharacterFrame, "Show", function() TokenFrame_Update() end)
+		-- self:RegisterEvent("PLAYER_TALENT_UPDATE")
 
-		self:RegisterEvent("PLAYER_LEVEL_UP")
 	else
 		g_isBarAddOnLoaded = true
 	end
@@ -1637,12 +1776,44 @@ module.defaults = {
 				UseGlobalSettings = true,
 			},
 		},
+		TotemBar = {
+			Enable = true,
+			X = 42.5,
+			Y = -267.8,
+			Point = "LEFT",
+			Scale = 0.85,
+			Fader = {
+				Casting = true,
+				Combat = true,
+				Enable = false,
+				Health = true,
+				HealthClip = 1.0,
+				Hover = true,
+				HoverAlpha = 0.75,
+				InAlpha = 1.0,
+				OutAlpha = 0.1,
+				OutDelay = 0.0,
+				OutTime = 1.5,
+				Power = true,
+				PowerClip = 0.9,
+				Targeting = true,
+				UseGlobalSettings = true,
+			},
+		},
 		VehicleExit = {
 			Enable = true,
 			X = -350,
 			Y = -220,
 			Point = "CENTER",
 			Scale = 1,
+		},
+		ExtraActionBar = {
+			Enable = true,
+			X = 0, -- -314,
+			Y = 145, -- 41,
+			Point = "BOTTOM",
+			Scale = 0.9,
+			HideTextures = false,
 		},
 	},
 }
@@ -1714,7 +1885,7 @@ local function createBottomBarOptions(num, order)
 end
 
 local function setSidebarState(info, value)
-		info[#info] = tonumber(info[#info]) or info[#info]
+	info[#info] = tonumber(info[#info]) or info[#info]
 	local val = info.option.values()[value]
 	module.db(info, val)
 
@@ -1729,6 +1900,7 @@ local optIsDisabled = {
 	BottomTex = function() return not db.BottomTexture.Enable end,
 	["Stance Bar"] = function() return not db.StanceBar.Enable end,
 	["Pet Bar"] = function() return not db.PetBar.Enable end,
+	["Totem Bar"] = function() return not db.TotemBar.Enable end,
 	["Vehicle Exit"] = function() return not db.VehicleExit.Enable end,
 	Hotkey = function() return not db.General.ShowHotkey end,
 	Count = function() return not db.General.ShowCount end,
@@ -1736,10 +1908,10 @@ local optIsDisabled = {
 }
 
 local btSideBarPresets = {
-	Right1 = { position = { x = -90, y = 95,   point = "RIGHT",    }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
-	Left1 =  { position = { x = 20,  y = 95,   point = "LEFT",     }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
-	Right2 = { position = { x = -90, y = -210, point = "TOPRIGHT", }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
-	Left2 =  { position = { x = 20,  y = -210, point = "TOPLEFT",  }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, vehicleui = false}},
+	Right1 = { position = { x = -90, y = 95,   point = "RIGHT",    }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
+	Left1 =  { position = { x = 20,  y = 95,   point = "LEFT",     }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
+	Right2 = { position = { x = -90, y = -210, point = "TOPRIGHT", }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
+	Left2 =  { position = { x = 20,  y = -210, point = "TOPLEFT",  }, buttons = 12, rows = 6, alpha = 1, hidehotkey = true, hidemacrotext = true, visibility = {always = false, possess = false, vehicleui = false}},
 }
 
 function module:AutoAdjustBT4(sideID)
@@ -1815,7 +1987,7 @@ local function createSideBarOptions(side, num, order)
 		Scale = module:NewSlider("Scale", "Choose the Scale for this Sidebar.", 7.33, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
 		AutoAdjust = module:NewExecute("Auto-Adjust BT4Bar", "If you recently changed the bar anchor, make sure to move the previous bar outside of the Sidebar to prevent overlaps.", 7.66, showDialog, nil, nil, disabledFunc, not IsAddOnLoaded("Bartender4")),
 		empty4 = module:NewDesc(" ", 8),
-		[""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
+		-- [""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
 		AutoPosDisable = g_isBarAddOnLoaded and module:NewToggle("Stop touching me!", "Whether or not to have LUI handle your Bar Positioning.", 10, true, nil, disabledFunc) or nil,
 		HideEmpty = not g_isBarAddOnLoaded and module:NewToggle("Hide Empty Buttons", nil, 11, true, nil, disabledFunc) or nil,
 		empty3 = module:NewDesc(" ", 12),
@@ -1846,237 +2018,217 @@ local function createSideBarOptions(side, num, order)
 			SidebarSetAnchor(side, num)
 		end
 	end
-	
-		return option
-	end
-	
-	local function createOtherBarOptions(name, order, frame, dbName, multiRow)
-		-- if g_isBarAddOnLoaded then return end
-		-- local specialBar = (name == "Extra Action Bar")
-		-- local function setDummyBar()
-		-- 	if InCombatLockdown() then return end
-		-- 	toggleDummyBar(ExtraActionBarFrame)
-		-- end
-	
-		local option = module:NewGroup(name, order, false, InCombatLockdown, {
-			header0 = module:NewHeader(name.." Settings", 0),
-			Enable = module:NewToggle("Show "..name, nil, 1, true),
-			[""] = module:NewPosSliders(name, 2, false, frame, true, nil, optIsDisabled[name]),
-			Point = module:NewSelect("Point", "Choose the Point for the "..name..".", 3, g_pointList, nil, setOptionPoints, nil, optIsDisabled[name]),
-			Scale = module:NewSlider("Scale", "Choose the Scale for the "..name..".", 4, 0.1, 1.5, 0.05, true, true, nil, nil, optIsDisabled[name]),
-	
-			HideTextures = specialBar and module:NewToggle("Hide Textures", "Whether or not to hide "..name.." textures.", 5, true) or nil,
-			DummyBar = specialBar and module:NewExecute("Show Dummy "..name, "Click to show/hide a dummy "..name..".", 6, setDummyBar, nil, optIsDisabled[name]) or nil,
-			NumPerRow = multiRow and module:NewSlider("Buttons per Row", "Choose the Number of Buttons per Row.", 5, 1, 10, 1, true, nil, nil, nil, optIsDisabled[name]) or nil,
-		})
-	
-		return option
+
+	return option
+end
+
+local function createOtherBarOptions(name, order, frame, dbName, multiRow)
+	if g_isBarAddOnLoaded then return end
+	local specialBar = (name == "Extra Action Bar")
+	local function setDummyBar()
+		if InCombatLockdown() then return end
+		toggleDummyBar(ExtraActionBarFrame)
 	end
 
-	function module:LoadOptions()
-		local dryCall = function() module:Refresh() end
-	
-		local options = {
-			General = module:NewGroup("General", 1, false, InCombatLockdown, {
-				header1 = module:NewHeader("General Settings", 0),
-				Enable = module:NewToggle("Enable", "Whether or not to use LUI's Action Bars.", 1, function() StaticPopup_Show("RELOAD_UI") end),
-				empty1 = module:NewDesc(" ", 2),
-				AdjustUIPanels = module:NewToggle("Adjust Blizzard's UI Panel positions", nil, 3, true),
-				empty2 = module:NewDesc(" ", 4),
-				ShowHotkey = module:NewToggle("Show Hotkey Text", nil, 5, true, nil, nil, g_isBarAddOnLoaded),
-				HotkeySize = module:NewSlider("Hotkey Size", "Choose your Hotkey Fontsize.", 6, 1, 40, 1, true, nil, nil, optIsDisabled.Hotkey, g_isBarAddOnLoaded),
-				HotkeyFont = module:NewSelect("Hotkey Font", "Choose your Hotkey Font.", 7, widgetLists.font, "LSM30_Font", true, nil, optIsDisabled.Hotkey, g_isBarAddOnLoaded),
-				HotkeyOutline = module:NewSelect("HotkeyFont Flag", "Choose your Hotkey Fontflag.", 8, LUI.FontFlags, false, dryCall, nil, optIsDisabled.Hotkey, g_isBarAddOnLoaded),
-				empty3 = module:NewDesc(" ", 9, nil, nil, g_isBarAddOnLoaded),
-				ShowMacro = module:NewToggle("Show Macro Text", nil, 10, true, nil, nil, g_isBarAddOnLoaded),
-				MacroSize = module:NewSlider("Macro Size", "Choose your Macro Fontsize.", 11, 1, 40, 1, true, nil, nil, optIsDisabled.Macro, g_isBarAddOnLoaded),
-				MacroFont = module:NewSelect("Macro Font", "Choose your Macro Font.", 12, widgetLists.font, "LSM30_Font", true, nil, optIsDisabled.Macro, g_isBarAddOnLoaded),
-				MacroOutline = module:NewSelect("Macro Font Flag", "Choose your Macro Fontflag.", 13, LUI.FontFlags, false, dryCall, nil, optIsDisabled.Macro, g_isBarAddOnLoaded),
-				empty4 = module:NewDesc(" ", 14, nil, nil, g_isBarAddOnLoaded),
-				ShowCount = module:NewToggle("Show Count Text", nil, 15, true, nil, nil, g_isBarAddOnLoaded),
-				CountSize = module:NewSlider("Count Size", "Choose your Count Fontsize.", 16, 1, 40, 1, true, nil, nil, optIsDisabled.Count, g_isBarAddOnLoaded),
-				CountFont = module:NewSelect("Count Font", "Choose your Count Font.", 17, widgetLists.font, "LSM30_Font", true, nil, optIsDisabled.Count, g_isBarAddOnLoaded),
-				CountOutline = module:NewSelect("Count Font Flag", "Choose your Count Fontflag.", 18, LUI.FontFlags, false, dryCall, nil, optIsDisabled.Count, g_isBarAddOnLoaded),
-				empty5 = module:NewDesc(" ", 19, nil, nil, g_isBarAddOnLoaded),
-				ShowEquipped = module:NewToggle("Show Equipped Border", nil, 20, true, nil, nil, g_isBarAddOnLoaded),
-				empty6 = module:NewDesc(" ", 21, nil, nil, g_isBarAddOnLoaded),
-				LoadLUI = module:NewExecute("Load LUI States", "Load the default Bar States.", 21, function() LoadStates(g_defaultStates); module:Refresh() end, nil, nil, g_isBarAddOnLoaded, g_isBarAddOnLoaded),
-				empty7 = module:NewDesc(" ", 23, nil, nil, g_isBarAddOnLoaded),
-				ToggleKB = module:NewExecute("Keybinds", "Toggles Keybinding mode.", 24, function() LibKeyBound:Toggle() end, nil, nil, g_isBarAddOnLoaded, g_isBarAddOnLoaded),
-				empty8 = module:NewDesc(" ", 25),
-				Reset = module:NewExecute("Restore Defaults", "Restores Bar Default Settings. (Does NOT affect Bartender etc! For this go to General->AddOns)", -1, function() module.db:ResetProfile(); module:Refresh() end),
-			}),
-			TopTexture = module:NewGroup("Top Texture", 2, false, InCombatLockdown, {
-				header1 = module:NewHeader("Top Texture Settings", 0),
-				Enable = module:NewToggle("Enable", "Whether or not to show the Top Bar Texture.", 1, true),
-				Alpha = module:NewSlider("Alpha", "Choose your Top Bar Texture Alpha.", 2, nil, nil, nil, true, true, nil, optIsDisabled.TopTex),
-				empty1 = module:NewDesc(" ", 3),
-				[""] = module:NewPosSliders("Top Bar Texture", 4, false, "LUIBarsTopBG", nil, nil, optIsDisabled.TopTex),
-			}),
-			BottomTexture = module:NewGroup("Bottom Texture", 3, false, InCombatLockdown, {
-				header1 = module:NewHeader("Bottom Texture Settings", 0),
-				Enable = module:NewToggle("Enable", "Whether or not to show the Bottom Bar Texture.", 1, true),
-				Alpha = module:NewSlider("Alpha", "Choose your Bottom Bar Texture Alpha.", 2, nil, nil, nil, true, true, nil, optIsDisabled.BottomTex),
-				empty1 = module:NewDesc(" ", 3),
-				[""] = module:NewPosSliders("Bottom Bar Texture", 4, false, "LUIBarsBottomBG", nil, nil, optIsDisabled.BottomTex),
-			}),
-			Bottombar1 = createBottomBarOptions(1, 4),
-			Bottombar2 = createBottomBarOptions(2, 5),
-			Bottombar3 = createBottomBarOptions(3, 6),
-			Bottombar4 = createBottomBarOptions(4, 7),
-			Bottombar5 = createBottomBarOptions(5, 8),
-			Bottombar6 = createBottomBarOptions(6, 9),
-			SidebarRight1 = createSideBarOptions("Right", 1, 10),
-			SidebarRight2 = createSideBarOptions("Right", 2, 11),
-			SidebarLeft1 = createSideBarOptions("Left", 1, 12),
-			SidebarLeft2 = createSideBarOptions("Left", 2, 13),
-			StanceBar = createOtherBarOptions("Shapeshift/Stance Bar", 14, "LUIStanceBar", "StanceBar", true),
-			PetBar = createOtherBarOptions("Pet Bar", 15, "LUIPetBar", "PetBar", true),
-			VehicleExit = createOtherBarOptions("Vehicle Exit Button", 17, "LUIVehicleExit"),
-		}
-	
-		return options
-	end
-	
-	function module:Refresh(...)
-		local info, value = ...
-		if type(info) == "table" then
-			db(info, value)
-		end
-	
-		if not g_isBarAddOnLoaded then
-			for i = 1, 6 do
-				module:SetBottomBar(i)
-			end
-	
-			for i = 1, 2 do
-				module:SetSideBar("Left", i)
-				module:SetSideBar("Right", i)
-			end
-	
-			for _, bar in pairs(bars) do
-				HookGrid(bar)
-			end
-	
-			module:SetPetBar()
-			module:SetStanceBar()
-			module:SetVehicleExit()
-		end
-	
-		LUIBarsTopBG:SetAlpha(db.TopTexture.Alpha)
-		LUIBarsTopBG:ClearAllPoints()
-		LUIBarsTopBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.TopTexture.X, db.TopTexture.Y)
-		ShowIf(LUIBarsTopBG, db.TopTexture.Enable)
+	local option = module:NewGroup(name, order, false, InCombatLockdown, {
+		header0 = module:NewHeader(name.." Settings", 0),
+		Enable = module:NewToggle("Show "..name, nil, 1, true),
+		[""] = module:NewPosSliders(name, 2, false, frame, true, nil, optIsDisabled[name]),
+		Point = module:NewSelect("Point", "Choose the Point for the "..name..".", 3, g_pointList, nil, setOptionPoints, nil, optIsDisabled[name]),
+		Scale = module:NewSlider("Scale", "Choose the Scale for the "..name..".", 4, 0.1, 1.5, 0.05, true, true, nil, nil, optIsDisabled[name]),
 
-		if Forte:IsEnabled() and Forte.db.Cooldown.Lock then
-			local FXCD = FW and FW.Frames.FX_Cooldown1
-			if FXCD and FXCD:IsShown() then
-				LUIBarsTopBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.TopTexture.X, db.TopTexture.Y + db.TopTexture.AnimationHeight)
-			end
-		end
-	
-		LUIBarsBottomBG:SetAlpha(db.BottomTexture.Alpha)
-		LUIBarsBottomBG:ClearAllPoints()
-		LUIBarsBottomBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.BottomTexture.X, db.BottomTexture.Y)
-		ShowIf(LUIBarsBottomBG, db.BottomTexture.Enable)
-	
-		for _, button in pairs(buttonlist) do
-			local name = button:GetName()
-	
-			local count = _G[name.."Count"]
-			if count then
-				count:SetFont(Media:Fetch("font", db.General.CountFont), db.General.CountSize, db.General.CountOutline)
-			if db.General.ShowCount then
-				count:Show()
-			else
-				count:Hide()
-			end
-			end
-	
-			local hotkey = _G[name.."HotKey"]
-			if hotkey then
-				hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
-				if db.General.ShowHotkey then
-					hotkey:Show()
-				else
-					hotkey:Hide()
-				end
-				end
-	
-			local macro = _G[name.."Name"]
-			if macro then
-				macro:SetFont(Media:Fetch("font", db.General.MacroFont), db.General.MacroSize, db.General.MacroOutline)
-				if db.General.ShowMacro then
-					macro:Show()
-				else
-					macro:Hide()
-				end
-				end
-	
-			local border = _G[name.."Border"]
-			if db.General.ShowEquipped and button.action and IsEquippedAction(button.action) then
-				if border then border:Show() end
-			else
-				if border then border:Hide() end
-				end
-		end
-	
-		SidebarSetAnchor("Left", 1)
-		SidebarSetAnchor("Left", 2)
-		SidebarSetAnchor("Right", 1)
-		SidebarSetAnchor("Right", 2)
-	
-		UpdateUIPanelOffset(true)
+		HideTextures = specialBar and module:NewToggle("Hide Textures", "Whether or not to hide "..name.." textures.", 5, true) or nil,
+		DummyBar = specialBar and module:NewExecute("Show Dummy "..name, "Click to show/hide a dummy "..name..".", 6, setDummyBar, nil, optIsDisabled[name]) or nil,
+		NumPerRow = multiRow and module:NewSlider("Buttons per Row", "Choose the Number of Buttons per Row.", 5, 1, 10, 1, true, nil, nil, nil, optIsDisabled[name]) or nil,
+	})
+
+	return option
+end
+
+function module:LoadOptions()
+	local dryCall = function() module:Refresh() end
+
+	local options = {
+		General = module:NewGroup("General", 1, false, InCombatLockdown, {
+			header1 = module:NewHeader("General Settings", 0),
+			Enable = module:NewToggle("Enable", "Whether or not to use LUI's Action Bars.", 1, function() StaticPopup_Show("RELOAD_UI") end),
+			empty1 = module:NewDesc(" ", 2),
+			AdjustUIPanels = module:NewToggle("Adjust Blizzard's UI Panel positions", nil, 3, true),
+			empty2 = module:NewDesc(" ", 4),
+			ShowHotkey = module:NewToggle("Show Hotkey Text", nil, 5, true, nil, nil, g_isBarAddOnLoaded),
+			HotkeySize = module:NewSlider("Hotkey Size", "Choose your Hotkey Fontsize.", 6, 1, 40, 1, true, nil, nil, optIsDisabled.Hotkey, g_isBarAddOnLoaded),
+			HotkeyFont = module:NewSelect("Hotkey Font", "Choose your Hotkey Font.", 7, widgetLists.font, "LSM30_Font", true, nil, optIsDisabled.Hotkey, g_isBarAddOnLoaded),
+			HotkeyOutline = module:NewSelect("HotkeyFont Flag", "Choose your Hotkey Fontflag.", 8, LUI.FontFlags, false, dryCall, nil, optIsDisabled.Hotkey, g_isBarAddOnLoaded),
+			empty3 = module:NewDesc(" ", 9, nil, nil, g_isBarAddOnLoaded),
+			ShowMacro = module:NewToggle("Show Macro Text", nil, 10, true, nil, nil, g_isBarAddOnLoaded),
+			MacroSize = module:NewSlider("Macro Size", "Choose your Macro Fontsize.", 11, 1, 40, 1, true, nil, nil, optIsDisabled.Macro, g_isBarAddOnLoaded),
+			MacroFont = module:NewSelect("Macro Font", "Choose your Macro Font.", 12, widgetLists.font, "LSM30_Font", true, nil, optIsDisabled.Macro, g_isBarAddOnLoaded),
+			MacroOutline = module:NewSelect("Macro Font Flag", "Choose your Macro Fontflag.", 13, LUI.FontFlags, false, dryCall, nil, optIsDisabled.Macro, g_isBarAddOnLoaded),
+			empty4 = module:NewDesc(" ", 14, nil, nil, g_isBarAddOnLoaded),
+			ShowCount = module:NewToggle("Show Count Text", nil, 15, true, nil, nil, g_isBarAddOnLoaded),
+			CountSize = module:NewSlider("Count Size", "Choose your Count Fontsize.", 16, 1, 40, 1, true, nil, nil, optIsDisabled.Count, g_isBarAddOnLoaded),
+			CountFont = module:NewSelect("Count Font", "Choose your Count Font.", 17, widgetLists.font, "LSM30_Font", true, nil, optIsDisabled.Count, g_isBarAddOnLoaded),
+			CountOutline = module:NewSelect("Count Font Flag", "Choose your Count Fontflag.", 18, LUI.FontFlags, false, dryCall, nil, optIsDisabled.Count, g_isBarAddOnLoaded),
+			empty5 = module:NewDesc(" ", 19, nil, nil, g_isBarAddOnLoaded),
+			ShowEquipped = module:NewToggle("Show Equipped Border", nil, 20, true, nil, nil, g_isBarAddOnLoaded),
+			empty6 = module:NewDesc(" ", 21, nil, nil, g_isBarAddOnLoaded),
+			LoadLUI = module:NewExecute("Load LUI States", "Load the default Bar States.", 21, function() LoadStates(g_defaultStates); module:Refresh() end, nil, nil, g_isBarAddOnLoaded, g_isBarAddOnLoaded),
+			empty7 = module:NewDesc(" ", 23, nil, nil, g_isBarAddOnLoaded),
+			ToggleKB = module:NewExecute("Keybinds", "Toggles Keybinding mode.", 24, function() LibKeyBound:Toggle() end, nil, nil, g_isBarAddOnLoaded, g_isBarAddOnLoaded),
+			empty8 = module:NewDesc(" ", 25),
+			Reset = module:NewExecute("Restore Defaults", "Restores Bar Default Settings. (Does NOT affect Bartender etc! For this go to General->AddOns)", -1, function() module.db:ResetProfile(); module:Refresh() end),
+		}),
+		TopTexture = module:NewGroup("Top Texture", 2, false, InCombatLockdown, {
+			header1 = module:NewHeader("Top Texture Settings", 0),
+			Enable = module:NewToggle("Enable", "Whether or not to show the Top Bar Texture.", 1, true),
+			Alpha = module:NewSlider("Alpha", "Choose your Top Bar Texture Alpha.", 2, nil, nil, nil, true, true, nil, optIsDisabled.TopTex),
+			empty1 = module:NewDesc(" ", 3),
+			[""] = module:NewPosSliders("Top Bar Texture", 4, false, "LUIBarsTopBG", nil, nil, optIsDisabled.TopTex),
+		}),
+		BottomTexture = module:NewGroup("Bottom Texture", 3, false, InCombatLockdown, {
+			header1 = module:NewHeader("Bottom Texture Settings", 0),
+			Enable = module:NewToggle("Enable", "Whether or not to show the Bottom Bar Texture.", 1, true),
+			Alpha = module:NewSlider("Alpha", "Choose your Bottom Bar Texture Alpha.", 2, nil, nil, nil, true, true, nil, optIsDisabled.BottomTex),
+			empty1 = module:NewDesc(" ", 3),
+			[""] = module:NewPosSliders("Bottom Bar Texture", 4, false, "LUIBarsBottomBG", nil, nil, optIsDisabled.BottomTex),
+		}),
+		Bottombar1 = createBottomBarOptions(1, 4),
+		Bottombar2 = createBottomBarOptions(2, 5),
+		Bottombar3 = createBottomBarOptions(3, 6),
+		Bottombar4 = createBottomBarOptions(4, 7),
+		Bottombar5 = createBottomBarOptions(5, 8),
+		Bottombar6 = createBottomBarOptions(6, 9),
+		SidebarRight1 = createSideBarOptions("Right", 1, 10),
+		SidebarRight2 = createSideBarOptions("Right", 2, 11),
+		SidebarLeft1 = createSideBarOptions("Left", 1, 12),
+		SidebarLeft2 = createSideBarOptions("Left", 2, 13),
+		StanceBar = createOtherBarOptions("Shapeshift/Stance Bar", 14, "LUIStanceBar", "StanceBar", true),
+		PetBar = createOtherBarOptions("Pet Bar", 15, "LUIPetBar", "PetBar", true),
+		Totembar = createOtherBarOptions("Totem Bar", 16, "LUITotemBar", "TotemBar", true) or nil,
+		VehicleExit = createOtherBarOptions("Vehicle Exit Button", 17, "LUIVehicleExit"),
+		ExtraActionBar = createOtherBarOptions("Extra Action Bar", 18, "LUIExtraActionBar"),
+	}
+
+	return options
+end
+
+function module:Refresh(...)
+	local info, value = ...
+	if type(info) == "table" then
+		db(info, value)
 	end
-	
-	function module:OnInitialize()
-		db, dbd = LUI:NewNamespace(self)
-	
-		local ProfileName = UnitName("player").." - "..GetRealmName()
-		local currentVersion = LUI.db.global.luiconfig[ProfileName].Versions.bars
-	
-		-- recalc X/Y values for fixed scale options
-		if currentVersion and currentVersion < 2.4 then
-			for k, v in pairs(module.db.profile) do
-				if type(v) == "table" then
-					if v.Scale then
-						if v.X ~= module.defaults.profile[k].X then
-							v.X = v.X * v.Scale * v.Scale
-						end
-	
-						if v.Y ~= module.defaults.profile[k].Y then
-							v.Y = v.Y * v.Scale * v.Scale
-						end
-					end
-				end
-			end
-			LUI.db.global.luiconfig[ProfileName].Versions.bars = 2.4
+
+	if not g_isBarAddOnLoaded then
+		for i = 1, 6 do
+			module:SetBottomBar(i)
 		end
-	
-	end
-	
-	function module:PLAYER_LEVEL_UP()
+
+		for i = 1, 2 do
+			module:SetSideBar("Left", i)
+			module:SetSideBar("Right", i)
+		end
+
+		for _, bar in pairs(bars) do
+			HookGrid(bar)
+		end
+
+		module:SetPetBar()
 		module:SetStanceBar()
+		module:SetTotemBar()
+		module:SetVehicleExit()
+		module:SetExtraActionBar()
 	end
-	
-	function module:OnEnable()
-		module:SetBars()
-	
-		--- This oen needed to be delayed until all addons are loaded.
-		local ProfileName = UnitName("player").." - "..GetRealmName()
-		local currentVersion = LUI.db.global.luiconfig[ProfileName].Versions.bars
-		if not currentVersion then
-			LUI.db.global.luiconfig[ProfileName].Versions.bars = LUI.Versions.bars
-		elseif currentVersion and currentVersion < LUI.Versions.bars then
-			module:AutoAdjustBT4("Right1")
-			module:AutoAdjustBT4("Right2")
-			module:AutoAdjustBT4("Left1")
-			module:AutoAdjustBT4("Left2")
-			LUI.db.global.luiconfig[ProfileName].Versions.bars = 2.5
+
+	LUIBarsTopBG:SetAlpha(db.TopTexture.Alpha)
+	LUIBarsTopBG:ClearAllPoints()
+	LUIBarsTopBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.TopTexture.X, db.TopTexture.Y)
+	ShowIf(LUIBarsTopBG, db.TopTexture.Enable)
+
+	LUIBarsBottomBG:SetAlpha(db.BottomTexture.Alpha)
+	LUIBarsBottomBG:ClearAllPoints()
+	LUIBarsBottomBG:SetPoint("BOTTOM", UIParent, "BOTTOM", db.BottomTexture.X, db.BottomTexture.Y)
+	ShowIf(LUIBarsBottomBG, db.BottomTexture.Enable)
+
+	for _, button in pairs(buttonlist) do
+		local name = button:GetName()
+
+		local count = _G[name.."Count"]
+		if count then
+			count:SetFont(Media:Fetch("font", db.General.CountFont), db.General.CountSize, db.General.CountOutline)
+			ShowIf(count, db.General.ShowCount)
+		end
+
+		local hotkey = _G[name.."HotKey"]
+		if hotkey then
+			hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
+			ShowIf(hotkey, db.General.ShowHotkey)
+		end
+
+		local macro = _G[name.."Name"]
+		if macro then
+			macro:SetFont(Media:Fetch("font", db.General.MacroFont), db.General.MacroSize, db.General.MacroOutline)
+			ShowIf(macro, db.General.ShowMacro)
+		end
+
+		local border = _G[name.."Border"]
+		if border then
+			ShowIf(border, db.General.ShowEquipped and button.action and IsEquippedAction(button.action))
 		end
 	end
-	
-	function module:OnDisable()
-		module:UnRegisterEvent("PLAYER_LEVEL_UP")
-	end
-	
+
+	SidebarSetAnchor("Left", 1)
+	SidebarSetAnchor("Left", 2)
+	SidebarSetAnchor("Right", 1)
+	SidebarSetAnchor("Right", 2)
+
+	UpdateUIPanelOffset(true)
+end
+
+function module:OnInitialize()
+	db, dbd = LUI:NewNamespace(self)
+
+	-- local currentVersion = LUI.db.global.luiconfig[LUI.profileName].Versions.bars
+
+	-- recalc X/Y values for fixed scale options
+	-- if currentVersion and currentVersion < 2.4 then
+	-- 	for k, v in pairs(module.db.profile) do
+	-- 		if type(v) == "table" then
+	-- 			if v.Scale then
+	-- 				if v.X ~= module.defaults.profile[k].X then
+	-- 					v.X = v.X * v.Scale * v.Scale
+	-- 				end
+
+	-- 				if v.Y ~= module.defaults.profile[k].Y then
+	-- 					v.Y = v.Y * v.Scale * v.Scale
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
+	-- 	LUI.db.global.luiconfig[LUI.profileName].Versions.bars = 2.4
+	-- end
+
+end
+
+function module:PLAYER_SPECIALIZATION_CHANGED()
+	module:SetStanceBar()
+end
+
+function module:OnEnable()
+	module:SetBars()
+
+	--- This one needed to be delayed until all addons are loaded.
+	-- local currentVersion = LUI.db.global.luiconfig[LUI.profileName].Versions.bars
+	-- if not currentVersion then
+	-- 	LUI.db.global.luiconfig[LUI.profileName].Versions.bars = LUI.Versions.bars
+	-- elseif currentVersion and currentVersion < LUI.Versions.bars then
+		module:AutoAdjustBT4("Right1")
+		module:AutoAdjustBT4("Right2")
+		module:AutoAdjustBT4("Left1")
+		module:AutoAdjustBT4("Left2")
+		-- LUI.db.global.luiconfig[LUI.profileName].Versions.bars = 2.5
+	-- end
+end
+
+function module:OnDisable()
+	module:UnRegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+end
