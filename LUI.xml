@@ -28,7 +28,6 @@
 	<Script file="addons\omen.lua"/>
 	<Script file="addons\recount.lua"/>
 	<Script file="addons\details.lua"/>
-	<Script file="addons\forte.lua"/>
 
 	<!-- Extended Modules -->
 	<Include file="modules\auras\auras.xml"/>
@@ -41,13 +40,11 @@
 	<Script file="modules\faq.lua"/>
 	<Script file="modules\micromenu.lua"/>
 	<Include file="modules\raidmenu.xml"/>
-	<Script file="modules\swing.lua"/>
 	<Script file="modules\threatbar.lua"/>
 	<Script file="modules\merchant.lua"/>
 	<Script file="modules\removethatbuff.lua"/>
 	<Script file="modules\mirrorbar.lua"/>
 	<Script file="modules\artwork.lua"/>
-	<!-- <Script file="modules\nameplates.lua"/> -->
 
 	<!-- Additional Scripts -->
 	<Script file="scripts\autoinvite.lua"/>
@@ -57,7 +54,6 @@
 	<Script file="scripts\errorhider.lua"/>
 	<Script file="scripts\frameidentifier.lua"/>
 	<Script file="scripts\talentspam.lua"/>
-	<script file="scripts\WorldMapFix.lua"/>
 	<Script file="scripts\newplayerexperience.lua"/>
 
 	<!-- Initialize Unitframes -->
@@ -88,7 +84,7 @@
 
 	<!-- Unitframe Options -->
 	<Script file="unitframes\options\colors.lua"/>
-	<Script file="unitframes\options\copysettings.lua"/> -->
+	<Script file="unitframes\options\copysettings.lua"/>
 	<Script file="unitframes\options\general.lua"/>
 	<Script file="unitframes\options\importexport.lua"/>
 	<Script file="unitframes\options\movable.lua"/>
@@ -101,20 +97,12 @@
 	<Script file="unitframes\plugins\oUF_Experience.lua"/>
 	<Script file="unitframes\plugins\oUF_Reputation.lua"/>
 	<Script file="unitframes\plugins\oUF_RaidDebuffs.lua"/>
-	<!-- <Script file="unitframes\plugins\oUF_Smooth.lua"/> -->
 
 	<!-- to investigate as we may not need these anymore -->
 	<Script file="unitframes\plugins\singleauras.lua"/>
 	<Script file="unitframes\plugins\raiddebuffs.lua"/>
 	<Script file="unitframes\plugins\maintank.lua"/>
-	<!-- <Script file="unitframes\plugins\vehicle.lua"/> -->
-
-	<!-- to possibly move into the core/standard oUF style -->
-	<!-- <Script file="unitframes\plugins\arcanecharges.lua"/> -->
-	<!-- <Script file="unitframes\plugins\chi.lua"/> -->
-	<!-- <Script file="unitframes\plugins\holypower.lua"/> -->
-	<!-- <Script file="unitframes\plugins\warlockbar.lua"/> -->
-	<Script file="unitframes\plugins\totalabsorb.lua"/>
+	<Script file="unitframes\plugins\vehicle.lua"/>
 
 	<!-- Unitframe Layout -->
 	<Script file="unitframes\layout\tags.lua"/>
