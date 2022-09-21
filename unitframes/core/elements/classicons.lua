@@ -150,12 +150,11 @@ local function Visibility(self, event, unit)
 	local element = self.ClassIcons
 	local shouldEnable
 
-	if UPDATE_SHAPESHIFT_FORM then
+	if(UnitHasVehicleUI('player')) then
 	 	if(UnitPowerType('vehicle') == Enum.PowerType.Energy) then
 			shouldEnable = true
 		end
-	end
-	if(ClassPowerID) then
+	elseif(ClassPowerID) then
 		if(not RequireSpec or RequireSpec == GetSpecialization()) then
 			if(not RequireForm or RequireForm == GetShapeshiftFormID()) then
 				if(not RequireSpell or IsPlayerSpell(RequireSpell)) then
@@ -192,7 +191,7 @@ do
 		self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
 		self:RegisterEvent('UNIT_MAXPOWER', Path)
 
-		if UPDATE_SHAPESHIFT_FORM then
+		if(UnitHasVehicleUI('player')) then
 			Path(self, 'ClassPowerEnable', 'vehicle', 'COMBO_POINTS')
 		else
 			local element = self.ClassIcons
@@ -220,7 +219,17 @@ do
 		self.ClassIcons.isEnabled = false
 	end
 
-	if(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
+	if(PlayerClass == 'MONK') then
+		ClassPowerID = Enum.PowerType.Chi or 12
+		ClassPowerType = "CHI"
+		RequireSpec = SPEC_MONK_WINDWALKER
+	elseif(PlayerClass == 'PALADIN') then
+		ClassPowerID = Enum.PowerType.HolyPower or 9
+		ClassPowerType = "HOLY_POWER"
+	elseif(PlayerClass == 'WARLOCK') then
+		ClassPowerID = Enum.PowerType.SoulShards or 7
+		ClassPowerType = "SOUL_SHARDS"
+	elseif(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
 		ClassPowerID = Enum.PowerType.ComboPoints or 4
 		ClassPowerType = 'COMBO_POINTS'
 
@@ -228,6 +237,10 @@ do
 			RequireForm = CAT_FORM
 			RequireSpell = 5221 -- Shred
 		end
+	elseif(PlayerClass == 'MAGE') then
+		ClassPowerID = Enum.PowerType.ArcaneCharges or 16
+		ClassPowerType = 'ARCANE_CHARGES'
+		RequireSpec = SPEC_MAGE_ARCANE
 	end
 end
 
@@ -241,9 +254,9 @@ local Enable = function(self, unit)
 	element.__max = #element
 	element.ForceUpdate = ForceUpdate
 
-	-- if(RequireSpec or RequireSpell) then
-	-- 	self:RegisterEvent('PLAYER_TALENT_UPDATE', VisibilityPath, true)
-	-- end
+	if(RequireSpec or RequireSpell) then
+		self:RegisterEvent('PLAYER_TALENT_UPDATE', VisibilityPath, true)
+	end
 
 	if(RequireForm) then
 		self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', VisibilityPath, true)

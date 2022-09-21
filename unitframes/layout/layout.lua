@@ -9,14 +9,39 @@ local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
 local Fader = LUI:Module("Fader")
 
-local L = LUI.L
-local Blizzard = LUI.Blizzard
-
-local oUF = LUI.oUF
-
 local Media = LibStub("LibSharedMedia-3.0")
+local Blizzard = LUI.Blizzard
+local oUF = LUI.oUF
+local L = LUI.L
+local db
 
-local db, colors
+local UnitHealth, UnitHealthMax, UnitPower, UnitPowerMax = _G.UnitHealth, _G.UnitHealthMax, _G.UnitPower, _G.UnitPowerMax
+local UnitIsUnit, UnitExists, UnitIsGhost, UnitIsDead = _G.UnitIsUnit, _G.UnitExists, _G.UnitIsGhost, _G.UnitIsDead
+local UnitName, UnitGUID, UnitIsPVP, GetPVPTimer = _G.UnitName, _G.UnitGUID, _G.UnitIsPVP, _G.GetPVPTimer
+local UnitIsPlayer, UnitIsEnemy, UnitIsTapDenied = _G.UnitIsPlayer, _G.UnitIsEnemy, _G.UnitIsTapDenied
+local GetSpellInfo, GetTalentInfo, GetTotemInfo = _G.GetSpellInfo, _G.GetTalentInfo, _G.GetTotemInfo
+local UnitIsVisible, UnitIsConnected, UnitIsAFK = _G.UnitIsVisible, _G.UnitIsConnected, _G.UnitIsAFK
+local GetThreatStatusColor, UnitThreatSituation = _G.GetThreatStatusColor, _G.UnitThreatSituation
+local UnitPowerType, GetUnitPowerBarTextureInfo = _G.UnitPowerType, _G.GetUnitPowerBarTextureInfo
+local UnitClass, UnitLevel, GetSpecialization = _G.UnitClass, _G.UnitLevel, _G.GetSpecialization
+local UnitAura, UnitDebuff, DebuffTypeColor = _G.UnitAura, _G.UnitDebuff, _G.DebuffTypeColor
+local SetPortraitTexture, UnitHasVehicleUI = _G.SetPortraitTexture, _G.UnitHasVehicleUI
+local UnitXP, UnitXPMax, GetXPExhaustion = _G.UnitXP, _G.UnitXPMax, _G.GetXPExhaustion
+local GetComboPoints, GetShapeshiftFormID = _G.GetComboPoints, _G.GetShapeshiftFormID
+local UnitReaction, GetWatchedFactionInfo = _G.UnitReaction, _G.GetWatchedFactionInfo
+local UnitSpellHaste, UnitChannelInfo = _G.UnitSpellHaste, _G.UnitChannelInfo
+local GetGlyphSocketInfo = _G.GetGlyphSocketInfo
+local format = string.format
+local floor = math.floor
+
+local ALT_MANA_BAR_PAIR_DISPLAY_INFO = _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO
+local ADDITIONAL_POWER_BAR_INDEX = _G.ADDITIONAL_POWER_BAR_INDEX
+local GameFontHighlight = _G.GameFontHighlight
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local MAX_COMBO_POINTS = _G.MAX_COMBO_POINTS
+local MAX_TOTEMS = _G.MAX_TOTEMS
+
+local standings = {"Hated", "Hostile", "Unfriendly", "Neutral", "Friendly", "Honored", "Revered", "Exalted"}
 
 ------------------------------------------------------------------------
 --	Textures and Medias
@@ -24,17 +49,12 @@ local db, colors
 
 local mediaPath = [=[Interface\Addons\LUI\media\]=]
 
-local floor = math.floor
-local format = string.format
-local GetGlyphSocketInfo = GetGlyphSocketInfo 
-
+local highlightTex = mediaPath..[=[textures\statusbars\highlightTex]=]
 local normTex = mediaPath..[=[textures\statusbars\normTex]=]
 local glowTex = mediaPath..[=[textures\statusbars\glowTex]=]
-local highlightTex = mediaPath..[=[textures\statusbars\highlightTex]=]
 local blankTex = mediaPath..[=[textures\statusbars\blank]=]
-
-local aggroTex = mediaPath..[=[textures\aggro]=]
 local buttonTex = mediaPath..[=[textures\buttonTex]=]
+local aggroTex = mediaPath..[=[textures\aggro]=]
 
 local backdrop = {
 	bgFile = blankTex,
@@ -53,8 +73,6 @@ local fontn = mediaPath..[=[fonts\KhmerUI.ttf]=]
 local font2 = mediaPath..[=[Fonts\ARIALN.ttf]=]
 local font3 = mediaPath..[=[fonts\Prototype.ttf]=]
 
-local _, class = UnitClass("player")
-local standings = {"Hated", "Hostile", "Unfriendly", "Neutral", "Friendly", "Honored", "Revered", "Exalted"}
 local highlight = true
 local entering
 
@@ -95,213 +113,17 @@ local cornerAuras = {
 local channelingTicks -- base time between ticks
 do
 	local classChannels = {
-		--[[DRUID = {
-			[GetSpellInfo(740)] = 2, -- Tranquility
-			--[GetSpellInfo(16914)] = 1, -- Hurricane
-		},
-		MAGE = {
-			--[GetSpellInfo(10)] = 1, -- Blizzard
-			[GetSpellInfo(12051)] = 2, -- Evocation
-			--[GetSpellInfo(5143)] = 0.75, -- Arcane Missiles			located below do to talents affecting time between ticks
-		},
-		PRIEST = {
-			[GetSpellInfo(15407)] = 1, -- Mind Flay
-			[GetSpellInfo(234702)] = 1, -- Mind Sear
-			[GetSpellInfo(64843)] = 2, -- Divine Hymn
-			--[GetSpellInfo(64901)] = 2, -- Hymn of Hope
-			[GetSpellInfo(47540)] = 1, -- Penance
-		},
-		SHAMAN = {
-			[GetSpellInfo(61882)] = 1, -- Earthquake
-		},
-		WARLOCK = {
-			--[GetSpellInfo(1120)] = 3, -- Drain Soul
-			[GetSpellInfo(234153)] = 1, -- Drain Life
-			[GetSpellInfo(755)] = 1, -- Health Funnel
-			--[GetSpellInfo(79268)] = 1, -- Soul Harvest
-			[GetSpellInfo(5740)] = 2, -- Rain of Fire
-			--[GetSpellInfo(1949)] = 1, -- Hellfire
-		},]]
 	}
 
 	channelingTicks = {
 		-- ["First Aid"] = 1 -- Bandages
 	}
-	if classChannels[class] then
-		for k, v in pairs(classChannels[class]) do
+	if classChannels[LUI.playerClass] then
+		for k, v in pairs(classChannels[LUI.playerClass]) do
 			channelingTicks[k] = v
 		end
 	end
 	wipe(classChannels)
-
-	-- if class == "MAGE" then
-		-- local arcaneMissiles = GetSpellInfo(5143)
--- 
-		-- local function talentUpdate()
-			-- local rank = select(5, GetTalentInfo(1, 10)) -- Missile Barrage talent
-			-- channelingTicks[arcaneMissiles] = rank == 0 and 0.75 or (0.7 - (rank / 10))
-		-- end
--- 
-		-- module:RegisterEvent("PLAYER_TALENT_UPDATE", talentUpdate)
-		-- talentUpdate()
-	-- end
-end
-
-local menu
-do
-	local removeMenuOptions = {
-		SET_FOCUS = "LUI_SET_FOCUS",
-		CLEAR_FOCUS = "LUI_CLEAR_FOCUS",
-		LOCK_FOCUS_FRAME = true,
-		UNLOCK_FOCUS_FRAME = true,
-	}
-
-	local insertMenuOptions = {
-		SELF = {
-			"LUI_ROLE_CHECK",
-			"LUI_READY_CHECK",
-		},
-	}
-
-	-- UnitPopupButtons["LUI_SET_FOCUS"] = {
-	-- 	text = L["Type %s to Set Focus"]:format(SLASH_FOCUS1),
-	-- 	tooltipText = L["Blizzard does not support right-click focus"],
-	-- 	dist = 0,
-	-- }
-	-- UnitPopupButtons["LUI_CLEAR_FOCUS"] = {
-	-- 	text = L["Type %s to Clear Focus"]:format(SLASH_CLEARFOCUS1),
-	-- 	tooltipText = L["Blizzard does not support right-click focus"],
-	-- 	dist = 0,
-	-- }
-	-- UnitPopupButtons["LUI_ROLE_CHECK"] = {
-	-- 	text = ROLE_POLL,
-	-- 	tooltipText = L["Initiate a role check"],
-	-- 	dist = 0,
-	-- }
-	-- UnitPopupButtons["LUI_READY_CHECK"] = {
-	-- 	text = READY_CHECK,
-	-- 	tooltipText = L["Initiate a ready check"],
-	-- 	dist = 0,
-	-- }
-
-	-- hooksecurefunc("UnitPopup_OnClick", function(self)
-	-- 	local button = self.value
-	-- 	if button == "LUI_ROLE_CHECK" then
-	-- 		InitiateRolePoll()
-	-- 	elseif button == "LUI_READY_CHECK" then
-	-- 		DoReadyCheck()
-	-- 	end
-	-- end)
-
-	-- hooksecurefunc("UnitPopup_HideButtons", function()
-	-- 	local dropdownMenu = UIDROPDOWNMENU_INIT_MENU
-	-- 	local inParty, inRaid, inBG, isLeader, isAssist = GetNumSubgroupMembers() > 0, GetNumGroupMembers() > 0, UnitInBattleground("player"), UnitIsGroupLeader("unit" or "player name"), UnitIsGroupAssistant("unit" or "player name")
-	-- 	if inRaid then
-	-- 		inParty = true
-	-- 	end
-
-	-- 	for i, v in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
-	-- 		if v == "LUI_ROLE_CHECK" or v == "LUI_READY_CHECK" then
-	-- 			if (not isLeader and not isAssist) or inBG or (not inParty and not inRaid) then
-	-- 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end)
-
-	local dropdown = CreateFrame("Frame", "LUI_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
-	--UnitPopupFrames[#UnitPopupFrames+1] = "LUI_UnitFrame_DropDown"
-
-	local function getMenuUnit(unit)
-		if unit == "focus" then return "FOCUS" end
-
-		if UnitIsUnit(unit, "player") then return "SELF" end
-
-		if UnitIsUnit(unit, "vehicle") then return "VEHICLE" end
-
-		if UnitIsUnit(unit, "pet") then return "PET" end
-
-		if not UnitIsPlayer(unit) then return "TARGET" end
-
-		local id = UnitInRaid(unit)
-		if id then
-			return "RAID_PLAYER", id
-		end
-
-		if UnitInParty(unit) then
-			return "PARTY"
-		end
-
-		return "PLAYER"
-	end
-
-	local unitDropDownMenus = {}
-	local function getUnitDropDownMenu(unit)
-		local menu = unitDropDownMenus[unit]
-		if menu then return menu end
-
-		if not UnitPopupMenus then
-			unitDropDownMenus[unit] = unit
-			return unit
-		end
-
-		local data = UnitPopupMenus[unit]
-		if not data then
-			unitDropDownMenus[unit] = unit
-			return unit
-		end
-
-		local found = false
-		for _, v in pairs(data) do
-			if removeMenuOptions[v] then
-				found = true
-				break
-			end
-		end
-
-		local insert = insertMenuOptions[unit]
-
-		if not found and not insert then -- nothing to add or remove
-			unitDropDownMenus[unit] = unit
-			return unit
-		end
-
-		local newData = {}
-		for _, v in ipairs(data) do
-			local blacklisted = removeMenuOptions[v]
-			if not blacklisted then
-				if insert and v == "CANCEL" then
-					for _, extra in ipairs(insert) do
-						tinsert(newData, extra)
-					end
-				end
-				tinsert(newData, v)
-			elseif blacklisted ~= true then
-				tinsert(newData, blacklisted)
-			end
-		end
-
-		local newMenuName = "LUI_" .. unit
-		UnitPopupMenus[newMenuName] = newData
-		unitDropDownMenus[unit] = newMenuName
-		return newMenuName
-	end
-
-	local dropdown_unit
-	UIDropDownMenu_Initialize(dropdown, function(frame)
-		if not dropdown_unit then return end
-
-		local unit, id = getMenuUnit(dropdown_unit)
-		if unit then
-			local menu = getUnitDropDownMenu(unit)
-			UnitPopup_ShowMenu(frame, menu, dropdown_unit, nil, id)
-		end
-	end, "MENU")
-
-	menu = function(self, unit)
-		dropdown_unit = unit
-		ToggleDropDownMenu(1, nil, dropdown, "cursor")
-	end
 end
 
 ------------------------------------------------------------------------
@@ -376,27 +198,13 @@ local utf8sub = function(string, i, dots)
 end
 
 local UnitFrame_OnEnter = function(self)
-	UnitFrame_OnEnter(self)
+	_G.UnitFrame_OnEnter(self)
 	self.Highlight:Show()
 end
 
 local UnitFrame_OnLeave = function(self)
-	UnitFrame_OnLeave(self)
+	_G.UnitFrame_OnLeave(self)
 	self.Highlight:Hide()
-end
-
-local menu = function(self)
-	local unit = self.unit:gsub("(.)", string.upper, 1)
-	if _G[unit.."FrameDropDown"] then
-		ToggleDropDownMenu(1, nil, _G[unit.."FrameDropDown"], "cursor")
-	elseif (self.unit:match("party")) then
-		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor")
-	else
-		FriendsDropDown.unit = self.unit
-		FriendsDropDown.id = self.id
-		FriendsDropDown.initialize = RaidFrameDropDown_Initialize
-		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor")
-	end
 end
 
 local OverrideHealth = function(self, event, unit, powerType)
@@ -974,11 +782,7 @@ local ThreatOverride = function(self, event, unit)
 	local status = UnitThreatSituation(unit)
 
 	if(status and status > 0) then
-		local r, g, b = 0.69, 0.69, 0.69
-		if status == 1 then local r, g, b = 1, 1, 0.47
-		elseif status == 2 then local r, g, b = 1, 0.6, 0
-		elseif status == 3 then local r, g, b = 1, 0, 0
-		end
+		local r, g, b = GetThreatStatusColor(status)
 		for i = 1, 8 do
 			self.Threat[i]:SetVertexColor(r, g, b)
 		end
@@ -988,28 +792,17 @@ local ThreatOverride = function(self, event, unit)
 	end
 end
 
-local CPointsOverride = function(self, event, unit)
-	if unit == "pet" then return end
 
-	local cp
-	if class == "Druid" and GetShapeshiftForm() == 1 then 
-		cp = GetComboPoints("player", "target")
-	else
-		cp = GetComboPoints("player", "target")
-	end
 
-	local cpoints = self.CPoints
-	if cp == 0 and not cpoints.showAlways then
-		return cpoints:Hide()
-	elseif not cpoints:IsShown() then
-		cpoints:Show()
-	end
-
-	for i = 1, MAX_COMBO_POINTS do
-		if i <= cp then
-			cpoints[i]:SetValue(1)
+local TotemsUpdate = function(self, elapsed)
+	self.total = elapsed + (self.total or 0)
+	if self.total >= 0.02 then
+		self.total = 0
+		local haveTotem, name, startTime, duration, totemIcon = GetTotemInfo(self.slot)
+		if (((GetTime() - startTime) == 0) or ( duration == 0 )) then
+			self:SetValue(0)
 		else
-			cpoints[i]:SetValue(0)
+			self:SetValue(1 - ((GetTime() - startTime) / duration))
 		end
 	end
 end
@@ -1017,57 +810,54 @@ end
 local TotemsOverride = function(self, event, slot)
 	if slot > MAX_TOTEMS then return end
 
-	local totem = self.Totems
-	local total = 0
-	local delay = 0.01
+	local totem = self.Totems[slot]
 
-	haveTotem, name, startTime, duration, totemIcon = GetTotemInfo(slot)
+	local haveTotem, name, startTime, duration, totemIcon = GetTotemInfo(slot)
 
-	local color = module.colors.totems[slot] or colors[slot]
-	totem[slot]:SetStatusBarColor(unpack(color))
-	totem[slot]:SetValue(0)
-	
+	local color = module.colors.totems[slot]
+	totem:SetStatusBarColor(unpack(color))
+	totem:SetValue(0)
+
 	-- Multipliers
-	if (totem[slot].bg.multiplier) then
-		local mu = totem[slot].bg.multiplier
-		local r, g, b = totem[slot]:GetStatusBarColor()
+	if (totem.bg.multiplier) then
+		local mu = totem.bg.multiplier
+		local r, g, b = totem:GetStatusBarColor()
 		r, g, b = r*mu, g*mu, b*mu
-		totem[slot].bg:SetVertexColor(r, g, b) 
+		totem.bg:SetVertexColor(r, g, b)
 	end
-	
-	totem[slot].ID = slot
 
 	if(haveTotem) then
 		
-		if totem[slot].Name then
-			totem[slot].Name:SetText(Abbrev(name))
-		end					
-		if(duration >= 0) then	
-			totem[slot]:SetValue(1 - ((GetTime() - startTime) / duration))	
+		if totem.Name then
+			totem.Name:SetText(name)
+		end
+		if(duration >= 0) then
+			totem:SetValue(1 - ((GetTime() - startTime) / duration))
 			-- Status bar update
-			totem[slot]:SetScript("OnUpdate",function(self,elapsed)
-					total = total + elapsed
-					if total >= delay then
-						total = 0
-						haveTotem, name, startTime, duration, totemIcon = GetTotemInfo(self.ID)
-							if (((GetTime() - startTime) == 0) or ( duration == 0 )) then
-								self:SetValue(0)
-							else
-								self:SetValue(1 - ((GetTime() - startTime) / duration))
-							end
-					end
-				end)					
+			totem:SetScript("OnUpdate", TotemsUpdate)
 		else
 			-- There's no need to update because it doesn't have any duration
-			totem[slot]:SetScript("OnUpdate",nil)
-			totem[slot]:SetValue(0)
-		end 
+			totem:SetScript("OnUpdate",nil)
+			totem:SetValue(0)
+		end
+		if totemIcon then
+			totem.icon:SetTexture(totemIcon)
+		end
 	else
 		-- No totem = no time 
-		if totem[slot].Name then
-			totem[slot].Name:SetText(" ")
+		if totem.Name then
+			totem.Name:SetText(" ")
 		end
-		totem[slot]:SetValue(0)
+		totem:SetValue(0)
+	end
+
+	for i = 1, MAX_TOTEMS do
+		local currTotem = self.Totems[i]
+		if GetTotemInfo(i) then
+			currTotem:Show()
+		else
+			currTotem:Hide()
+		end
 	end
 
 end
@@ -1228,7 +1018,7 @@ local Reposition = function(V2Tex)
 	toCX, toCY = toCX * toS, toCY * toS
 
 	fromL, fromR = fromL * fromS, fromR * fromS
-	fromT, fromB = fromT * fromS, fromB * fromS
+	--fromT, fromB = fromT * fromS, fromB * fromS
 	fromCX, fromCY = fromCX * fromS, fromCY * fromS
 
 	local magicValue = to:GetWidth() / 6
@@ -1794,7 +1584,7 @@ module.funcs = {
 				if(self.unit ~= unit) then return end
 				if unit == "vehicle" then unit = "player" end
 
-				local value, max = UnitXP(unit), UnitXPMax(unit)
+				local value, max = UnitXP("player"), UnitXPMax("player")
 				if max == 0 then return end -- Rarely, client will throw this, avoid divide by zero
 
 				self.Experience:SetMinMaxValues(0, max)
@@ -1807,12 +1597,12 @@ module.funcs = {
 				self.Experience.Value:SetFormattedText("%d / %d (%d%%)", value, max, math.floor((value / max) * 100 + 0.5))
 			end
 
-			if UnitLevel("player") == MAX_PLAYER_LEVEL then
+			if UnitLevel("player") == LEVEL_CAP then
 				self.XP:Hide()
 			else
 				self.XP:RegisterEvent("PLAYER_LEVEL_UP")
 				self.XP:SetScript("OnEvent", function(_, event, level)
-					if level == MAX_PLAYER_LEVEL then
+					if level == LEVEL_CAP then
 						self.XP:Hide()
 						if self.Rep and ouf_xp_rep.Reputation.Enable then
 							self.Rep:Show()
@@ -1919,10 +1709,10 @@ module.funcs = {
 						min, max, value = 41000, 42000, 42000
 					end
 					
-					barMax = max - min
-					barValue = value - min
-					barMin = 0
-					percentBar = barValue * 100 / barMax
+					local barMax = max - min
+					local barValue = value - min
+					local barMin = 0
+					local percentBar = barValue * 100 / barMax
 					
 					self.Reputation:SetMinMaxValues(barMin, barMax)
 					self.Reputation:SetValue(barValue)
@@ -1980,7 +1770,7 @@ module.funcs = {
 						end
 					end
 					print(msg)
-				elseif button == "RightButton" and self.XP and self.XP.Enable and UnitLevel("player") ~= MAX_PLAYER_LEVEL then
+				elseif button == "RightButton" and self.XP and self.XP.Enable and UnitLevel("player") ~= LEVEL_CAP then
 					self.Rep:Hide()
 					self.XP:Show()
 				end
@@ -2018,6 +1808,8 @@ module.funcs = {
 				self.Runes[i] = CreateFrame("StatusBar", nil, self.Runes, "BackdropTemplate")
 				self.Runes[i]:SetBackdrop(backdrop)
 				self.Runes[i]:SetBackdropColor(0.08, 0.08, 0.08)
+				self.Runes[i]:RegisterEvent("RUNE_POWER_UPDATE")
+
 			end
 
 			self.Runes.FrameBackdrop = CreateFrame("Frame", nil, self.Runes, "BackdropTemplate")
@@ -2044,7 +1836,7 @@ module.funcs = {
 		
 		for i = 1, 6 do
 			self.Runes[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.Runes.Texture))
-			self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[math.floor((i+1)/2)]))
+			self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[GetRuneType(i)]))
 			self.Runes[i]:SetSize(((oufdb.Bars.Runes.Width - 5 * oufdb.Bars.Runes.Padding) / 6), oufdb.Bars.Runes.Height)
 
 			self.Runes[i]:ClearAllPoints()
@@ -2056,19 +1848,78 @@ module.funcs = {
 		end
 	end,
 
-	-- 	for i = 1, 6 do
-	-- 		self.Runes[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.Runes.Texture))
-	-- 		self.Runes[i]:SetStatusBarColor(unpack(module.colors.Runes[1]))
-	-- 		self.Runes[i]:SetSize(((oufdb.Bars.Runes.Width - 5 * oufdb.Bars.Runes.Padding) / 6), oufdb.Bars.Runes.Height)
+	Totems = function(self, unit, oufdb)
+		if not self.Totems then
+			self.Totems = CreateFrame("Frame", nil, self)
+			self.Totems:SetFrameLevel(6)
 
-	-- 		self.Runes[i]:ClearAllPoints()
-	-- 		if i == 1 then
-	-- 			self.Runes[i]:SetPoint("LEFT", self.Runes, "LEFT", 0, 0)
-	-- 		else
-	-- 			self.Runes[i]:SetPoint("LEFT", self.Runes[i-1], "RIGHT", oufdb.Bars.Runes.Padding, 0)
-	-- 		end
-	-- 	end
-	-- end,
+			for i = 1, MAX_TOTEMS do
+				local bar = CreateFrame("StatusBar", nil, self.Totems, "BackdropTemplate")
+				bar:SetBackdrop(backdrop)
+				bar:SetBackdropColor(0, 0, 0)
+				bar:SetMinMaxValues(0, 1)
+				bar.slot = i
+
+				bar.bg = bar:CreateTexture(nil, "BORDER")
+				bar.bg:SetAllPoints(bar)
+				bar.bg:SetTexture(normTex)
+
+				bar.icon = bar:CreateTexture(nil, "OVERLAY")
+				bar.icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT")
+				bar.icon:SetSize(oufdb.Bars.Totems.Height * oufdb.Bars.Totems.IconScale, oufdb.Bars.Totems.Height * oufdb.Bars.Totems.IconScale)
+
+				local btn = CreateFrame("Button", nil, bar, "SecureActionButtonTemplate")
+				btn:RegisterForClicks("AnyUp")
+				btn:SetAllPoints(bar)
+				btn:SetAttribute("unit", "player")
+				btn:SetAttribute("type", "destroytotem")
+				btn:SetAttribute("totem-slot", i)
+
+				self.Totems[i] = bar
+				self.Totems[i].btn = btn
+			end
+			
+			
+			self.Totems.FrameBackdrop = CreateFrame("Frame", nil, self.Totems, "BackdropTemplate")
+			self.Totems.FrameBackdrop:SetPoint("TOPLEFT", self.Totems, "TOPLEFT", -3.5, 3)
+			self.Totems.FrameBackdrop:SetPoint("BOTTOMRIGHT", self.Totems, "BOTTOMRIGHT", 3.5, -3)
+			self.Totems.FrameBackdrop:SetFrameStrata("BACKGROUND")
+			self.Totems.FrameBackdrop:SetBackdrop({
+				edgeFile = glowTex, edgeSize = 5,
+				insets = {left = 3, right = 3, top = 3, bottom = 3}
+			})
+			self.Totems.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
+			self.Totems.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
+
+			self.Totems.Override = TotemsOverride
+		end
+
+		local x = oufdb.Bars.Totems.Lock and 0 or oufdb.Bars.Totems.X
+		local y = oufdb.Bars.Totems.Lock and 0.5 or oufdb.Bars.Totems.Y
+
+		self.Totems:ClearAllPoints()
+		self.Totems:SetSize(oufdb.Bars.Totems.Width, oufdb.Bars.Totems.Height)
+		self.Totems:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
+
+		local totemPoints = {0, 1, 2, 3}
+
+		for i = 1, MAX_TOTEMS do
+			local bar = self.Totems[i]
+			bar:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.Totems.Texture))
+			bar:SetHeight(oufdb.Bars.Totems.Height)
+			bar:SetWidth((oufdb.Bars.Totems.Width - 3 * oufdb.Bars.Totems.Padding) / 4)
+			bar.icon:SetSize(oufdb.Bars.Totems.Height * oufdb.Bars.Totems.IconScale, oufdb.Bars.Totems.Height * oufdb.Bars.Totems.IconScale)
+
+			bar:ClearAllPoints()
+			if totemPoints[i] == 0 then
+				bar:SetPoint("LEFT", self.Totems, "LEFT", 0, 0)
+			else
+				bar:SetPoint("LEFT", self.Totems[totemPoints[i]], "RIGHT", oufdb.Bars.Totems.Padding, 0)
+			end
+
+			bar.bg.multiplier = oufdb.Bars.Totems.Multiplier
+		end
+	end,
 	ClassIcons = function(self, unit, oufdb)
 		local _, class = UnitClass("player")
 		local BASE_COUNT = {
@@ -2077,18 +1928,13 @@ module.funcs = {
 		}
 		-- The maximum of a ressource a given class can have
 		local MAX_COUNT = {
-			ROGUE = 6,
+			ROGUE = 5,
 			DRUID = 5,
 		}
 		local r, g, b
-		if class == "ROGUE" then r, g, b = unpack(module.colors.combopoints[1])
-		elseif class == "DRUID" then r, g, b = unpack(module.colors.combopoints[1])
-		end
-		
-		if class == "ROGUE" then oufdb.Bars.ClassIcons = oufdb.Bars.Energy
-		elseif class == "DRUID" then oufdb.Bars.ClassIcons = oufdb.Bars.Energy
-		end
-		
+		if class == "ROGUE" or class == "DRUID" then r, g, b = unpack(module.colors.combopoints[1]) end
+		if class == "ROGUE" or class == "DRUID" then oufdb.Bars.ClassIcons = oufdb.Bars.Energy end
+
 		if not self.ClassIcons then
 			self.ClassIcons = CreateFrame("Frame", nil, self, "BackdropTemplate")
 			self.ClassIcons:SetFrameLevel(6)
@@ -2112,16 +1958,10 @@ module.funcs = {
 		self.ClassIcons:SetWidth(oufdb.Bars.ClassIcons.Width)
 		self.ClassIcons:ClearAllPoints()
 		self.ClassIcons:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-	
+
 		local function checkPowers(event, level)
 			local pLevel = (event == "UNIT_LEVEL") and tonumber(level) or UnitLevel("player")
 			local count = BASE_COUNT[class]
-			if class == "ROGUE" then
-				--Check for Strategem, increase CPoints to 6.
-				if select(4, GetTalentInfo(3, 2, 1)) then
-					count = 6
-				end
-			end
 			self.ClassIcons.Count = count
 
 			for i = 1, MAX_COUNT[class] do
@@ -2139,8 +1979,8 @@ module.funcs = {
 				else
 					self.ClassIcons[i]:SetPoint("LEFT", self.ClassIcons[i-1], "RIGHT", oufdb.Bars.ClassIcons.Padding, 0)
 				end
-				--LUI:Print("ClassIcon["..i.."] Is Shown")
-				--self.ClassIcons[i]:Show()
+				-- LUI:Print("ClassIcon["..i.."] Is Shown")
+				-- self.ClassIcons[i]:Show()
 				if i > self.ClassIcons.Count then
 					self.ClassIcons[i]:Hide()
 				end
@@ -2149,6 +1989,8 @@ module.funcs = {
 		checkPowers()
 
 		module:RegisterEvent("UNIT_LEVEL", checkPowers)
+		module:RegisterEvent("PLAYER_ENTERING_WORLD", checkPowers)
+		module:RegisterEvent("PLAYER_TALENT_UPDATE", checkPowers)
 		self.ClassIcons.UpdateTexture = checkPowers
 	end,
 	DruidMana = function(self, unit, oufdb)
@@ -2234,9 +2076,9 @@ module.funcs = {
 			self.DruidMana:Hide()
 		end
 	end,
-
 	-- raid specific
 	SingleAuras = function(self, unit, oufdb)
+		local _, class = UnitClass("player")
 		if not cornerAuras[class] then return end
 		if not self.SingleAuras then self.SingleAuras = {} end
 
@@ -2289,7 +2131,7 @@ module.funcs = {
 		if not self.Portrait then
 			self.Portrait = CreateFrame("PlayerModel", nil, self)
 			self.Portrait:SetFrameLevel(5)
-			--self.Portrait.Override = PortraitOverride
+			self.Portrait.Override = PortraitOverride
 		end
 
 		self.Portrait:SetHeight(oufdb.Portrait.Height)
@@ -2475,7 +2317,7 @@ module.funcs = {
 			end
 
 			castbar.Icon = castbar:CreateTexture(nil, "ARTWORK")
-			castbar.Icon:SetTexCoord(0, 1, 0, 1) 
+			castbar.Icon:SetTexCoord(0, 1, 0, 1)
 			if unit == "player" or unit == "target" or unit == "focus" or unit == "pet" then
 				castbar.Icon:SetHeight(28.5)
 				castbar.Icon:SetWidth(28.5)
@@ -2683,24 +2525,6 @@ module.funcs = {
 		self.HealPrediction.otherBar:SetPoint("TOPLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
 		self.HealPrediction.otherBar:SetPoint("BOTTOMLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 	end,
-
-	absorbBar = function(self, unit, oufdb)
-		if not self.absorbBar then
-			self.absorbBar = CreateFrame('StatusBar', nil, self.Health)
-		end
-
-		self.absorbBar.maxOverflow = 1
-		
-		self.absorbBar:SetWidth(oufdb.Bars.Health.Width * self:GetWidth() / oufdb.Width) -- needed for 25/40 man raid width downscaling!
-		self.absorbBar:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.absorbBar.Texture))
-		self.absorbBar:SetStatusBarColor(oufdb.Bars.absorbBar.MyColor.r, oufdb.Bars.absorbBar.MyColor.g, oufdb.Bars.absorbBar.MyColor.b, oufdb.Bars.absorbBar.MyColor.a)
-
-		self.absorbBar:ClearAllPoints()
-		self.absorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		self.absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-
-		self.absorbBar.Override = absorbBarOverride
-	end,
 	
 	V2Textures = function(from, to)
 		if not from.V2Tex then
@@ -2764,6 +2588,7 @@ module.funcs = {
 ------------------------------------------------------------------------
 
 local SetStyle = function(self, unit, isSingle)
+	local _, class = UnitClass("Player")
 	local oufdb, ouf_xp_rep
 
 	if unit == "player" or unit == "vehicle" then
@@ -2814,7 +2639,6 @@ local SetStyle = function(self, unit, isSingle)
 		oufdb = module.db.Raid
 	end
 
-	self.menu = unit ~= "raid" and menu or nil
 	self.colors = module.colors
 	self:RegisterForClicks("AnyUp")
 
@@ -2840,9 +2664,7 @@ local SetStyle = function(self, unit, isSingle)
 	module.funcs.Full(self, unit, oufdb)
 	module.funcs.FrameBackdrop(self, unit, oufdb)
 
-	if oufdb.Bars.HealPrediction and oufdb.Bars.HealPrediction.Enable then module.funcs.HealPrediction(self, unit, oufdb) end		
-	if oufdb.Bars.absorbBar and oufdb.Bars.absorbBar.Enable then module.funcs.absorbBar(self, unit, oufdb) end
-
+	if oufdb.Bars.HealPrediction and oufdb.Bars.HealPrediction.Enable then module.funcs.HealPrediction(self, unit, oufdb) end
 	------------------------------------------------------------------------
 	--	Texts
 	------------------------------------------------------------------------
@@ -2907,9 +2729,11 @@ local SetStyle = function(self, unit, isSingle)
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "ROGUE" then
+			
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "SHAMAN" then
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
+			if oufdb.Bars.Totems.Enable then module.funcs.Totems(self, unit, oufdb) end
 		elseif class == "PRIEST" then 
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 		end
@@ -2975,7 +2799,7 @@ local SetStyle = function(self, unit, isSingle)
 	--end
 
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", function(self) self.Health:ForceUpdate() end)
-	-- if unit == "player" then self:RegisterEvent("PLAYER_ENTERING_WORLD", function(self) self.Health:ForceUpdate() end) end
+	if unit == "player" then self:RegisterEvent("PLAYER_ENTERING_WORLD", function(self) self.Health:ForceUpdate() end) end
 	if unit == "pet" then
 		self.elapsed = 0
 		self:SetScript("OnUpdate", function(self, elapsed)

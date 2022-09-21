@@ -2,13 +2,19 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: tags.lua
 	Description: oUF Tags
-]] 
+]]
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
 local oUF = LUI.oUF
 
 local Media = LibStub("LibSharedMedia-3.0")
+
+local UnitIsConnected, UnitIsGhost, UnitIsDead, UnitIsAFK = _G.UnitIsConnected, _G.UnitIsGhost, _G.UnitIsDead, _G.UnitIsAFK
+local UnitQuestTrivialLevelRange, GetQuestGreenRange = _G.UnitQuestTrivialLevelRange, _G.GetQuestGreenRange
+local UnitPower, UnitPowerMax, UnitPowerType = _G.UnitPower, _G.UnitPowerMax, _G.UnitPowerType
+local UnitClass, UnitLevel, UnitReaction = _G.UnitClass, _G.UnitLevel, _G.UnitReaction
+local UnitIsPlayer, UnitName = _G.UnitIsPlayer, _G.UnitName
 
 local nameCache = {}
 
@@ -134,8 +140,6 @@ oUF.Tags.Methods["DiffColor"] = function(unit)
 			r, g, b = unpack(module.colors.leveldiff[2])
 		elseif difference >= -2 then
 			r, g, b = unpack(module.colors.leveldiff[3])
-		-- elseif (-difference <= UnitQuestTrivialLevelRange("player")) then
-		-- 	r, g, b = unpack(module.colors.leveldiff[4])
 		else
 			r, g, b = unpack(module.colors.leveldiff[5])
 		end
@@ -179,7 +183,7 @@ oUF.Tags.Methods["NameLong"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["RaidName25"] = "UNIT_NAME_UPDATE UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["RaidName25"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["RaidName25"] = function(unit, realunit)
 	if module.db and module.db.Raid.Texts.Name.ShowDead then
 		if not UnitIsConnected(unit) then
@@ -197,7 +201,7 @@ oUF.Tags.Methods["RaidName25"] = function(unit, realunit)
 	return nameCache[name][1]
 end
 
-oUF.Tags.Events["RaidName40"] = "UNIT_NAME_UPDATE UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["RaidName40"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["RaidName40"] = function(unit, realunit)
 	if module.db and module.db.Raid.Texts.Name.ShowDead then
 		if not UnitIsConnected(unit) then

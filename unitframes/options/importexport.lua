@@ -214,9 +214,9 @@ local layouts = setmetatable({
 					TextureBG = "Otravi",
 					Texture = "Otravi",
 				},
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 				ComboPoints = {
 					Y = -4,
 					X = 25,
@@ -435,9 +435,9 @@ local layouts = setmetatable({
 			Y = -220,
 			Height = 42,
 			Bars = {
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -453,9 +453,9 @@ local layouts = setmetatable({
 					Texture = "Otravi",
 				},
 			},
-			-- Border = {
-			-- 	Aggro = true,
-			-- },
+			Border = {
+				Aggro = true,
+			},
 			Texts = {
 				HealthPercent = {
 					Outline = "OUTLINE",
@@ -487,9 +487,9 @@ local layouts = setmetatable({
 				Alpha = 0.15,
 			},
 			Bars = {
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -554,16 +554,11 @@ local layouts = setmetatable({
 					TextureBG = "Otravi",
 					Texture = "Otravi",
 				},
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 				DruidMana = {
 					OverPower = false,
-					TextureBG = "Otravi",
-					Texture = "Otravi",
-				},
-				AltPower = {
-					OverPower = true,
 					TextureBG = "Otravi",
 					Texture = "Otravi",
 				},
@@ -615,9 +610,9 @@ local layouts = setmetatable({
 					Texture = "Otravi",
 				},
 			},
-			-- Border = {
-			-- 	Aggro = true,
-			-- },
+			Border = {
+				Aggro = true,
+			},
 			Texts = {
 				Power = {
 					Y = -48,
@@ -739,9 +734,9 @@ local layouts = setmetatable({
 		},
 		Party = {
 			ShowPlayer = true,
-			-- Border = {
-			-- 	Aggro = true,
-			-- },
+			Border = {
+				Aggro = true,
+			},
 			Aura = {
 				Debuffs = {
 					Num = 4,
@@ -772,9 +767,9 @@ local layouts = setmetatable({
 				Full = {
 					Y = -32,
 				},
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -884,9 +879,6 @@ local layouts = setmetatable({
 				Alpha = 0.6,
 			},
 			Bars = {
-				AltPower = {
-					Enable = false,
-				},
 			},
 			X = -291.1,
 			Texts = {
@@ -1143,9 +1135,9 @@ local layouts = setmetatable({
 				},
 			},
 			Scale = 0.85,
-			-- Border = {
-			-- 	Aggro = true,
-			-- },
+			Border = {
+				Aggro = true,
+			},
 			Y = -210,
 			X = -300,
 			Fader = {
@@ -1163,9 +1155,9 @@ local layouts = setmetatable({
 				},
 			},
 			Bars = {
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 			},
 			Icons = {
 				Role = {
@@ -1332,9 +1324,9 @@ local layouts = setmetatable({
 				Health = {
 					Tapping = true,
 				},
-				-- HealPrediction = {
-				-- 	Enable = true,
-				-- },
+				HealPrediction = {
+					Enable = true,
+				},
 			},
 			Fader = {
 				Enable = true,
@@ -1401,8 +1393,6 @@ for _, v in pairs(layouts) do
 	v.Version = LUI.Versions.ouf
 end
 
-local _, class = UnitClass("player")
-
 local units = {"Player", "Target", "ToT", "ToToT", "Focus", "FocusTarget", "Pet", "PetTarget", "Party", "PartyTarget", "PartyPet", "Boss", "BossTarget", "Maintank", "MaintankTarget", "MaintankToT", "Arena", "ArenaTarget", "ArenaPet", "Raid"}
 
 local function CopyData(source, destination)
@@ -1418,7 +1408,7 @@ end
 
 local function IsEmptyTable(data)
 	if type(data) ~= "table" then return end
-	for k, v in pairs(data) do
+	for k, v in pairs(data) do --luacheck: ignore
 		return false
 	end
 	return true
@@ -1522,7 +1512,7 @@ local function ExportLayout(layout)
 	local data = module:Serialize(module.db.global[layout])
 	if data == nil then return end
 	local breakDown
-	for i = 1, math.ceil(strlen(data)/100) do
+	for i = 1, math.ceil(string.len(data)/100) do
 		local part = (strsub(data, (((i-1)*100)+1), (i*100))).." "
 		breakDown = (breakDown and breakDown or "")..part
 	end
@@ -1544,6 +1534,7 @@ local function GetLayoutArray()
 end
 
 do
+	local StaticPopupDialogs = _G.StaticPopupDialogs
 	StaticPopupDialogs["ALREADY_A_LAYOUT"] = {
 		preferredIndex = 3,
 		text = "That layout already exists.\nPlease choose another name.",

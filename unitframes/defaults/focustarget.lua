@@ -2,7 +2,7 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: focustarget.lua
 	Description: oUF FocusTarget Defaults
-]] 
+]]
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
@@ -113,16 +113,6 @@ module.defaults.profile.FocusTarget = {
 				g = 1,
 				b = 0,
 				a = 0.25
-			},
-		},
-		TotalAbsorb = {
-			Enable = false,
-			Texture = "LUI_Gradient",
-			MyColor = {
-				r = 0,
-				g = 1,
-				b = 0,
-				a = 0.5
 			},
 		},
 	},

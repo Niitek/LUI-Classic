@@ -46,14 +46,6 @@ local function Update(self, event, unit)
 	if(UnitIsPVPFreeForAll(unit)) then
 		status = 'FFA'
 	elseif(factionGroup and factionGroup ~= 'Neutral' and UnitIsPVP(unit)) then
-		-- if(unit == 'player' and UnitIsMercenary(unit)) then --removed for tbc/classic compat
-			-- if(factionGroup == 'Horde') then
-			-- 	factionGroup = 'Alliance'
-			-- elseif(factionGroup == 'Alliance') then
-			-- 	factionGroup = 'Horde'
-			-- end
-		-- end
-
 		status = factionGroup
 	end
 

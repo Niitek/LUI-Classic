@@ -1,7 +1,17 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-
 assert(oUF, 'oUF Experience was unable to locate oUF install')
+
+local GetServerExpansionLevel = _G.GetServerExpansionLevel
+local UnitHasVehicleUI = _G.UnitHasVehicleUI
+local GetPetExperience = _G.GetPetExperience
+local GetXPExhaustion = _G.GetXPExhaustion
+local UnitXPMax = _G.UnitXPMax
+local UnitLevel = _G.UnitLevel
+local HasPetUI = _G.HasPetUI
+local UnitXP = _G.UnitXP
+
+local LEVEL_CAP = MAX_PLAYER_LEVEL_TABLE[GetServerExpansionLevel()]
 
 for tag, func in pairs({
 	['curxp'] = function(unit)
@@ -43,7 +53,7 @@ end
 
 local function Unbeneficial(self, unit)
 	if(unit == 'player') then
-		if(UnitLevel(unit) == MAX_PLAYER_LEVEL) then
+		if(UnitLevel(unit) == LEVEL_CAP) then
 			return true
 		end
 	elseif(unit == 'pet') then

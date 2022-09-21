@@ -2,7 +2,7 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: player.lua
 	Description: oUF Player Defaults
-]] 
+]]
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
@@ -173,14 +173,21 @@ module.defaults.profile.Player = {
 				a = 0.25
 			},
 		},
-		TotalAbsorb = {
-			Enable = false,
-			Texture = "LUI_Gradient",
-			MyColor = {
-				r = 0,
-				g = 1,
-				b = 0,
-				a = 0.5
+		ComboPoints = {
+			Enable = true,
+			ShowAlways = false,
+			X = 0,
+			Y = 0.5,
+			Height = 5,
+			Width = 249,
+			Texture = "LUI_Ruben",
+			Padding = 1,
+			Multiplier = 0.4,
+			IndividualBGColor = true,
+			BackgroundColor = {
+				r = 0.23,
+				g = 0.23,
+				b = 0.23,
 			},
 		},
 		DruidMana = {
@@ -201,11 +208,12 @@ module.defaults.profile.Player = {
 			Enable = true,
 			X = 0,
 			Y = 0.5,
-			Height = 8,
+			Height = 10,
 			Width = 250,
 			Texture = "LUI_Gradient",
 			Padding = 1,
-			Multiplier = 0.5,
+			Multiplier = 0.35,
+			IconScale = 1.5,
 			Lock = true,
 		},
 		Runes = {

@@ -7,12 +7,22 @@
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
 local Fader = LUI:Module("Fader")
-
-local oUF = LUI.oUF
 local Blizzard = LUI.Blizzard
-local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local oUF = LUI.oUF
 
-local _, class = UnitClass("player")
+local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+
+local UnregisterStateDriver = _G.UnregisteredStateDriver
+local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
+local RegisterStateDriver = _G.RegisterStateDriver
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoadOnDemand
+local GetCVarBool = _G.GetCVarBool
+local UnitLevel = _G.UnitLevel
+local IsInRaid = _G.IsInRaid
+local SetCVar = _G.SetCVar
 
 local ufUnits = {
 	Player = "player",
@@ -198,7 +208,7 @@ module.ToggleUnit = setmetatable({
 		if override == nil then override = module.db.BossTarget.Enable end
 
 		if override and module.db.Boss.Enable then
-			if oUF_LUI_bosstarget1 then
+			if _G.oUF_LUI_bosstarget1 then
 				for i = 1, MAX_BOSS_FRAMES do
 					if _G["oUF_LUI_bosstarget"..i] then
 						_G["oUF_LUI_bosstarget"..i]:Enable()
@@ -898,7 +908,7 @@ module.ApplySettings = function(unit)
 				module.funcs.Experience(frame, frame.__unit, module.db.XP_Rep)
 				module.funcs.Reputation(frame, frame.__unit, module.db.XP_Rep)
 
-				if module.db.XP_Rep.Experience.Enable and UnitLevel("player") ~= MAX_PLAYER_LEVEL then
+				if module.db.XP_Rep.Experience.Enable and UnitLevel("player") ~= LEVEL_CAP then
 					frame.Experience:ForceUpdate()
 					frame.XP:Show()
 					frame.Rep:Hide()
