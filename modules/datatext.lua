@@ -289,7 +289,9 @@ function module:SetBags()
 		stat.Events = {"BAG_UPDATE",}
 
 		stat.BAG_UPDATE = function(self, bagID) -- Change occured to items in player inventory
-			
+			local count
+			local itemlink
+
 			for i,v in pairs(db.Bags.Tracked) do
 				count = GetItemCount(i)
 				itemlink = GetItemInfo(i)
@@ -370,32 +372,44 @@ function module:SetClock()
 		local invitesPending = false
 
 		-- Event functions
-		stat.Events = {"PLAYER_ENTERING_WORLD"} -- classic test
+		stat.Events = {"CALENDAR_UPDATE_PENDING_INVITES", "PLAYER_ENTERING_WORLD"}
 		-- , "UPDATE_24HOUR", "UPDATE_LOCALTIME"
 
+		stat.CALENDAR_UPDATE_PENDING_INVITES = function(self) -- A change to number of pending invites for calendar events occurred
+			invitesPending = GameTimeFrame and (GameTimeFrame.pendingCalendarInvites > 0) or false
+		end
+
+
 		stat.GUILD_PARTY_STATE_UPDATED = function(self) -- Number of guildmates in group changed
-			if InGuildParty() then
-				guildParty = " |cff66c7ffG"
-			else
+			-- if InGuildParty() then
+			-- 	guildParty = " |cff66c7ffG"
+			-- else
 				guildParty = ""
-			end 
-		end 
+			-- end
+		end
 
 		stat.PLAYER_DIFFICULTY_CHANGED = function(self) -- Instance difficulty changed
 			local inInstance, instanceType = IsInInstance()
 			if inInstance then
 				local _,_, instanceDifficulty,_, maxPlayers, dynamicMode, isDynamic, _, instanceGroupSize = GetInstanceInfo()
-				local normal = 1, 3, 173
-				local heroic = 2, 4, 9, 148, 174, 175, 176
-
-				if instanceType == "party" then
-					if instanceDifficulty == normal then
+				if (instanceType == "raid" or instanceType == "party") then
+					if instanceDifficulty == 14 then
+						instanceInfo = instanceGroupSize.." |cffffcc00N" -- Flexible renamed Normal in 6.0
+					elseif instanceDifficulty == 7 or instanceDifficulty == 17 then
+						instanceInfo = maxPlayers.." |cff00ccffL"        -- Looking for Raid
+					elseif instanceDifficulty == 1 or instanceDifficulty == 3 or instanceDifficulty == 4 or instanceDifficulty == 12 then
 						instanceInfo = maxPlayers.." |cff00ff00N"        -- Legacy Normal
-					elseif instanceDifficulty == heroic then
+					elseif instanceDifficulty == 15 then
+						instanceInfo = maxPlayers.." |cff00ff00H"        -- Normal renamed Heroic in 6.0
+					elseif instanceDifficulty == 16 or instanceDifficulty == 23 then
+						instanceInfo = maxPlayers.." |cffff0000M"        -- Heroic renamed Mythic in 6.0
+					elseif instanceDifficulty == 8 then
+						instanceInfo = maxPlayers.." |cffff0000C"        -- Challenge Mode
+					elseif instanceDifficulty == 24 then
+						instanceInfo = maxPlayers.." |cff00ff00T"        -- Timewalking Dungeon
+					else
 						instanceInfo = maxPlayers.." |cffff0000H"        -- Legacy Heroic
 					end
-				elseif instanceType == "raid" then
-						instanceInfo = maxPlayers.." |cff00ff00N"
 				else
 					instanceInfo = nil
 				end
@@ -424,19 +438,26 @@ function module:SetClock()
 		stat.OnEnable = function(self)
 			if db.Clock.ShowInstanceDifficulty then
 				self:RegisterEvent("GUILD_PARTY_STATE_UPDATED")
+				self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED")
 				self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED")
+				self:GUILD_PARTY_STATE_UPDATED()
 			else
 				self:UnregisterEvent("GUILD_PARTY_STATE_UPDATED")
+				self:UnregisterEvent("PLAYER_DIFFICULTY_CHANGED")
 				self:UnregisterEvent("INSTANCE_GROUP_SIZE_CHANGED")
 				instanceInfo, guildParty = nil, ""
 			end
 
+			if not module:IsHooked(GameTimeFrame, "OnClick") then
+				module:SecureHookScript(GameTimeFrame, "OnClick", stat.CALENDAR_UPDATE_PENDING_INVITES) -- hook the OnClick function of the GameTimeFrame to update the pending invites
+			end
 			if not module:IsHooked(TimeManagerMilitaryTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerMilitaryTimeCheck, "OnClick", stat.UPDATE_24HOUR)
 			end
 			if not module:IsHooked(TimeManagerLocalTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerLocalTimeCheck, "OnClick", stat.UPDATE_LOCALTIME)
 			end
+			self:CALENDAR_UPDATE_PENDING_INVITES()
 
 			self:PLAYER_ENTERING_WORLD()
 		end
@@ -495,6 +516,8 @@ function module:SetClock()
 				else
 					TimeManagerLocalTimeCheck:SetChecked(false)
 				end
+			else -- Toggle CalendarFrame
+				GameTimeFrame:Click() -- using just :Click() wont fire the hook
 			end
 		end
 
@@ -590,8 +613,20 @@ function module:SetClock()
 					end
 				end
 
+				-- World Bosses
+				-- for i = 1, GetNumSavedWorldBosses() do
+				-- 	if not oneraid then
+				-- 		GameTooltip:AddLine(" ")
+				-- 		GameTooltip:AddLine("Saved Raid(s) :")
+				-- 		oneraid = true
+				-- 	end
+
+				-- 	local name, _, reset = GetSavedWorldBossInfo(i)
+				-- 	GameTooltip:AddDoubleLine(format("%s |cffaaaaaa(%s)", name, RAID_INFO_WORLD_BOSS), formatTime(reset), 1,1,1, 1,1,1)
+				-- end
+
 				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Hint:\n- Right-Click for Time Manager Frame.", 0, 1, 0)
+				GameTooltip:AddLine("Hint:\n- Left-Click for Calendar Frame.\n- Right-Click for Time Manager Frame.", 0, 1, 0)
 				GameTooltip:Show()
 			end
 		end
@@ -1014,6 +1049,8 @@ function module:setEXP()
 		stat.OnReset = stat.PLAYER_XP_UPDATE
 
 		stat.OnClick = function(self, button)
+			local profit
+			local spent
 			if button == "RightButton" then -- reset session
 				profit = 0
 				spent = 0
@@ -2887,6 +2924,7 @@ function module:SetLootSpec()
 		stat.PLAYER_LOOT_SPEC_UPDATED = function(self, unit)
 			local name = ""
 			local lootspec = GetLootSpecialization()
+			local text
 			if lootspec == 0 then
 			   local curspec = GetSpecialization()
 			   _, name, _, _, _, _ = GetSpecializationInfo(curspec)
