@@ -41,16 +41,6 @@ Questions/Support: Please use the awesome LUI v3 Website if you have any questio
 
 Addons in the LUI starter pack includes: Bartender, Omen, Recount, Grid, ButtonFacade (Those are not included in this core addon) All addons in the basic addon pack can be replaced by any addons you may want to use instead, some setting up may be required by you to adapt those addons to the interface.
 
-**Known Issues**
-
-*Druid Mana bar does not work as intended
-
-**QoL Stuff Planned**
-
-*Localization for short chat channels (general chat)
-
-*Class icon/color toggle for guild/friend list info text
-
-*Reinstate Absorb predictions
-
-*Add a Restore function for Details!
+**Road Map**
+No more updates other than hotfixes will be done.
+This project will be abandoned in lue of adding compatability with the retail project. In essense the two will be merged into one addon.
