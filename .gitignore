@@ -14,8 +14,6 @@
 *.dylib
 
 # Project Ignores
-libs
-!libs/libs.xml
 .vscode
 CHANGES.txt
 /.vs
