@@ -73,6 +73,8 @@ local fontn = mediaPath..[=[fonts\KhmerUI.ttf]=]
 local font2 = mediaPath..[=[Fonts\ARIALN.ttf]=]
 local font3 = mediaPath..[=[fonts\Prototype.ttf]=]
 
+local _, class = UnitClass("player")
+local standings = {"Hated", "Hostile", "Unfriendly", "Neutral", "Friendly", "Honored", "Revered", "Exalted"}
 local highlight = true
 local entering
 
@@ -1018,7 +1020,7 @@ local Reposition = function(V2Tex)
 	toCX, toCY = toCX * toS, toCY * toS
 
 	fromL, fromR = fromL * fromS, fromR * fromS
-	--fromT, fromB = fromT * fromS, fromB * fromS
+	fromT, fromB = fromT * fromS, fromB * fromS
 	fromCX, fromCY = fromCX * fromS, fromCY * fromS
 
 	local magicValue = to:GetWidth() / 6
@@ -2078,7 +2080,6 @@ module.funcs = {
 	end,
 	-- raid specific
 	SingleAuras = function(self, unit, oufdb)
-		local _, class = UnitClass("player")
 		if not cornerAuras[class] then return end
 		if not self.SingleAuras then self.SingleAuras = {} end
 
@@ -2131,7 +2132,7 @@ module.funcs = {
 		if not self.Portrait then
 			self.Portrait = CreateFrame("PlayerModel", nil, self)
 			self.Portrait:SetFrameLevel(5)
-			self.Portrait.Override = PortraitOverride
+			--self.Portrait.Override = PortraitOverride
 		end
 
 		self.Portrait:SetHeight(oufdb.Portrait.Height)
@@ -2639,6 +2640,7 @@ local SetStyle = function(self, unit, isSingle)
 		oufdb = module.db.Raid
 	end
 
+	self.menu = unit ~= "raid" and menu or nil
 	self.colors = module.colors
 	self:RegisterForClicks("AnyUp")
 
@@ -2729,7 +2731,6 @@ local SetStyle = function(self, unit, isSingle)
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "ROGUE" then
-			
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "SHAMAN" then
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
