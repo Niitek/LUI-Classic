@@ -15,7 +15,7 @@ local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 
 local UnregisterStateDriver = _G.UnregisteredStateDriver
 local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
-local RegisterStateDriver = _G.RegisterStateDriver
+local RegisterAttributeDriver = _G.RegisterAttributeDriver
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoadOnDemand
@@ -694,12 +694,19 @@ module.ToggleUnit = setmetatable({
 	end,
 
 	Raid = function(override)
+		print('raid')
+		local raidAddon = {
+			"Plexus",
+			"Grid2",
+			"VudHo",
+			"Healbot",
+			
+		}
+		if IsAddOnLoaded("Plexus") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("Vuhdo") or IsAddOnLoaded("Healbot") then	print("Player") return end
+
 		if override == nil then override = module.db.Raid.Enable end
 
 		if override then
-			if IsAddOnLoaded("Plexus") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("Healbot") then
-				return
-			end
 			if oUF_LUI_raid then
 				for i = 1, 5 do
 					if i ~= 1 then
@@ -833,11 +840,11 @@ module.ToggleUnit = setmetatable({
 				end
 
 				if oUF_LUI_raid_25 then
-					UnregisterStateDriver(oUF_LUI_raid_25, "visibility")
+					UnregisterAttributeDriver(oUF_LUI_raid_25, "visibility")
 					oUF_LUI_raid_25:Hide()
 				end
 				if oUF_LUI_raid_40 then
-					UnregisterStateDriver(oUF_LUI_raid_40, "visibility")
+					UnregisterAttributeDriver(oUF_LUI_raid_40, "visibility")
 					oUF_LUI_raid_40:Hide()
 				end
 
