@@ -17,7 +17,7 @@ local L = LUI.L
 local db, dbd
 local fdir = "Interface\\AddOns\\LUI\\media\\templates\\v3\\"
 
-LUI.Versions.bars = 2.4
+LUI.Versions.bars = 2.5
 
 local positions = { "TOP", "TOPRIGHT", "TOPLEFT", "BOTTOM", "BOTTOMRIGHT", "BOTTOMLEFT", "RIGHT", "LEFT", "CENTER"}
 
@@ -865,9 +865,9 @@ function module:SetPetBar()
 
 	Configure(LUIPetBar, 10, db.PetBar.NumPerRow)
 
-	if db.PetBar.Fader.Enable then
-		Fader:RegisterFrame(LUIPetBar, db.PetBar.Fader, true)
-	end
+	-- if db.PetBar.Fader.Enable then
+	-- 	Fader:RegisterFrame(LUIPetBar, db.PetBar.Fader, true)
+	-- end
 
 	LUIPetBar[db.PetBar.Enable and "Show" or "Hide"](LUIPetBar)
 end
@@ -921,9 +921,9 @@ function module:SetStanceBar()
 	Configure(LUIStanceBar, 10, db.StanceBar.NumPerRow)
 	ShowIf(LUIStanceBar, db.StanceBar.Enable and GetNumShapeshiftForms() > 0)
 
-	if db.StanceBar.Fader.Enable then
-		Fader:RegisterFrame(LUIStanceBar, db.StanceBar.Fader, true)
-	end
+	-- if db.StanceBar.Fader.Enable then
+	-- 	Fader:RegisterFrame(LUIStanceBar, db.StanceBar.Fader, true)
+	-- end
 
 	LUIStanceBar[db.StanceBar.Enable and "Show" or "Hide"](LUIStanceBar)
 	ShowIf(LUIStanceBar, db.StanceBar.Enable and GetNumShapeshiftForms() > 0)
@@ -985,9 +985,9 @@ function module:SetTotemBar()
 
 	Configure(LUITotemBar, 6, 6)
 
-	if db.TotemBar.Fader.Enable then
-		Fader:RegisterFrame(LUITotemBar, db.TotemBar.Fader, true)
-	end
+	-- if db.TotemBar.Fader.Enable then
+	-- 	Fader:RegisterFrame(LUITotemBar, db.TotemBar.Fader, true)
+	-- end
 
 	LUITotemBar[db.TotemBar.Enable and "Show" or "Hide"](LUITotemBar)
 	ShowIf(LUITotemBar, db.TotemBar.Enable)
@@ -1923,7 +1923,7 @@ function module:LoadOptions()
 		info[#info] = tonumber(info[#info]) or info[#info]
 		local val = info.option.values()[value]
 		self.db(info, val)
-		
+
 		local barname = gsub(info[#info-2], "Sidebar", "LUIBar")
 		UnregisterStateDriver(_G[barname], "page")
 		RegisterStateDriver(_G[barname], "page", val)
@@ -1940,8 +1940,9 @@ function module:LoadOptions()
 	end
 
 	local function createBottomBarOptions(num, order)
+		if isBarAddOnLoaded == true then return end
 		local disabledFunc = function() return not db["Bottombar"..num].Enable end
-		
+
 		local option = self:NewGroup("Action Bar "..num, order, false, InCombatLockdown, {
 			header0 = self:NewHeader("Action Bar "..num.." Settings", 0),
 			Enable = (num ~= 1) and self:NewToggle("Show Action Bar "..num, nil, 1, true) or nil,
@@ -1958,9 +1959,9 @@ function module:LoadOptions()
 				Alt = self:NewSelect("Alt", "Choose the Alt State for Action Bar "..num..".\n\nDefault: "..defaultstate["Bottombar"..num][1], 25, statelist, nil, false, nil, disabledFunc),
 				Ctrl = self:NewSelect("Ctrl", "Choose the Ctrl State for Action Bar "..num..".\n\nDefault: "..defaultstate["Bottombar"..num][1], 26, statelist, nil, false, nil, disabledFunc),
 			}),
-			Fader = self:NewGroup("Fader", 12, true, disabledFunc, Fader:CreateFaderOptions(_G["LUIBar"..num], db["Bottombar"..num].Fader, dbd["Bottombar"..num].Fader, true)),
+			Fader = (isBarAddOnLoaded ~= true) and self:NewGroup("Fader", 12, true, disabledFunc, Fader:CreateFaderOptions(_G["LUIBar"..num], db["Bottombar"..num].Fader, dbd["Bottombar"..num].Fader, true)),
 		})
-		
+
 		if num == 1 then
 			for i, name in ipairs(statetext) do
 				option.args.State.args[tostring(i)] = self:NewSelect(name, "Choose the State for "..name..".\n\nDefaults:\nLUI: "..defaultstate.Bottombar1[i].."\nBlizzard: "..blizzstate.Bottombar1[i],
@@ -2028,6 +2029,7 @@ function module:LoadOptions()
 	end
 	
 	local function createOtherBarOptions(name, order, frame, dbName, multiRow)
+		if isBarAddOnLoaded == true then return end
 		local specialBar = name == "Extra Action Bar"
 
 		local option = self:NewGroup(name, order, false, InCombatLockdown, {
@@ -2041,7 +2043,7 @@ function module:LoadOptions()
 			DummyBar = specialBar and self:NewExecute("Show Dummy "..name, "Click to show/hide a dummy "..name..".", 6, setDummyBar, nil, disabled[name]) or nil,
 
 			NumPerRow = multiRow and self:NewSlider("Buttons per Row", "Choose the Number of Buttons per Row.", 5, 1, 10, 1, true, nil, nil, nil, disabled[name]) or nil,
-			Fader = (dbName and self:NewGroup("Fader", 6, true, disabled[name], Fader:CreateFaderOptions(_G[frame], db[dbName].Fader, dbd[dbName].Fader, true))) or nil,
+			Fader = (isBarAddOnLoaded ~= true) and (dbName and self:NewGroup("Fader", 6, true, disabled[name], Fader:CreateFaderOptions(_G[frame], db[dbName].Fader, dbd[dbName].Fader, true))) or nil,
 		})
 		
 		return option
