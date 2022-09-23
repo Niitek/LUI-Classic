@@ -694,7 +694,7 @@ module.ToggleUnit = setmetatable({
 	end,
 
 	Raid = function(override)
-		print('raid')
+		-- print('raid')
 		local raidAddon = {
 			"Plexus",
 			"Grid2",
