@@ -149,16 +149,14 @@ do
 				end
 			end
 
-			--[[
-			for i = 1, 6 do
-				_G["VehicleMenuBarActionButton" .. i]:UnregisterAllEvents()
-			end
+			-- for i = 1, 6 do
+			-- 	_G["VehicleMenuBarActionButton" .. i]:UnregisterAllEvents()
+			-- end
 
 			for i = 1, 12 do
 				_G["BonusActionButton" .. i]:UnregisterAllEvents()
 				_G["MultiCastActionButton" .. i]:UnregisterEvent("UPDATE_BINDINGS")
 			end
-			--]]
 
 			local talentFrame = PlayerTalentFrame
 			if talentFrame then
