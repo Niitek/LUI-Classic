@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 3.44
+## Version: 3.45
 ## Title: LUI_WotLK
 ## Author: Siku, Mule, Nitsah
 ## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista
@@ -7,7 +7,7 @@
 ## SavedVariables: LUIDB, LUIGold, LUI_Themes, LUI_Layouts
 ## SavedVariablesPerCharacter: LUICONFIG
 ## X-oUF: oUF_LUI
-## Dependancies: Masque
+## Dependancies:
 
 libs\libs.xml
 LUI.xml

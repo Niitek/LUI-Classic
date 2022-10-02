@@ -12,6 +12,7 @@
 *.so
 *.so.*
 *.dylib
+*.7z
 
 # Project Ignores
 .vscode
