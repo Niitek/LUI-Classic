@@ -1,154 +1,180 @@
---[[ Element: Heal Prediction Bar
- Handle updating and visibility of the heal prediction status bars.
-
- Widget
-
- HealPrediction - A table containing `myBar` and `otherBar`.
-
- Sub-Widgets
-
- myBar    - A StatusBar used to represent your incoming heals.
- otherBar - A StatusBar used to represent other peoples incoming heals.
-
- Notes
-
- The default StatusBar texture will be applied if the UI widget doesn't have a
- status bar texture or color defined.
-
- Options
-
- .maxOverflow     - Defines the maximum amount of overflow past the end of the
-                    health bar.
- .frequentUpdates - Update on UNIT_HEALTH_FREQUENT instead of UNIT_HEALTH. Use
-                    this if .frequentUpdates is also set on the Health element.
-
- Examples
-
-   -- Position and size
-   local myBar = CreateFrame('StatusBar', nil, self.Health)
-   myBar:SetPoint('TOP')
-   myBar:SetPoint('BOTTOM')
-   myBar:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT')
-   myBar:SetWidth(200)
-   
-   local otherBar = CreateFrame('StatusBar', nil, self.Health)
-   otherBar:SetPoint('TOP')
-   otherBar:SetPoint('BOTTOM')
-   otherBar:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT')
-   otherBar:SetWidth(200)
-
-
-   
-   -- Register with oUF
-   self.HealPrediction = {
-      myBar = myBar,
-      otherBar = otherBar,
-      maxOverflow = 1.05,
-      frequentUpdates = true,
-   }
-
- Hooks
-
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+--[[
+# Element: Health Prediction Bars
+Handles the visibility and updating of incoming heals.
+## Widget
+HealPrediction - A `table` containing references to sub-widgets and options.
+## Sub-Widgets
+myBar          - A `StatusBar` used to represent incoming heals from the player.
+otherBar       - A `StatusBar` used to represent incoming heals from others.
+## Notes
+A default texture will be applied to the StatusBar widgets if they don't have a texture set.
+A default texture will be applied to the Texture widgets if they don't have a texture or a color set.
+## Options
+.maxOverflow - The maximum amount of overflow past the end of the health bar. Set this to 1 to disable the overflow.
+               Defaults to 1.05 (number)
+## Examples
+    -- Position and size
+    local myBar = CreateFrame('StatusBar', nil, self.Health)
+    myBar:SetPoint('TOP')
+    myBar:SetPoint('BOTTOM')
+    myBar:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT')
+    myBar:SetWidth(200)
+    local otherBar = CreateFrame('StatusBar', nil, self.Health)
+    otherBar:SetPoint('TOP')
+    otherBar:SetPoint('BOTTOM')
+    otherBar:SetPoint('LEFT', myBar:GetStatusBarTexture(), 'RIGHT')
+    otherBar:SetWidth(200)
+    -- Register with oUF
+    self.HealPrediction = {
+        myBar = myBar,
+        otherBar = otherBar,
+        maxOverflow = 1.05,
+    }
+--]]
 
 local _, ns = ...
 local oUF = ns.oUF
+local myGUID = UnitGUID('player')
+local HealComm = LibStub("LibHealComm-4.0")
 
 local function Update(self, event, unit)
 	if(self.unit ~= unit) then return end
 
-	local hp = self.HealPrediction
-	if(hp.PreUpdate) then hp:PreUpdate(unit) end
+	local element = self.HealPrediction
 
-	local myIncomingHeal = UnitGetIncomingHeals(unit, 'player') or 0
-	local allIncomingHeal = UnitGetIncomingHeals(unit) or 0
+	--[[ Callback: HealPrediction:PreUpdate(unit)
+	Called before the element has been updated.
 
+	* self - the HealPrediction element
+	* unit - the unit for which the update has been triggered (string)
+	--]]
+	if(element.PreUpdate) then
+		element:PreUpdate(unit)
+	end
+
+	local guid = UnitGUID(unit)
+
+	local allIncomingHeal = HealComm:GetHealAmount(guid, element.healType) or 0
+	local myIncomingHeal = (HealComm:GetHealAmount(guid, element.healType, nil, myGUID) or 0) * (HealComm:GetHealModifier(myGUID) or 1)
 	local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
-
 	local otherIncomingHeal = 0
+
+	if(health + allIncomingHeal > maxHealth * element.maxOverflow) then
+		allIncomingHeal = maxHealth * element.maxOverflow - health
+	end
+
 	if(allIncomingHeal < myIncomingHeal) then
 		myIncomingHeal = allIncomingHeal
 	else
-		otherIncomingHeal = allIncomingHeal - myIncomingHeal
+		otherIncomingHeal = HealComm:GetOthersHealAmount(guid, HealComm.ALL_HEALS) or 0
 	end
 
-	if(hp.myBar) then
-		hp.myBar:SetMinMaxValues(0, maxHealth)
-		hp.myBar:SetValue(myIncomingHeal)
-		hp.myBar:Show()
+	if(element.myBar) then
+		element.myBar:SetMinMaxValues(0, maxHealth)
+		element.myBar:SetValue(myIncomingHeal)
+		element.myBar:Show()
 	end
 
-	if(hp.otherBar) then
-		hp.otherBar:SetMinMaxValues(0, maxHealth)
-		hp.otherBar:SetValue(otherIncomingHeal)
-		hp.otherBar:Show()
+	if(element.otherBar) then
+		element.otherBar:SetMinMaxValues(0, maxHealth)
+		element.otherBar:SetValue(otherIncomingHeal)
+		element.otherBar:Show()
 	end
 
-	if(hp.PostUpdate) then
-		return hp:PostUpdate(unit)
+	if(element.PostUpdate) then
+		return element:PostUpdate(unit, myIncomingHeal, otherIncomingHeal)
 	end
 end
 
 local function Path(self, ...)
+	--[[ Override: HealPrediction.Override(self, event, unit)
+	Used to completely override the internal update function.
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event
+	--]]
 	return (self.HealPrediction.Override or Update) (self, ...)
 end
 
-local ForceUpdate = function(element)
+local function ForceUpdate(element)
 	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
 local function Enable(self)
-	local hp = self.HealPrediction
-	if(hp) then
-		hp.__owner = self
-		hp.ForceUpdate = ForceUpdate
+	local element = self.HealPrediction
+	if(element) then
+		element.__owner = self
+		element.ForceUpdate = ForceUpdate
+		element.healType = element.healType or HealComm.ALL_HEALS
 
-		self:RegisterEvent('UNIT_HEAL_PREDICTION', Path)
+		self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
 		self:RegisterEvent('UNIT_MAXHEALTH', Path)
-		if(hp.frequentUpdates) then
-			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
-		else
-			self:RegisterEvent('UNIT_HEALTH', Path)
-		end
-		if(not hp.maxOverflow) then
-			hp.maxOverflow = 1.05
-		end
 
-		if(hp.myBar) then
-			if(hp.myBar:IsObjectType'StatusBar' and not hp.myBar:GetStatusBarTexture()) then
-				hp.myBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
+		local function HealCommUpdate(...)
+			if self.HealPrediction and self:IsVisible() then
+				for i = 1, select('#', ...) do
+					if self.unit and UnitGUID(self.unit) == select(i, ...) then
+						Path(self, nil, self.unit)
+					end
+				end
 			end
-
-			hp.myBar:Show()
 		end
-		if(hp.otherBar) then
-			if(hp.otherBar:IsObjectType'StatusBar' and not hp.otherBar:GetStatusBarTexture()) then
-				hp.otherBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
+
+		local function HealComm_Heal_Update(event, casterGUID, spellID, healType, _, ...)
+			HealCommUpdate(...)
+		end
+
+		local function HealComm_Modified(event, guid)
+			HealCommUpdate(guid)
+		end
+
+		HealComm.RegisterCallback(element, 'HealComm_HealStarted', HealComm_Heal_Update)
+		HealComm.RegisterCallback(element, 'HealComm_HealUpdated', HealComm_Heal_Update)
+		HealComm.RegisterCallback(element, 'HealComm_HealDelayed', HealComm_Heal_Update)
+		HealComm.RegisterCallback(element, 'HealComm_HealStopped', HealComm_Heal_Update)
+		HealComm.RegisterCallback(element, 'HealComm_ModifierChanged', HealComm_Modified)
+		HealComm.RegisterCallback(element, 'HealComm_GUIDDisappeared', HealComm_Modified)
+
+		if(not element.maxOverflow) then
+			element.maxOverflow = 1.05
+		end
+
+		if(element.myBar) then
+			if(element.myBar:IsObjectType('StatusBar') and not element.myBar:GetStatusBarTexture()) then
+				element.myBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 			end
-
-			hp.otherBar:Show()
 		end
+
+		if(element.otherBar) then
+			if(element.otherBar:IsObjectType('StatusBar') and not element.otherBar:GetStatusBarTexture()) then
+				element.otherBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
+			end
+		end
+
 		return true
 	end
 end
 
 local function Disable(self)
-	local hp = self.HealPrediction
-	if(hp) then
-		if(hp.myBar) then
-			hp.myBar:Hide()
+	local element = self.HealPrediction
+	if(element) then
+		if(element.myBar) then
+			element.myBar:Hide()
 		end
-		if(hp.otherBar) then
-			hp.otherBar:Hide()
+
+		if(element.otherBar) then
+			element.otherBar:Hide()
 		end
-		self:UnregisterEvent('UNIT_HEAL_PREDICTION', Path)
+
+		HealComm.UnregisterCallback(element, 'HealComm_HealStarted')
+		HealComm.UnregisterCallback(element, 'HealComm_HealUpdated')
+		HealComm.UnregisterCallback(element, 'HealComm_HealDelayed')
+		HealComm.UnregisterCallback(element, 'HealComm_HealStopped')
+		HealComm.UnregisterCallback(element, 'HealComm_ModifierChanged')
+		HealComm.UnregisterCallback(element, 'HealComm_GUIDDisappeared')
+
 		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
-		self:UnregisterEvent('UNIT_HEALTH', Path)
 		self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
 	end
 end
-
 oUF:AddElement('HealPrediction', Path, Enable, Disable)
