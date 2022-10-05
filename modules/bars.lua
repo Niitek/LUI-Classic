@@ -84,21 +84,22 @@ local Page = {
 		"[bonusbar:4] %s; ", -- Moonkin Form
 		"[bonusbar:2] %s; ", -- Tree of Life Form
 	},
-	["WARRIOR"] = {
-		"[bonusbar:1] %s; ", -- Battle Stance
-		"[bonusbar:2] %s; ", -- Berserker Stance
-		"[bonusbar:3] %s; ", -- Defensive Stance
-	},
-	["PRIEST"] = {
-		"[bonusbar:1] %s; " -- Shadow Form
-	},
+	-- ["WARRIOR"] = {
+		-- "[bonusbar:1] %s; ", -- Battle Stance
+		-- "[bonusbar:2] %s; ", -- Battle Stance
+		-- "[bonusbar:3] %s; ", -- Defensive Stance
+		-- "[bonusbar:4] %s; ", -- Berserker Stance
+	-- },
+	-- ["PRIEST"] = {
+	-- 	"[bonusbar:1] %s; " -- Shadow Form
+	-- },
 	["ROGUE"] = {
 		"[bonusbar:1] %s; ", -- Stealth
-		"[form:3] %s; " -- Shadowdance
+		-- "[form:3] %s; " -- Shadowdance
 	},
-	["WARLOCK"] = {
-		"[form:2] %s; " -- Metamorphosis
-	},
+	-- ["WARLOCK"] = {
+	-- 	"[form:2] %s; " -- Metamorphosis
+	-- },
 }
 
 local toggleDummyBar
@@ -754,7 +755,7 @@ function module:SetPetBar()
 		local bar = CreateFrame("Frame", "LUIPetBar", UIParent, "SecureHandlerStateTemplate")
 		bar.buttons = {}
 
-		RegisterStateDriver(bar, "visibility", "[petbattle] [vehicleui] [bonusbar:5] [nopet] hide; show")
+		RegisterStateDriver(bar, "visibility", "[vehicleui] [bonusbar:5] [nopet] hide; show")
 
 		PetActionBarFrame:SetParent(bar)
 		PetActionBarFrame:EnableMouse(false)
