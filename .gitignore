@@ -19,5 +19,5 @@
 CHANGES.txt
 /.vs
 .github
-libs/
+libs/*
 !libs/libs.xml
