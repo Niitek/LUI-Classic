@@ -40,21 +40,21 @@ function module:LoadOptions()
 	local options = {
 		Title = self:NewHeader("Art Work", 1),
 		UpperArt = self:NewGroup("Upper Art", 2, true, {
-			Orb = self:NewToggle("Disable the Orb", "", 1, toggleArt),
+			Orb = self:NewToggle("Disable the Orb", "", 1, ToggleArt),
 			--Note = self:NewDesc("Be careful with this option as you will not have control over the textures provided by the panel buttons.", 2),
-			NaviBG = self:NewToggle("Disable the Orb navigation background", "", 4, toggleArt),
-			Background = self:NewToggle("Disable the themed background art", "", 7, toggleArt),
+			NaviBG = self:NewToggle("Disable the Orb navigation background", "", 4, ToggleArt),
+			Background = self:NewToggle("Disable the themed background art", "", 7, ToggleArt),
 			--NewToggle(name, desc, order, func, width, disabled, hidden)
 		}),
 		LowerArt = self:NewGroup("Lower Art", 3, true, {
-			ThemeLine = self:NewToggle("Disable the black foreground line", "", 1, toggleArt),
-			BackGLine = self:NewToggle("Disable the themed background art", "", 4, toggleArt),
+			ThemeLine = self:NewToggle("Disable the black foreground line", "", 1, ToggleArt),
+			BackGLine = self:NewToggle("Disable the themed background art", "", 4, ToggleArt),
 		}),
 	}
 	return options
 end
 
-function toggleArt(what)
+function ToggleArt(what)
 	if not db.UpperArt.Orb or what == "enable" then
 		LUI.Orb.Hover:Show()
 		LUI.Orb.Ring2:Show()
@@ -115,9 +115,9 @@ function module:OnInitialize()
 end
 
 function module:OnEnable()
-	toggleArt()
+	ToggleArt()
 end
 
 function module:OnDisable()
-	toggleArt("enable")
+	ToggleArt("enable")
 end
