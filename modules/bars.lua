@@ -102,40 +102,6 @@ local Page = {
 	-- },
 }
 
-local toggleDummyBar
-do
-	local function playerRegenDisabled(bar, event)
-		module:UnregisterEvent(event)
-
-		toggleDummyBar(bar, false)
-		LUI:Print("Dummy "..bar:GetName().." hidden due to combat.")
-	end
-
-	toggleDummyBar = function(bar, force)
-		local show = not bar:IsShown()
-		if force then show = force end
-
-		local parent = LUIExtraActionBar
-		if not parent.SetBackdrop then Mixin(parent, BackdropTemplateMixin) end
-
-		if show then
-			parent:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
-			bar.button:Show()
-			bar:Show()
-			bar.outro:Stop()
-			bar.intro:Play()
-
-			module:RegisterEvent("PLAYER_REGEN_DISABLED", playerRegenDisabled, bar)
-		else
-			if parent.SetBackdrop then parent:SetBackdrop({}) end
-			bar.intro:Stop()
-			if not HasExtraActionBar() then
-				bar:Hide()
-			end
-		end
-	end
-end
-
 local last = "HIDEGRID"
 local function HookGrid(self, event)
 	if event == "ACTIONBAR_SHOWGRID" then
@@ -632,7 +598,6 @@ function module:SetBottomBar(id)
 
 	if not bars[id] then
 		local bar = CreateFrame("Frame", "LUIBar"..id, UIParent, "SecureHandlerStateTemplate")
-		-- local group = Masque and Masque:Group("LUI", "Bottom Bar "..id)
 		bar.buttons = {}
 
 		for i = 1, 12 do
@@ -703,7 +668,6 @@ function module:SetSideBar(side, id)
 
 	if not bars[sideID] then
 		local bar = CreateFrame("Frame", "LUIBar"..sideID, UIParent, "SecureHandlerStateTemplate")
-		-- local group = Masque and Masque:Group("LUI", side.." Sidebar "..id)
 		bar:SetWidth(1) -- because of way LUI handles
 		bar:SetHeight(1) -- sidebar position calculation
 		bar.buttons = {}
@@ -774,15 +738,6 @@ function module:SetPetBar()
 			end
 			bar.buttons[i] = button
 		end
-
-		-- if Masque then
-		-- 	local group = Masque:Group("LUI", "Pet Bar")
-		-- 	for i = 1, 10 do
-		-- 		local button = _G["PetActionButton"..i]
-		-- 		group:AddButton(button)
-		-- 		button.__MSQ = group
-		-- 	end
-		-- end
 	end
 
 	local scale = db.PetBar.Scale
@@ -829,15 +784,6 @@ function module:SetStanceBar()
 		-- DO NOT CHANGE
 		hooksecurefunc("StanceBar_Update", MoveStance)
 		hooksecurefunc("StanceBar_UpdateState", MoveStance)
-
-		-- if Masque then
-		-- 	local group = Masque:Group("LUI", "Stance Bar")
-		-- 	for i = 1, 10 do
-		-- 		local button = _G['StanceButton'..i]
-		-- 		group:AddButton(button)
-		-- 		button.__MSQ = group
-		-- 	end
-		-- end
 	end
 
 	local scale = db.StanceBar.Scale
@@ -888,14 +834,6 @@ function module:SetTotemBar()
 			button:SetPoint("CENTER", anchor, "CENTER", 0, 0)
 			button:HookScript("OnClick", TotemDestroy)
 		end
-		-- if Masque then
-		-- 	local group = Masque:Group("LUI", "Totem Bar")
-		-- 	for i = 1, 12 do
-		-- 		local button = _G['MultiCastActionButton'..i]
-		-- 		group:AddButton(button)
-		-- 		button.__MSQ = group
-		-- 	end
-		-- end
 	end
 
 	local s = db.TotemBar.Scale
@@ -944,41 +882,6 @@ function module:SetVehicleExit()
 
 	LUIVehicleExit:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 	LUIVehicleExit:RegisterEvent("ACTIONBAR_UPDATE_USABLE")
-end
-
-function module:SetExtraActionBar()
-	if not LUI.IsRetail then return end
-	local bar = LUIExtraActionBar
-	local eadb = db.ExtraActionBar
-	if not bar then
-		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
-		bar:SetSize(52, 52)
-
-		bar.content = ExtraAbilityContainer
-		bar.content.ignoreFramePositionManager = true
-		bar.content:SetToplevel(false)
-		bar.content:SetParent(bar)
-
-		bar.content:ClearAllPoints()
-		bar.content:SetPoint("CENTER", bar, "TOPLEFT", 64, -64)
-		module:SecureHook("ExtraActionBar_Update", function()
-			if HasExtraActionBar() then
-				ExtraActionBarFrame.button.style:SetShown(not eadb.HideTextures)
-			end
-		end)
-
-		module:SecureHook(ZoneAbilityFrame, "UpdateDisplayedZoneAbilities", function()
-			ZoneAbilityFrame.Style:SetShown(not eadb.HideTextures)
-		end)
-	end
-
-	bar:ClearAllPoints()
-	bar:SetPoint(eadb.Point, UIParent, eadb.Point, eadb.X / eadb.Scale, eadb.Y / eadb.Scale)
-	bar:SetScale(eadb.Scale)
-
-	ShowIf(ExtraActionBarFrame.button.style, not eadb.HideTextures)
-	ShowIf(ZoneAbilityFrame.Style, not eadb.HideTextures)
-	ShowIf(bar, eadb.Enable)
 end
 
 function module:HideBlizzard()
@@ -1068,14 +971,12 @@ local function StyleButton(button)
 		if parent == "MultiCastActionPage1" then return end
 		if parent == "MultiCastActionPage2" then return end
 		if parent == "MultiCastActionPage3" then return end
-		if parent == "ExtraActionBarFrame" then return end
 	end
 
 	local name = button:GetName()
 	local size = button:GetWidth()
 	local scale = size / 36
 
-	-- first style texts / equipped border, then check for BF/Masque, if not loaded, proceed!
 	-- hotkey
 	local hotkey = _G[name.."HotKey"]
 	hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
@@ -1130,9 +1031,6 @@ local function StyleButton(button)
 			LibKeyBound:Set(button)
 		end
 	end)
-
-	-- if Masque then return end
-	-- if Masque and button.__MSQ and not button.__MSQ.db.Disabled then return end
 
 	-- normal
 	local normal = button:GetNormalTexture()
@@ -1415,7 +1313,6 @@ function module:SetBars()
 		module:SetStanceBar()
 		module:SetTotemBar()
 		module:SetVehicleExit()
-		module:SetExtraActionBar()
 
 		module:HideBlizzard()
 
@@ -1807,14 +1704,6 @@ module.defaults = {
 			Point = "CENTER",
 			Scale = 1,
 		},
-		ExtraActionBar = {
-			Enable = true,
-			X = 0, -- -314,
-			Y = 145, -- 41,
-			Point = "BOTTOM",
-			Scale = 0.9,
-			HideTextures = false,
-		},
 	},
 }
 
@@ -2026,10 +1915,6 @@ end
 
 local function createOtherBarOptions(name, order, frame, dbName, multiRow)
 	if g_isBarAddOnLoaded then return end
-	local function setDummyBar()
-		if InCombatLockdown() then return end
-	-- 	toggleDummyBar(ExtraActionBarFrame)
-	end
 
 	local option = module:NewGroup(name, order, frame, dbName, false, InCombatLockdown, {
 		header0 = module:NewHeader(name.." Settings", 0),
@@ -2108,7 +1993,6 @@ function module:LoadOptions()
 		PetBar = createOtherBarOptions("Pet Bar", 15, "LUIPetBar", "PetBar", true),
 		TotemBar = (class == "SHAMAN") and createOtherBarOptions("Totem Bar", 16, "LUITotemBar", "TotemBar", true) or nil,
 		VehicleExit = createOtherBarOptions("Vehicle Exit Button", 17, "LUIVehicleExit", VehicleExit, true),
-		-- ExtraActionBar = createOtherBarOptions("Extra Action Bar", 18, "LUIExtraActionBar"),
 	}
 
 	return options
@@ -2138,7 +2022,6 @@ function module:Refresh(...)
 		module:SetStanceBar()
 		module:SetTotemBar()
 		module:SetVehicleExit()
-		module:SetExtraActionBar()
 	end
 
 	LUIBarsTopBG:SetAlpha(db.TopTexture.Alpha)
