@@ -24,5 +24,4 @@
     <Include file="AceLocale-3.0\AceLocale-3.0.xml"/>
     <Include file="AceSerializer-3.0\AceSerializer-3.0.xml"/>
     <Include file="AceTimer-3.0\AceTimer-3.0.xml"/>
-    <include file="LibHealComm-4.0\LibHealComm-4.0.xml"/>
 </Ui>
