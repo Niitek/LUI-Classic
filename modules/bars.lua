@@ -7,7 +7,7 @@
 local addonname, LUI = ...
 local module = LUI:Module("Bars", "AceHook-3.0", "AceEvent-3.0")
 local Themes = LUI:Module("Themes")
--- local Masque = LibStub("Masque", true)
+local Fader = LUI:GetModule("Fader")
 local Media = LibStub("LibSharedMedia-3.0")
 local LibKeyBound = LibStub("LibKeyBound-1.0")
 local widgetLists = AceGUIWidgetLSMlists
@@ -667,9 +667,9 @@ function module:SetBottomBar(id)
 		SetOnStatePage(bar)
 		RegisterStateDriver(bar, "page", GetBarState(id))
 
-		-- if bardb.Fader.Enable then
-		-- 	Fader:RegisterFrame(bar, bardb.Fader, true)
-		-- end
+		if bardb.Fader.Enable then
+			Fader:RegisterFrame(bar, bardb.Fader, true)
+		end
 
 		bars[id] = bar
 	end
@@ -723,10 +723,10 @@ function module:SetSideBar(side, id)
 			if button:GetName():find("LUI") then button.buttonType = "LUIBar"..sideID.."Button" end
 			button:SetAttribute("flyoutDirection", side == "Left" and "RIGHT" or "LEFT")
 			
-			if group then
-				group:AddButton(button)
-				button.__MSQ = group
-			end
+			-- if group then
+			-- 	group:AddButton(button)
+			-- 	button.__MSQ = group
+			-- end
 		end
 
 		bar:RegisterEvent("ACTIONBAR_SHOWGRID")
@@ -791,6 +791,11 @@ function module:SetPetBar()
 	LUIPetBar:SetScale(scale)
 
 	Configure(LUIPetBar, 10, db.PetBar.NumPerRow)
+
+	if db.PetBar.Fader.Enable then
+		Fader:RegisterFrame(LUIPetBar, db.PetBar.Fader, true)
+	end
+
 	ShowIf(LUIPetBar, db.PetBar.Enable)
 end
 
@@ -841,6 +846,9 @@ function module:SetStanceBar()
 	LUIStanceBar:SetScale(scale)
 
 	Configure(LUIStanceBar, 10, db.StanceBar.NumPerRow)
+	if db.StanceBar.Fader.Enable then
+		Fader:RegisterFrame(LUIStanceBar, db.StanceBar.Fader, true)
+	end
 	ShowIf(LUIStanceBar, db.StanceBar.Enable and GetNumShapeshiftForms() > 0)
 end
 
@@ -900,11 +908,11 @@ function module:SetTotemBar()
 
 	Configure(LUITotemBar, 6, 6)
 
-	-- if db.TotemBar.Fader.Enable then
-	-- 	Fader:RegisterFrame(LUITotemBar, db.TotemBar.Fader, true)
-	-- end
+	if db.TotemBar.Fader.Enable then
+		Fader:RegisterFrame(LUITotemBar, db.TotemBar.Fader, true)
+	end
 
-	LUITotemBar[db.TotemBar.Enable and "Show" or "Hide"](LUITotemBar)
+	-- LUITotemBar[db.TotemBar.Enable and "Show" or "Hide"](LUITotemBar)
 	ShowIf(LUITotemBar, db.TotemBar.Enable)
 end
 
@@ -1024,15 +1032,15 @@ local function StyleButton(button)
 	if InCombatLockdown() then return end
 	if not button then return end
 
-	local normTex = [[Interface\AddOns\LUI\media\textures\buttons2\Normal.tga]]
-	local backdropTex = [[Interface\AddOns\LUI\media\textures\buttons2\Backdrop.tga]]
-	local glossTex = [[Interface\AddOns\LUI\media\textures\buttons2\Gloss.tga]]
-	local pushedTex = [[Interface\AddOns\LUI\media\textures\buttons2\Normal.tga]]
-	local checkedTex = [[Interface\AddOns\LUI\media\textures\buttons2\Highlight.tga]]
-	local highlightTex = [[Interface\AddOns\LUI\media\textures\buttons2\Highlight.tga]]
-	local flashTex = [[Interface\AddOns\LUI\media\textures\buttons2\Overlay.tga]]
-	local borderTex = [[Interface\AddOns\LUI\media\textures\buttons2\Border.tga]]
-	local font = [[Interface\Addons\LUI\media\fonts\vibrocen.ttf]]
+	local normTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Normal.tga"
+	local backdropTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Backdrop.tga"
+	local glossTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Gloss.tga"
+	local pushedTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Normal.tga"
+	local checkedTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Highlight.tga"
+	local highlightTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Highlight.tga"
+	local flashTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Overlay.tga"
+	local borderTex = "Interface\\AddOns\\LUI\\media\\textures\\buttons2\\Border.tga"
+	local font = "Interface\\Addons\\LUI\\media\\fonts\\vibrocen.ttf"
 	local dummy = function() end
 
 	if button:GetNormalTexture() then
@@ -1123,7 +1131,7 @@ local function StyleButton(button)
 		end
 	end)
 
-	--if Masque then return end
+	-- if Masque then return end
 	-- if Masque and button.__MSQ and not button.__MSQ.db.Disabled then return end
 
 	-- normal
@@ -1566,11 +1574,6 @@ module.defaults = {
 			HideEmpty = false,
 			State = {
 				[1] = "0",
-				-- [2] = "0",
-				-- [3] = "0",
-				-- [4] = "0",
-				-- [5] = "0",
-				-- [6] = "0",
 				Alt = "0",
 				Ctrl = "0",
 			},
@@ -1753,6 +1756,7 @@ module.defaults = {
 			Point = "RIGHT",
 			Scale = 0.85,
 			NumPerRow = 10,
+			HideEmpty = true,
 			Fader = {
 				Casting = true,
 				Combat = true,
@@ -1818,9 +1822,6 @@ function T()
 	return "Alt "..db.Bottombar1.State["Alt"], "Ctrl "..db.Bottombar1.State["Ctrl"],
 			db.Bottombar1.State[1], db.Bottombar1.State[2], db.Bottombar1.State[3],
 			db.Bottombar1.State[4], db.Bottombar1.State[5], db.Bottombar1.State[6]
-			-- "Alt "..db.Bottombar2.State["Alt"], "Ctrl "..db.Bottombar2.State["Ctrl"],
-			-- db.Bottombar2.State[1], db.Bottombar2.State[2], db.Bottombar2.State[3],
-			-- db.Bottombar2.State[4], db.Bottombar2.State[5], db.Bottombar2.State[6]
 end
 
 module.childGroups = "select"
@@ -1870,17 +1871,13 @@ local function createBottomBarOptions(num, order)
 			Alt = module:NewSelect("Alt", "Choose the Alt State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 25, g_stateList, nil, false, nil, disabledFunc),
 			Ctrl = module:NewSelect("Ctrl", "Choose the Ctrl State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 26, g_stateList, nil, false, nil, disabledFunc),
 		}),
+		Fader = module:NewGroup("Fader", 12, true, disabledFunc, Fader:CreateFaderOptions(_G["LUIBar"..num], db["Bottombar"..num].Fader, dbd["Bottombar"..num].Fader, true)),
 	})
 
 	if num == 1 then
 		for i, name in ipairs(g_stateText) do							   
 			option.args.State.args[tostring(i)] = module:NewSelect(name, format("Choose the State for %s.\n\nDefaults: %s", name, g_defaultStates.Bottombar1[i]), i, g_stateList, nil, false, nil, disabledFunc)
-			-- option.args.State.args[tostring(i)] = module:NewSelect(name, format("Choose the State for %s.\n\nDefaults: %s", name, g_defaultStates.Bottombar2[i]), i, g_stateList, nil, false, nil, disabledFunc)
 		end
-	-- elseif num == 2 then
-	-- 	for i, name in ipairs(g_stateText) do							   
-	-- 		option.args.State.args[tostring(i)] = module:NewSelect(name, format("Choose the State for %s.\n\nDefaults: %s", name, g_defaultStates.Bottombar2[i]), i, g_stateList, nil, false, nil, disabledFunc)
-	-- 	end
 	else	
 		option.args.State.args["1"] = module:NewSelect("Default", format("Choose the State for Action Bar %s.\n\nDefaults: %s", num, g_defaultStates["Bottombar"..num][1]), 1, g_stateList, nil, false, nil, disabledFunc)
 	end
@@ -1909,6 +1906,7 @@ local optIsDisabled = {
 	Hotkey = function() return not db.General.ShowHotkey end,
 	Count = function() return not db.General.ShowCount end,
 	Macro = function() return not db.General.ShowMacro end,
+	-- Fader = function() return not db.General.Fader end,
 }
 
 local btSideBarPresets = {
@@ -1991,7 +1989,7 @@ local function createSideBarOptions(side, num, order)
 		Scale = module:NewSlider("Scale", "Choose the Scale for this Sidebar.", 7.33, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
 		AutoAdjust = module:NewExecute("Auto-Adjust BT4Bar", "If you recently changed the bar anchor, make sure to move the previous bar outside of the Sidebar to prevent overlaps.", 7.66, showDialog, nil, nil, disabledFunc, not IsAddOnLoaded("Bartender4")),
 		empty4 = module:NewDesc(" ", 8),
-		-- [""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
+		[""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
 		AutoPosDisable = g_isBarAddOnLoaded and module:NewToggle("Stop touching me!", "Whether or not to have LUI handle your Bar Positioning.", 10, true, nil, disabledFunc) or nil,
 		HideEmpty = not g_isBarAddOnLoaded and module:NewToggle("Hide Empty Buttons", nil, 11, true, nil, disabledFunc) or nil,
 		empty3 = module:NewDesc(" ", 12),
@@ -2028,13 +2026,12 @@ end
 
 local function createOtherBarOptions(name, order, frame, dbName, multiRow)
 	if g_isBarAddOnLoaded then return end
-	local specialBar = (name == "Extra Action Bar")
 	local function setDummyBar()
 		if InCombatLockdown() then return end
-		toggleDummyBar(ExtraActionBarFrame)
+	-- 	toggleDummyBar(ExtraActionBarFrame)
 	end
 
-	local option = module:NewGroup(name, order, false, InCombatLockdown, {
+	local option = module:NewGroup(name, order, frame, dbName, false, InCombatLockdown, {
 		header0 = module:NewHeader(name.." Settings", 0),
 		Enable = module:NewToggle("Show "..name, nil, 1, true),
 		[""] = module:NewPosSliders(name, 2, false, frame, true, nil, optIsDisabled[name]),
@@ -2044,6 +2041,7 @@ local function createOtherBarOptions(name, order, frame, dbName, multiRow)
 		HideTextures = specialBar and module:NewToggle("Hide Textures", "Whether or not to hide "..name.." textures.", 5, true) or nil,
 		DummyBar = specialBar and module:NewExecute("Show Dummy "..name, "Click to show/hide a dummy "..name..".", 6, setDummyBar, nil, optIsDisabled[name]) or nil,
 		NumPerRow = multiRow and module:NewSlider("Buttons per Row", "Choose the Number of Buttons per Row.", 5, 1, 10, 1, true, nil, nil, nil, optIsDisabled[name]) or nil,
+		Fader = (name ~= "Vehicle Exit Button") and module:NewGroup(name.." Fader", 6, true, optIsDisabled[frame], Fader:CreateFaderOptions(frame, db[dbName].Fader, dbd[dbName].Fader, true)) or nil,
 	})
 
 	return option

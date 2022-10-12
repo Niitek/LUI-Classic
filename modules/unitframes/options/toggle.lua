@@ -1046,7 +1046,7 @@ module.ApplySettings = function(unit)
 				if module.db.Settings.ShowV2BossTextures then frame.V2Tex:Show() else frame.V2Tex:Hide() end
 			end
 
-			-- -- fader
+			-- fader
 			if module.db[unit].Fader then
 				if module.db[unit].Fader.Enable then
 					Fader:RegisterFrame(frame, module.db[unit].Fader)
