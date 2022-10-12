@@ -3,15 +3,15 @@
 	<!-- Initialize LUI -->
 	<Include file="locale\locale.xml"/>
 	<Script file="init.lua"/>
-	<Script file="tools\profiler.lua"/>
-	<Script file="debug.lua"/>
-    <Script file="tools\outofcombatwrapper.lua"/>
-	<Script file="devapi.lua"/>
-	<Script file="tools\restore.lua"/>
-    <Script file="tools\hideblizzard.lua"/>
+	<Script file="api\profiler.lua"/>
+	<Script file="api\debug.lua"/>
+    <Script file="api\outofcombatwrapper.lua"/>
+	<Script file="api\devapi.lua"/>
+	<Script file="api\restore.lua"/>
+    <Script file="api\hideblizzard.lua"/>
 
 	<!-- Initialize oUF -->
-	<Include file="unitframes\core\ouf.xml"/>
+	<Include file="modules\unitframes\core\ouf.xml"/>
 
 	<!-- Core + Basic Modules -->
 	<Script file="LUI.lua"/>
@@ -57,56 +57,56 @@
 	<Script file="scripts\newplayerexperience.lua"/>
 
 	<!-- Initialize Unitframes -->
- 	<Include file="unitframes\templates.xml"/>
-	<Script file="unitframes\init.lua"/> -->
+ 	<Include file="modules\unitframes\templates.xml"/>
+	<Script file="modules\unitframes\init.lua"/> -->
 
 	<!-- Unitframe Default Values -->
-	<Script file="unitframes\defaults\player.lua"/>
-	<Script file="unitframes\defaults\target.lua"/>
-	<Script file="unitframes\defaults\tot.lua"/>
-	<Script file="unitframes\defaults\totot.lua"/>
-	<Script file="unitframes\defaults\focus.lua"/>
-	<Script file="unitframes\defaults\focustarget.lua"/>
-	<Script file="unitframes\defaults\pet.lua"/>
-	<Script file="unitframes\defaults\pettarget.lua"/>
-	<Script file="unitframes\defaults\boss.lua"/>
-	<Script file="unitframes\defaults\bosstarget.lua"/>
-	<Script file="unitframes\defaults\party.lua"/>
-	<Script file="unitframes\defaults\partypet.lua"/>
-	<Script file="unitframes\defaults\partytarget.lua"/>
-	<Script file="unitframes\defaults\maintank.lua"/>
-	<Script file="unitframes\defaults\maintanktarget.lua"/>
-	<Script file="unitframes\defaults\maintanktot.lua"/>
-	<Script file="unitframes\defaults\arena.lua"/>
-	<Script file="unitframes\defaults\arenapet.lua"/>
-	<Script file="unitframes\defaults\arenatarget.lua"/>
-	<Script file="unitframes\defaults\raid.lua"/>
+	<Script file="modules\unitframes\defaults\player.lua"/>
+	<Script file="modules\unitframes\defaults\target.lua"/>
+	<Script file="modules\unitframes\defaults\tot.lua"/>
+	<Script file="modules\unitframes\defaults\totot.lua"/>
+	<Script file="modules\unitframes\defaults\focus.lua"/>
+	<Script file="modules\unitframes\defaults\focustarget.lua"/>
+	<Script file="modules\unitframes\defaults\pet.lua"/>
+	<Script file="modules\unitframes\defaults\pettarget.lua"/>
+	<Script file="modules\unitframes\defaults\boss.lua"/>
+	<Script file="modules\unitframes\defaults\bosstarget.lua"/>
+	<Script file="modules\unitframes\defaults\party.lua"/>
+	<Script file="modules\unitframes\defaults\partypet.lua"/>
+	<Script file="modules\unitframes\defaults\partytarget.lua"/>
+	<Script file="modules\unitframes\defaults\maintank.lua"/>
+	<Script file="modules\unitframes\defaults\maintanktarget.lua"/>
+	<Script file="modules\unitframes\defaults\maintanktot.lua"/>
+	<Script file="modules\unitframes\defaults\arena.lua"/>
+	<Script file="modules\unitframes\defaults\arenapet.lua"/>
+	<Script file="modules\unitframes\defaults\arenatarget.lua"/>
+	<Script file="modules\unitframes\defaults\raid.lua"/>
 
 	<!-- Unitframe Options -->
-	<Script file="unitframes\options\colors.lua"/>
-	<Script file="unitframes\options\copysettings.lua"/>
-	<Script file="unitframes\options\general.lua"/>
-	<Script file="unitframes\options\importexport.lua"/>
-	<Script file="unitframes\options\movable.lua"/>
-	<Script file="unitframes\options\ouf.lua"/>
-	<Script file="unitframes\options\showhide.lua"/>
-	<Script file="unitframes\options\toggle.lua"/>
+	<Script file="modules\unitframes\options\colors.lua"/>
+	<Script file="modules\unitframes\options\copysettings.lua"/>
+	<Script file="modules\unitframes\options\general.lua"/>
+	<Script file="modules\unitframes\options\importexport.lua"/>
+	<Script file="modules\unitframes\options\movable.lua"/>
+	<Script file="modules\unitframes\options\ouf.lua"/>
+	<Script file="modules\unitframes\options\showhide.lua"/>
+	<Script file="modules\unitframes\options\toggle.lua"/>
 
 	<!-- LUI Unitframe Additions -->
-	<Script file="unitframes\plugins\oUF_CombatFeedback.lua"/>
-	<Script file="unitframes\plugins\oUF_Experience.lua"/>
-	<Script file="unitframes\plugins\oUF_Reputation.lua"/>
-	<Script file="unitframes\plugins\oUF_RaidDebuffs.lua"/>
+	<Script file="modules\unitframes\plugins\oUF_CombatFeedback.lua"/>
+	<Script file="modules\unitframes\plugins\oUF_Experience.lua"/>
+	<Script file="modules\unitframes\plugins\oUF_Reputation.lua"/>
+	<Script file="modules\unitframes\plugins\oUF_RaidDebuffs.lua"/>
 
 	<!-- to investigate as we may not need these anymore -->
-	<Script file="unitframes\plugins\singleauras.lua"/>
-	<Script file="unitframes\plugins\raiddebuffs.lua"/>
-	<Script file="unitframes\plugins\maintank.lua"/>
-	<Script file="unitframes\plugins\vehicle.lua"/>
+	<Script file="modules\unitframes\plugins\singleauras.lua"/>
+	<Script file="modules\unitframes\plugins\raiddebuffs.lua"/>
+	<Script file="modules\unitframes\plugins\maintank.lua"/>
+	<Script file="modules\unitframes\plugins\vehicle.lua"/>
 
 	<!-- Unitframe Layout -->
-	<Script file="unitframes\layout\tags.lua"/>
-	<Script file="unitframes\layout\meta.lua"/>
-	<Script file="unitframes\layout\layout.lua"/>
+	<Script file="modules\unitframes\layout\tags.lua"/>
+	<Script file="modules\unitframes\layout\meta.lua"/>
+	<Script file="modules\unitframes\layout\layout.lua"/>
 
 </Ui>

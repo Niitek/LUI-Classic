@@ -9,7 +9,7 @@ local silent = false
 silent = true
 --@end-debug@]===]
 
-local L = _G.LibStub("AceLocale-3.0"):NewLocale(addonname, "enUS", true, silent)
+local L = _G.LibStub("AceLocale-3.0"):NewLocale(addonname, "enUS", true)
 
 
 -- Core

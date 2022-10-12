@@ -6,6 +6,7 @@
 ## Notes: User Interface Modification
 ## SavedVariables: LUIDB, LUIGold, LUI_Themes, LUI_Layouts
 ## SavedVariablesPerCharacter: LUICONFIG
+## OptionalDeps: Ace3, Masque, Masque_Darion
 ## X-oUF: oUF_LUI
 ## Dependancies:
 

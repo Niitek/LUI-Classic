@@ -505,6 +505,46 @@ function LUI:InstallBartender()
 		Bartender4DB.namespaces.StanceBar.profiles[k] = v
 	end
 
+	local TotemBarDefaults = {
+		[CharName] = {
+			["position"] = {
+				["y"] = -16.50000411188517,
+				["x"] = -82.49990584837293,
+				["point"] = "CENTER",
+				["scale"] = 1,
+			},
+			["skin"] = {
+				["Colors"] = {
+					["Normal"] = {0.133, 0.133, 0.133, 0.950},
+					["Pushed"] = {0.321, 0.321, 0.321, 1},
+					["Highlight"] = {0.403, 0.403, 0.403, 1},
+					["Gloss"] = {1, 1, 1, 1},
+					["Backdrop"] = {0.109, 0.109, 0.109, 1},
+					["Flash"] = {1, 0, 0, 1},
+					["Border"] = {0.407, 0.403, 0.411, 1},
+					["Checked"] = {0.011, 0.011, 0.011, 0},
+					["Disabled"] = {0.988, 1, 0.949, 1},
+				},
+				["Gloss"] = 0.3,
+				["ID"] = "Darion",
+			},
+			["enabled"] = false,
+			["padding"] = 1,
+			["visibility"] = {
+				["possess"] = false,
+				["always"] = false,
+				["stance"] = {
+					false, -- [1]
+				},
+			},
+			["version"] = 3,
+		},
+	}
+
+	for k,v in pairs(TotemBarDefaults) do
+		Bartender4DB.namespaces.TotemBar.profiles[k] = v
+	end
+
 	local PetBarDefaults = {
 		[CharName] = {
 			["rows"] = 2,
