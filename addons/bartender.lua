@@ -468,10 +468,10 @@ function LUI:InstallBartender()
 	local StanceBarDefaults = {
 		[CharName] = {
 			["position"] = {
-				["y"] = -16.50000411188517,
-				["x"] = -82.49990584837293,
-				["point"] = "CENTER",
-				["scale"] = 1,
+				["y"] = 267.5,
+				["x"] = 20,
+				["point"] = "BOTTOMLEFT",
+				["scale"] = 0.85,
 			},
 			["skin"] = {
 				["Colors"] = {
@@ -488,7 +488,7 @@ function LUI:InstallBartender()
 				["Gloss"] = 0.3,
 				["ID"] = "Darion",
 			},
-			["enabled"] = false,
+			["enabled"] = true,
 			["padding"] = 1,
 			["visibility"] = {
 				["possess"] = false,
@@ -504,14 +504,14 @@ function LUI:InstallBartender()
 	for k,v in pairs(StanceBarDefaults) do
 		Bartender4DB.namespaces.StanceBar.profiles[k] = v
 	end
-
-	local TotemBarDefaults = {
+		--Totembar Defaults
+	local MultiCastDefaults = {
 		[CharName] = {
 			["position"] = {
-				["y"] = -16.50000411188517,
-				["x"] = -82.49990584837293,
-				["point"] = "CENTER",
-				["scale"] = 1,
+				["y"] = 267.5,
+				["x"] = 20,
+				["point"] = "BOTTOMLEFT",
+				["scale"] = 0.85,
 			},
 			["skin"] = {
 				["Colors"] = {
@@ -528,7 +528,7 @@ function LUI:InstallBartender()
 				["Gloss"] = 0.3,
 				["ID"] = "Darion",
 			},
-			["enabled"] = false,
+			["enabled"] = true,
 			["padding"] = 1,
 			["visibility"] = {
 				["possess"] = false,
@@ -541,20 +541,21 @@ function LUI:InstallBartender()
 		},
 	}
 
-	for k,v in pairs(TotemBarDefaults) do
-		Bartender4DB.namespaces.TotemBar.profiles[k] = v
+	for k,v in pairs(MultiCastDefaults) do
+		Bartender4DB.namespaces.MultiCast.profiles[k] = v
 	end
 
 	local PetBarDefaults = {
 		[CharName] = {
-			["rows"] = 2,
+			["rows"] = 1,
 			["hidemacrotext"] = true,
 			["position"] = {
-				["y"] = 295,
-				["x"] = -195,
+				["y"] = 267.8,
+				["x"] = -315,
 				["point"] = "BOTTOMRIGHT",
 				["scale"] = 0.8999999761581421,
 			},
+			["HGrowth"] = LEFT,
 			["version"] = 3,
 			["visibility"] = {
 				["always"] = false,

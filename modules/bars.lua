@@ -7,6 +7,7 @@
 local addonname, LUI = ...
 local module = LUI:Module("Bars", "AceHook-3.0", "AceEvent-3.0")
 local Themes = LUI:Module("Themes")
+local Masque = LibStub("Masque", true)
 local Fader = LUI:GetModule("Fader")
 local Media = LibStub("LibSharedMedia-3.0")
 local LibKeyBound = LibStub("LibKeyBound-1.0")
@@ -18,6 +19,7 @@ local db, dbd
 LUI.Versions.bars = 2.5
 
 local _, class = UnitClass("player")
+
 local buttonlist = {}
 local bars = {}
 local sidebars = {}
@@ -65,14 +67,12 @@ local g_defaultStates = {
 }
 
 do
-	if (class == "DRUID") then
+	if class == "DRUID" then
 		g_stateText = {"Default", "Bear Form", "Cat Form", "Cat Form (Prowl)", "Moonkin Form"}
 		g_defaultStates.Bottombar1 = {"1", "9", "7", "7", "1"}
-		-- g_defaultStates.Bottombar2 = {"2", "9", "7", "7", "2"}
-	elseif (class == "ROGUE") then
+	elseif class == "ROGUE" then
 		g_stateText = {"Default", "Stealth"}
 		g_defaultStates.Bottombar1 = {"1", "7"}
-		-- g_defaultStates.Bottombar2 = {"2", "7"}
 	end
 end
 
@@ -101,6 +101,39 @@ local Page = {
 	-- 	"[form:2] %s; " -- Metamorphosis
 	-- },
 }
+
+local toggleDummyBar
+do
+	local function playerRegenDisabled(bar, event)
+		module:UnregisterEvent(event)
+
+		toggleDummyBar(bar, false)
+		LUI:Print("Dummy "..bar:GetName().." hidden due to combat.")
+	end
+
+	toggleDummyBar = function(bar, force)
+		local show = not bar:IsShown()
+		if force then show = force end
+
+		local parent = bar:GetParent()
+		if not parent then parent = LUIExtraActionBar end
+
+		if show then
+			if not parent.SetBackdrop then Mixin(parent, BackdropTemplateMixin) end
+			parent:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background"})
+			bar.button:Show()
+			bar:Show()
+			bar.outro:Stop()
+			bar.intro:Play()
+
+			module:RegisterEvent("PLAYER_REGEN_DISABLED", playerRegenDisabled, bar)
+		else
+			if parent.SetBackdrop then parent:SetBackdrop({}) end
+			bar.intro:Stop()
+			bar:Hide()
+		end
+	end
+end
 
 local last = "HIDEGRID"
 local function HookGrid(self, event)
@@ -144,9 +177,9 @@ local function ValidateStates()
 	local invalid = false
 	if not db.StatesLoaded then invalid = true
 	-- If settings from a different class is imported, it can lead to bars being set to an invalid state.
-	elseif (class == "DRUID") and db.Bottombar1.State[3] == "0" then invalid = true
-	elseif (class == "ROGUE") and db.Bottombar1.State[2] == "0" then invalid = true
-	elseif (class == "ROGUE") and db.Bottombar1.State[3] == "7" then invalid = true -- Importing Druid settings on Rogue
+	elseif class == "DRUID" and db.Bottombar1.State[3] == "0" then invalid = true
+	elseif class == "ROGUE" and db.Bottombar1.State[2] == "0" then invalid = true
+	elseif class == "ROGUE" and db.Bottombar1.State[3] == "7" then invalid = true -- Importing Druid settings on Rogue
 	end
 
 	if invalid then
@@ -158,8 +191,8 @@ end
 
 local function GetAnchor(anchor)
 	if string.find(anchor, "Dominos") then
-		if _G.IsAddOnLoaded("Dominos") then
-			return _G.Dominos.ActionBar:Get(string.match(anchor, "%d+"))
+		if IsAddOnLoaded("Dominos") then
+			return Dominos.ActionBar:Get(string.match(anchor, "%d+"))
 		end
 	else
 		return _G[anchor]
@@ -317,7 +350,7 @@ local function UpdateUIPanelOffset(isLeft)
 	if isLeft then
 		local left1 = (sidebars.Left1 and db.SidebarLeft1.Enable) and sidebars.Left1.ButtonAnchor:GetRight() or 16
 		local left2 = (sidebars.Left2 and db.SidebarLeft2.Enable) and sidebars.Left2.ButtonAnchor:GetRight() or 16
-		UIParent:SetAttribute("LEFT_OFFSET", math.ceil(math.max(left1, left2)))
+		UIParent:SetAttribute("LEFT_OFFSET", ceil(max(left1, left2)))
 	end
 end
 
@@ -598,6 +631,7 @@ function module:SetBottomBar(id)
 
 	if not bars[id] then
 		local bar = CreateFrame("Frame", "LUIBar"..id, UIParent, "SecureHandlerStateTemplate")
+		local group = Masque and Masque:Group("LUI", "Bottom Bar "..id)
 		bar.buttons = {}
 
 		for i = 1, 12 do
@@ -618,7 +652,7 @@ function module:SetBottomBar(id)
 				button.__MSQ = group
 			end
 
-			-- module:HookActionButton(button)
+			module:HookActionButton(button)
 			if button:GetName():find("LUI") then button.buttonType = "LUIBar"..id.."Button" end
 		end
 
@@ -668,6 +702,7 @@ function module:SetSideBar(side, id)
 
 	if not bars[sideID] then
 		local bar = CreateFrame("Frame", "LUIBar"..sideID, UIParent, "SecureHandlerStateTemplate")
+		local group = Masque and Masque:Group("LUI", side.." Sidebar "..id)
 		bar:SetWidth(1) -- because of way LUI handles
 		bar:SetHeight(1) -- sidebar position calculation
 		bar.buttons = {}
@@ -687,10 +722,12 @@ function module:SetSideBar(side, id)
 			if button:GetName():find("LUI") then button.buttonType = "LUIBar"..sideID.."Button" end
 			button:SetAttribute("flyoutDirection", side == "Left" and "RIGHT" or "LEFT")
 			
-			-- if group then
-			-- 	group:AddButton(button)
-			-- 	button.__MSQ = group
-			-- end
+			if group then
+				group:AddButton(button)
+				button.__MSQ = group
+			end
+
+			module:HookActionButton(button)
 		end
 
 		bar:RegisterEvent("ACTIONBAR_SHOWGRID")
@@ -738,6 +775,15 @@ function module:SetPetBar()
 			end
 			bar.buttons[i] = button
 		end
+
+		if Masque then
+			local group = Masque:Group("LUI", "Pet Bar")
+			for i = 1, 10 do
+				local button = _G["PetActionButton"..i]
+				group:AddButton(button)
+				button.__MSQ = group
+			end
+		end
 	end
 
 	local scale = db.PetBar.Scale
@@ -784,6 +830,15 @@ function module:SetStanceBar()
 		-- DO NOT CHANGE
 		hooksecurefunc("StanceBar_Update", MoveStance)
 		hooksecurefunc("StanceBar_UpdateState", MoveStance)
+
+		if Masque then
+			local group = Masque:Group("LUI", "Stance Bar")
+			for i = 1, 10 do
+				local button = _G['StanceButton'..i]
+				group:AddButton(button)
+				button.__MSQ = group
+			end
+		end
 	end
 
 	local scale = db.StanceBar.Scale
@@ -855,11 +910,13 @@ function module:SetTotemBar()
 end
 
 function module:SetVehicleExit()
-	local bar = CreateFrame("Frame", "LUIVehicleExit", UIParent, "SecureHandlerStateTemplate")
-	bar:SetHeight(60)
-	bar:SetWidth(60)
-	
-	function VehicleExitButton() 
+	if not LUIVehicleExit then
+		local bar = CreateFrame("Frame", "LUIVehicleExit", UIParent, "SecureHandlerStateTemplate")
+		bar:SetHeight(60)
+		bar:SetWidth(60)
+
+		RegisterStateDriver(bar, "visibility", "[vehicleui] [bonusbar:5] [target=vehicle, exists] show; hide")
+
 		local veb = CreateFrame("Button", nil, bar, "SecureActionButtonTemplate")
 		veb:SetAllPoints(bar)
 		veb:RegisterForClicks("AnyUp")
@@ -868,20 +925,39 @@ function module:SetVehicleExit()
 		veb:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 		veb:SetScript("OnClick", function(self) VehicleExit() end)
 
-		LUIVehicleExit:Hide()
-		if UnitOnTaxi("player") or UnitHasVehicleUI("player") then
-			ShowIf(LUIVehicleExit, db.VehicleExit.Enable)
-		end
+		if not UnitInVehicle("player") then bar:Hide() end
 	end
 
 	local scale = db.VehicleExit.Scale
 	LUIVehicleExit:ClearAllPoints()
 	LUIVehicleExit:SetPoint(db.VehicleExit.Point, UIParent, db.VehicleExit.Point, db.VehicleExit.X / scale, db.VehicleExit.Y / scale)
 	LUIVehicleExit:SetScale(scale)
-	LUIVehicleExit:SetScript("OnEvent", VehicleExitButton)
 
-	LUIVehicleExit:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-	LUIVehicleExit:RegisterEvent("ACTIONBAR_UPDATE_USABLE")
+	ShowIf(LUIVehicleExit, db.VehicleExit.Enable)
+end
+
+function module:SetExtraActionBar()
+	local bar = LUIExtraActionBar
+	if not bar then
+		bar = CreateFrame("Frame", "LUIExtraActionBar", UIParent, "SecureHandlerStateTemplate")
+		bar:SetHeight(52)
+		bar:SetWidth(52)
+		bar.content = ExtraActionBarFrame
+
+		bar.content.ignoreFramePositionManager = true
+
+		bar.content:SetParent(bar)
+		bar.content:ClearAllPoints()
+		bar.content:SetPoint("CENTER", bar, "CENTER", 0, 0)
+	end
+
+	local scale = db.ExtraActionBar.Scale
+	bar:ClearAllPoints()
+	bar:SetPoint(db.ExtraActionBar.Point, UIParent, db.ExtraActionBar.Point, db.ExtraActionBar.X / scale, db.ExtraActionBar.Y / scale)
+	bar:SetScale(scale)
+
+	ShowIf(bar.content.button.style, not db.ExtraActionBar.HideTextures)
+	ShowIf(bar, db.ExtraActionBar.Enable)
 end
 
 function module:HideBlizzard()
@@ -931,7 +1007,7 @@ function module:HideBlizzard()
 	end)
 end
 
-local function StyleButton(button)
+function StyleButton(button)
 	if InCombatLockdown() then return end
 	if not button then return end
 
@@ -971,12 +1047,14 @@ local function StyleButton(button)
 		if parent == "MultiCastActionPage1" then return end
 		if parent == "MultiCastActionPage2" then return end
 		if parent == "MultiCastActionPage3" then return end
+		if parent == "ExtraActionBarFrame" then return end
 	end
 
 	local name = button:GetName()
 	local size = button:GetWidth()
 	local scale = size / 36
 
+	-- first style texts / equipped border, then check for BF/Masque, if not loaded, proceed!
 	-- hotkey
 	local hotkey = _G[name.."HotKey"]
 	hotkey:SetFont(Media:Fetch("font", db.General.HotkeyFont), db.General.HotkeySize, db.General.HotkeyOutline)
@@ -1031,6 +1109,9 @@ local function StyleButton(button)
 			LibKeyBound:Set(button)
 		end
 	end)
+
+	--if Masque then return end
+	if Masque and button.__MSQ and not button.__MSQ.db.Disabled then return end
 
 	-- normal
 	local normal = button:GetNormalTexture()
@@ -1159,15 +1240,12 @@ local function StyleButton(button)
 
 	button.SetFrameLevel = dummy
 end
-module:SecureHook("ActionButton_Update", StyleButton)
 
 local function StylePetButtons()
 	for i = 1, 10 do
 		StyleButton(_G["PetActionButton"..i])
 	end
 end
-module:SecureHook("PetActionBar_Update", StylePetButtons)
-
 
 local function StyleStanceButtons()
 	for i = 1, 10 do
@@ -1175,27 +1253,13 @@ local function StyleStanceButtons()
 	end
 end
 
-module:SecureHook("StanceBar_Update", StyleStanceButtons)
-module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
-
 local flyoutButtons = 0
-local function StyleFlyoutButton()
-	for i = 1, flyoutButtons do
-		if _G["SpellFlyoutButton"..i] then
-			StyleButton(_G["SpellFlyoutButton"..i])
-		end
-	end
-end
--- SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
-
 local function StyleFlyout(self)
 	if not LUI.IsRetail then return end
 	if not self.FlyoutArrow then return end
 
 	self.FlyoutBorder:SetAlpha(0)
 	self.FlyoutBorderShadow:SetAlpha(0)
-
-	SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
 
 	SpellFlyoutHorizontalBackground:SetAlpha(0)
 	SpellFlyoutVerticalBackground:SetAlpha(0)
@@ -1217,8 +1281,13 @@ local function StyleFlyout(self)
 	end
 end
 
-module:SecureHook("ActionButton_UpdateFlyout", StyleFlyout)
-
+local function StyleFlyoutButton()
+	for i = 1, flyoutButtons do
+		if _G["SpellFlyoutButton"..i] then
+			StyleButton(_G["SpellFlyoutButton"..i])
+		end
+	end
+end
 
 local function UpdateHotkey(self, abt)
 	local gsub = string.gsub
@@ -1248,7 +1317,6 @@ local function UpdateHotkey(self, abt)
 		hotkey:SetText(text)
 	end
 end
-module:SecureHook("ActionButton_UpdateHotkeys", UpdateHotkey)
 
 local function Button_UpdateUsable(button)
 	local icon = _G[button:GetName().."Icon"]
@@ -1266,7 +1334,7 @@ local function Button_UpdateUsable(button)
 		icon:SetVertexColor(0.8, 0.1, 0.1)
 	end
 end
-module:SecureHook("ActionButton_UpdateUsable", Button_UpdateUsable)
+
 local function Button_OnUpdate(button, elapsed)
 	button.__elapsed = (button.__elapsed or 0) + elapsed
 
@@ -1275,7 +1343,23 @@ local function Button_OnUpdate(button, elapsed)
 		Button_UpdateUsable(button)
 	end
 end
-module:SecureHook("ActionButton_OnUpdate", Button_OnUpdate)
+
+function module:HookActionButton(button)
+	if button then
+		module:SecureHook(button, "Update", StyleButton)
+		module:SecureHook(button, "OnUpdate", Button_OnUpdate)
+		module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
+		module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
+	end
+	--Prevent rehooking.
+	if not module:IsHooked("StanceBar_Update") then
+		module:SecureHook("StanceBar_Update", StyleStanceButtons)
+		module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
+		module:SecureHook("PetActionBar_Update", StylePetButtons)
+		module:SecureHook("ActionButton_UpdateFlyout", StyleFlyout)
+		SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
+	end
+end
 
 function module:SetLibKeyBound()
 	function module:LIBKEYBOUND_ENABLED()
@@ -1313,8 +1397,10 @@ function module:SetBars()
 		module:SetStanceBar()
 		module:SetTotemBar()
 		module:SetVehicleExit()
+		module:SetExtraActionBar()
 
 		module:HideBlizzard()
+		module:HookActionButton()
 
 		-- because of an ugly bug...
 		module:SecureHook(CharacterFrame, "Show", function() TokenFrame_Update() end)
@@ -1704,6 +1790,14 @@ module.defaults = {
 			Point = "CENTER",
 			Scale = 1,
 		},
+		ExtraActionBar = {
+			Enable = true,
+			X = 0, -- -314,
+			Y = 245, -- 41,
+			Point = "BOTTOM",
+			Scale = 0.85,
+			HideTextures = false,
+		},
 	},
 }
 
@@ -1795,7 +1889,6 @@ local optIsDisabled = {
 	Hotkey = function() return not db.General.ShowHotkey end,
 	Count = function() return not db.General.ShowCount end,
 	Macro = function() return not db.General.ShowMacro end,
-	-- Fader = function() return not db.General.Fader end,
 }
 
 local btSideBarPresets = {
@@ -1915,6 +2008,11 @@ end
 
 local function createOtherBarOptions(name, order, frame, dbName, multiRow)
 	if g_isBarAddOnLoaded then return end
+	local specialBar = (name == "Extra Action Bar")
+	local function setDummyBar()
+		if InCombatLockdown() then return end
+		toggleDummyBar(ExtraActionBarFrame)
+	end
 
 	local option = module:NewGroup(name, order, frame, dbName, false, InCombatLockdown, {
 		header0 = module:NewHeader(name.." Settings", 0),
@@ -1991,8 +2089,9 @@ function module:LoadOptions()
 		SidebarLeft2 = createSideBarOptions("Left", 2, 13),
 		StanceBar = createOtherBarOptions("Shapeshift/Stance Bar", 14, "LUIStanceBar", "StanceBar", true),
 		PetBar = createOtherBarOptions("Pet Bar", 15, "LUIPetBar", "PetBar", true),
-		TotemBar = (class == "SHAMAN") and createOtherBarOptions("Totem Bar", 16, "LUITotemBar", "TotemBar", true) or nil,
-		VehicleExit = createOtherBarOptions("Vehicle Exit Button", 17, "LUIVehicleExit", VehicleExit, true),
+		TotemBar = createOtherBarOptions("Totem Bar", 16, "LUITotemBar", "TotemBar", true),
+		VehicleExit = createOtherBarOptions("Vehicle Exit Button", 17, "LUIVehicleExit"),
+		ExtraActionBar = createOtherBarOptions("Extra Action Bar", 18, "LUIExtraActionBar"),
 	}
 
 	return options
@@ -2022,6 +2121,7 @@ function module:Refresh(...)
 		module:SetStanceBar()
 		module:SetTotemBar()
 		module:SetVehicleExit()
+		module:SetExtraActionBar()
 	end
 
 	LUIBarsTopBG:SetAlpha(db.TopTexture.Alpha)
