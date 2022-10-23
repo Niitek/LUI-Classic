@@ -13,6 +13,7 @@ function LUI:InstallBartender()
 	if not IsAddOnLoaded("Bartender4") then return end
 
 	local CharName = UnitName("player")
+	local _, CharClass = UnitClass("player")
 	local ServerName = GetRealmName()
 	local ProfileName = CharName.." - "..ServerName
 
@@ -505,44 +506,46 @@ function LUI:InstallBartender()
 		Bartender4DB.namespaces.StanceBar.profiles[k] = v
 	end
 		--Totembar Defaults
-	local MultiCastDefaults = {
-		[CharName] = {
-			["position"] = {
-				["y"] = 267.5,
-				["x"] = 20,
-				["point"] = "BOTTOMLEFT",
-				["scale"] = 0.85,
-			},
-			["skin"] = {
-				["Colors"] = {
-					["Normal"] = {0.133, 0.133, 0.133, 0.950},
-					["Pushed"] = {0.321, 0.321, 0.321, 1},
-					["Highlight"] = {0.403, 0.403, 0.403, 1},
-					["Gloss"] = {1, 1, 1, 1},
-					["Backdrop"] = {0.109, 0.109, 0.109, 1},
-					["Flash"] = {1, 0, 0, 1},
-					["Border"] = {0.407, 0.403, 0.411, 1},
-					["Checked"] = {0.011, 0.011, 0.011, 0},
-					["Disabled"] = {0.988, 1, 0.949, 1},
+	if CharClass == "SHAMAN" then
+		local MultiCastDefaults = {
+			[CharName] = {
+				["position"] = {
+					["y"] = 267.5,
+					["x"] = 20,
+					["point"] = "BOTTOMLEFT",
+					["scale"] = 0.85,
 				},
-				["Gloss"] = 0.3,
-				["ID"] = "Darion",
-			},
-			["enabled"] = true,
-			["padding"] = 1,
-			["visibility"] = {
-				["possess"] = false,
-				["always"] = false,
-				["stance"] = {
-					false, -- [1]
+				["skin"] = {
+					["Colors"] = {
+						["Normal"] = {0.133, 0.133, 0.133, 0.950},
+						["Pushed"] = {0.321, 0.321, 0.321, 1},
+						["Highlight"] = {0.403, 0.403, 0.403, 1},
+						["Gloss"] = {1, 1, 1, 1},
+						["Backdrop"] = {0.109, 0.109, 0.109, 1},
+						["Flash"] = {1, 0, 0, 1},
+						["Border"] = {0.407, 0.403, 0.411, 1},
+						["Checked"] = {0.011, 0.011, 0.011, 0},
+						["Disabled"] = {0.988, 1, 0.949, 1},
+					},
+					["Gloss"] = 0.3,
+					["ID"] = "Darion",
 				},
+				["enabled"] = true,
+				["padding"] = 1,
+				["visibility"] = {
+					["possess"] = false,
+					["always"] = false,
+					["stance"] = {
+						false, -- [1]
+					},
+				},
+				["version"] = 3,
 			},
-			["version"] = 3,
-		},
-	}
+		}
 
-	for k,v in pairs(MultiCastDefaults) do
-		Bartender4DB.namespaces.MultiCast.profiles[k] = v
+		for k,v in pairs(MultiCastDefaults) do
+			Bartender4DB.namespaces.MultiCast.profiles[k] = v
+		end
 	end
 
 	local PetBarDefaults = {
