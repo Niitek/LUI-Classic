@@ -1346,10 +1346,10 @@ end
 
 function module:HookActionButton(button)
 	if button then
-		module:SecureHook(button, "Update", StyleButton)
-		module:SecureHook(button, "OnUpdate", Button_OnUpdate)
-		module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
-		module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
+		-- module:SecureHook(button, "Update", StyleButton)
+		-- module:SecureHook(button, "OnUpdate", Button_OnUpdate)
+		-- module:SecureHook(button, "UpdateHotkeys", UpdateHotkey)
+	-- 	module:SecureHook(button, "UpdateUsable", Button_UpdateUsable)
 	end
 	--Prevent rehooking.
 	if not module:IsHooked("StanceBar_Update") then
@@ -1357,7 +1357,7 @@ function module:HookActionButton(button)
 		module:SecureHook("StanceBar_UpdateState", StyleStanceButtons)
 		module:SecureHook("PetActionBar_Update", StylePetButtons)
 		module:SecureHook("ActionButton_UpdateFlyout", StyleFlyout)
-		SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
+		-- SpellFlyout:HookScript("OnShow", StyleFlyoutButton)
 	end
 end
 
@@ -1380,32 +1380,32 @@ end
 
 function module:SetBars()
 	if not (IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Dominos") or IsAddOnLoaded("Macaroon")) and db.General.Enable then
-		ValidateStates()
+		-- ValidateStates()
 
-		module:SetLibKeyBound()
+		-- module:SetLibKeyBound()
 
-		for i = 1, 6 do
-			module:SetBottomBar(i)
-		end
+		-- for i = 1, 6 do
+		-- 	module:SetBottomBar(i)
+		-- end
 
-		for i = 1, 2 do
-			module:SetSideBar("Left", i)
-			module:SetSideBar("Right", i)
-		end
+		-- for i = 1, 2 do
+		-- 	module:SetSideBar("Left", i)
+		-- 	module:SetSideBar("Right", i)
+		-- end
 
-		module:SetPetBar()
-		module:SetStanceBar()
-		module:SetTotemBar()
-		module:SetVehicleExit()
-		module:SetExtraActionBar()
+		-- module:SetPetBar()
+		-- module:SetStanceBar()
+		-- module:SetTotemBar()
+		-- module:SetVehicleExit()
+		-- -- module:SetExtraActionBar()
 
-		module:HideBlizzard()
-		module:HookActionButton()
+		-- module:HideBlizzard()
+		-- module:HookActionButton()
 
-		-- because of an ugly bug...
-		module:SecureHook(CharacterFrame, "Show", function() TokenFrame_Update() end)
-		module:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
+		-- -- because of an ugly bug...
+		-- module:SecureHook(CharacterFrame, "Show", function() TokenFrame_Update() end)
+		-- module:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	-- else
 		g_isBarAddOnLoaded = true
 	end
 
@@ -1423,7 +1423,7 @@ module.defaults = {
 	profile = {
 		StatesLoaded = false,
 		General = {
-			Enable = true,
+			Enable = false,
 			AdjustUIPanels = true,
 			ShowHotkey = false,
 			HotkeyFont = "vibrocen",
@@ -2024,7 +2024,7 @@ local function createOtherBarOptions(name, order, frame, dbName, multiRow)
 		HideTextures = specialBar and module:NewToggle("Hide Textures", "Whether or not to hide "..name.." textures.", 5, true) or nil,
 		DummyBar = specialBar and module:NewExecute("Show Dummy "..name, "Click to show/hide a dummy "..name..".", 6, setDummyBar, nil, optIsDisabled[name]) or nil,
 		NumPerRow = multiRow and module:NewSlider("Buttons per Row", "Choose the Number of Buttons per Row.", 5, 1, 10, 1, true, nil, nil, nil, optIsDisabled[name]) or nil,
-		Fader = (name ~= "Vehicle Exit Button") and module:NewGroup(name.." Fader", 6, true, optIsDisabled[frame], Fader:CreateFaderOptions(frame, db[dbName].Fader, dbd[dbName].Fader, true)) or nil,
+		-- Fader = (name ~= "Vehicle Exit Button") and module:NewGroup(name.." Fader", 6, true, optIsDisabled[frame], Fader:CreateFaderOptions(frame, db[dbName].Fader, dbd[dbName].Fader, true)) or nil,
 	})
 
 	return option
@@ -2104,24 +2104,24 @@ function module:Refresh(...)
 	end
 
 	if not g_isBarAddOnLoaded then
-		for i = 1, 6 do
-			module:SetBottomBar(i)
-		end
+		-- for i = 1, 6 do
+		-- 	module:SetBottomBar(i)
+		-- end
 
-		for i = 1, 2 do
-			module:SetSideBar("Left", i)
-			module:SetSideBar("Right", i)
-		end
+		-- for i = 1, 2 do
+		-- 	module:SetSideBar("Left", i)
+		-- 	module:SetSideBar("Right", i)
+		-- end
 
-		for _, bar in pairs(bars) do
-			HookGrid(bar)
-		end
+		-- for _, bar in pairs(bars) do
+		-- 	HookGrid(bar)
+		-- end
 
-		module:SetPetBar()
-		module:SetStanceBar()
-		module:SetTotemBar()
-		module:SetVehicleExit()
-		module:SetExtraActionBar()
+		-- module:SetPetBar()
+		-- module:SetStanceBar()
+		-- module:SetTotemBar()
+		-- module:SetVehicleExit()
+		-- module:SetExtraActionBar()
 	end
 
 	LUIBarsTopBG:SetAlpha(db.TopTexture.Alpha)
