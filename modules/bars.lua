@@ -1854,7 +1854,7 @@ local function createBottomBarOptions(num, order)
 			Alt = module:NewSelect("Alt", "Choose the Alt State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 25, g_stateList, nil, false, nil, disabledFunc),
 			Ctrl = module:NewSelect("Ctrl", "Choose the Ctrl State for Action Bar "..num..".\n\nDefault: "..g_defaultStates["Bottombar"..num][1], 26, g_stateList, nil, false, nil, disabledFunc),
 		}),
-		Fader = module:NewGroup("Fader", 12, true, disabledFunc, Fader:CreateFaderOptions(_G["LUIBar"..num], db["Bottombar"..num].Fader, dbd["Bottombar"..num].Fader, true)),
+		-- Fader = module:NewGroup("Fader", 12, true, disabledFunc, Fader:CreateFaderOptions(_G["LUIBar"..num], db["Bottombar"..num].Fader, dbd["Bottombar"..num].Fader, true)),
 	})
 
 	if num == 1 then

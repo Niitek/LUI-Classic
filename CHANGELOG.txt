@@ -1,3 +1,9 @@
+2022.24.10 Hotfix: For error `LUI.args.Bars.args.Bottombar5.args.Fader.args: expected a table, got 'nil'`
+
 2022.23.10 Bars: Fixed issue with none shaman characters getting an error upon install.
 
 2022.23.10 Bars: Disabled till project is merged with Retail branch.
+
+2022.23.10 Bars: Added Totembar to the Bartender template.
+
+2022.23.10 Bars: Changed default to off, in leu of issues with the bar module. Advice is to use Bartender till more work is done.
