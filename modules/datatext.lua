@@ -2669,6 +2669,7 @@ end
 
 function module:SetMemory()
 	local stat = NewStat("Memory")
+	do return end
 
 	if db.Memory.Enable and not stat.Created then
 		-- Localized functions
@@ -3287,7 +3288,7 @@ module.defaults = {
 			},
 		},
 		Memory = {
-			Enable = true,
+			Enable = false,
 			X = 610,
 			Y = 0,
 			InfoPanel = {
@@ -4294,33 +4295,33 @@ function module:LoadOptions()
 				Reset = ResetOption(5),
 			},
 		},
-		Memory = {
-			name = function(info) return NameLabel(info, "Memory Usage") end,
-			type = "group",
-			order = 13,
-			args = {
-				Header = {
-					name = "Memory Usage",
-					type = "header",
-					order = 1,
-				},
-				Enable = {
-					name = "Enable",
-					desc = "Whether you want to show your Memory Usage or not.",
-					type = "toggle",
-					width = "full",
-					get = function() return db.Memory.Enable end,
-					set = function(info, value)
-						db.Memory.Enable = value
-						ToggleStat("Memory")
-					end,
-					order = 2,
-				},
-				Position = PositionOptions(3, "Memory Usage"),
-				Font = FontOptions(4, "Memory Usage"),
-				Reset = ResetOption(5),
-			},
-		},
+		-- Memory = {
+		-- 	name = function(info) return NameLabel(info, "Memory Usage") end,
+		-- 	type = "group",
+		-- 	order = 13,
+		-- 	args = {
+		-- 		Header = {
+		-- 			name = "Memory Usage",
+		-- 			type = "header",
+		-- 			order = 1,
+		-- 		},
+		-- 		Enable = {
+		-- 			name = "Enable",
+		-- 			desc = "Whether you want to show your Memory Usage or not.",
+		-- 			type = "toggle",
+		-- 			width = "full",
+		-- 			get = function() return db.Memory.Enable end,
+		-- 			set = function(info, value)
+		-- 				db.Memory.Enable = value
+		-- 				ToggleStat("Memory")
+		-- 			end,
+		-- 			order = 2,
+		-- 		},
+		-- 		Position = PositionOptions(3, "Memory Usage"),
+		-- 		Font = FontOptions(4, "Memory Usage"),
+		-- 		Reset = ResetOption(5),
+		-- 	},
+		-- },
 		WeaponInfo = {
 			name = function(info) return NameLabel(info, "Weapon Information") end,
 			type = "group",

@@ -5,9 +5,15 @@
     <!-- <Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/> -->
     <Script file="LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
     <Script file="LibWindow-1.1\LibWindow-1.1.lua"/>
+    <!-- <Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/> -->
+    <!-- <Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/> -->
+    <!-- <Script file="LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua"/> -->
+    <!-- <Script file="LibDualSpec-1.0\LibDualSpec-1.0.lua"/> -->
+    <!-- <Script file="LibKeyBound-1.0\LibKeyBound-1.0.lua"/> -->
+    <!-- <Script file="LibWindow-1.1\LibWindow-1.1.lua"/> -->
 
     <Include file="LibBabble-Zone-3.0\lib.xml"/>
-    <Include file="LibKeyBound-1.0\lib.xml"/>
+    <Include file="LibKeyBound-1.0\LibKeyBound-1.0\lib.xml"/>
     <Include file="LibSharedMedia-3.0\lib.xml"/>
 
     <Include file="AceAddon-3.0\AceAddon-3.0.xml"/>
