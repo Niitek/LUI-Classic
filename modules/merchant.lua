@@ -201,7 +201,13 @@ function module:AutoStock()
 
 	-- Buy shopping cart.
 	for item, qty in pairs(cart) do
+		local maxItemCountThatCanBeBoughtAtOnce = 255
 		-- But item.
+		while qty > maxItemCountThatCanBeBoughtAtOnce do
+			BuyMerchantItem(item, maxItemCountThatCanBeBoughtAtOnce)
+			qty = qty - maxItemCountThatCanBeBoughtAtOnce
+		end
+
 		BuyMerchantItem(item, qty)
 	end
 
