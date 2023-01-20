@@ -16,7 +16,7 @@ local LUIThreat
 local LEVEL_CAP = MAX_PLAYER_LEVEL_TABLE[GetServerExpansionLevel()]
 LUI.Versions.threatbar = 2.0
 
-local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
+local fontflags = {"OUTLINE", "THICK", "MONOCHROME", "NONE"}
 local positions = { "TOP", "TOPRIGHT", "TOPLEFT", "BOTTOM", "BOTTOMRIGHT", "BOTTOMLEFT", "RIGHT", "LEFT", "CENTER"}
 
 local aggrocolors = {0, 1, 0, 1, 1, 0, 1, 0, 0}
@@ -280,7 +280,7 @@ local function SetThreat()
 	
 	local indicator = bar:CreateTexture(nil, "OVERLAY")
 	indicator:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
-	indicator:SetVertexColor(1, 1, 1, .75)
+	indicator:SetVertexColor(1, 1, 1, 0.75)
 	indicator:SetBlendMode("ADD")
 	indicator:SetHeight(bar:GetHeight() * 1.5)
 	indicator:SetWidth(bar:GetHeight())

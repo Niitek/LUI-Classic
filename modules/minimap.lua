@@ -21,7 +21,7 @@ local widgetLists = AceGUIWidgetLSMlists
 
 local db
 local shouldntSetPoint = false
-local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
+local fontflags = {'OUTLINE', 'THICK', 'MONOCHROME', 'NONE'}
 
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end

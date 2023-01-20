@@ -20,7 +20,7 @@ local widgetLists = AceGUIWidgetLSMlists
 local module = LUI:Module("Nameplates")
 
 local db
-local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
+local fontflags = {'OUTLINE', 'THICK', 'MONOCHROME', 'NONE'}
 
 function module:SetNameplates()
 	if db.Nameplates.Enable ~= true then return end

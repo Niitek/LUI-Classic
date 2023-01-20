@@ -263,6 +263,7 @@ function module:SetBags()
 		end
 	
 		-- Localized functions
+		local GetContainerNumFreeSlots, GetContainerNumSlots = C_Container.GetContainerNumFreeSlots, C_Container.GetContainerNumSlots
 
 		local bagTypes = {
 			[0x0000] = "Normal", -- 0
@@ -1659,7 +1660,8 @@ function module:SetGF()
 					toast.class:SetTexture("")
 				end
 			else
-				toast.class:SetTexture(BNet_GetClientEmbeddedAtlas(client))
+				--toast.class:SetTexture(BNet_GetClientTexture(client))
+				toast.class:SetTexture(_G.BNet_GetClientEmbeddedAtlas(client))
 				toast.class:SetTexCoord(0.2, 0.8, 0.2, 0.8)
 				toast.name:SetTextColor(0.8, 0.8, 0.8)
 				toast.faction:SetTexture("")

@@ -163,9 +163,13 @@ function module:LibSharedMedia_Registered(mediaType, key)
 		for i, name in ipairs(CHAT_FRAMES) do
 			local editBox = _G[name].editBox
 			if editBox then
-				local font = Media:Fetch("font", db.Font.Font, db.Font.Flag)
-				editBox:SetFont(font, db.Font.Size, db.Font.Flag)
-				editBox.header:SetFont(font, db.Font.Size, db.Font.Flag)
+				local font = Media:Fetch("font", db.Font.Font)
+				local fontFlag = db.Font.Flag
+				if fontFlag == "NONE" then
+				  fontFlag = ""
+				end
+				editBox:SetFont(font, db.Font.Size, fontFlag)
+				editBox.header:SetFont(font, db.Font.Size, fontFlag)
 			end
 		end
 	elseif mediaType == "border" and key == db.Border.Texture or mediaType == "background" and key == db.Background.Texture then

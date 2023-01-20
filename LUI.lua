@@ -88,8 +88,8 @@ LUI.Media = {
 LUI.FontFlags = {
 	[""] = L["None"],
 	OUTLINE = L["Outline"],
-	THICKOUTLINE = L["Thick Outline"],
-	MONOCHROME = L["Monochrome"],
+	THICK = L["Thick Outline"],
+	MONOCHROME = L["Monochrome"]
 }
 
 LUI.Points = {
@@ -264,7 +264,7 @@ function LUI:StyleButton(b, checked)
 	local normaltexture   = _G[name.."NormalTexture"]
 	local icontexture     = _G[name.."IconTexture"]
 
-	local hover = b:CreateTexture() -- hover
+	local hover = b:CreateTexture() --("frame", nil, self) -- hover
 	hover:SetColorTexture(1,1,1,0.2)
 	hover:SetHeight(button:GetHeight())
 	hover:SetWidth(button:GetWidth())
@@ -272,7 +272,7 @@ function LUI:StyleButton(b, checked)
 	hover:SetPoint("BOTTOMRIGHT",button,-2,2)
 	button:SetHighlightTexture(hover)
 
-	local pushed = b:CreateTexture() -- pushed
+	local pushed = b:CreateTexture() --("frame", nil, self) -- pushed
 	pushed:SetColorTexture(0.9,0.8,0.1,0.3)
 	pushed:SetHeight(button:GetHeight())
 	pushed:SetWidth(button:GetWidth())
@@ -284,7 +284,7 @@ function LUI:StyleButton(b, checked)
 	count:SetFont(Media:Fetch("font", (Infotext and Infotext.db.profile.FPS.Font or "vibroceb")), (Infotext and Infotext.db.profile.FPS.FontSize or 12), "OUTLINE")
 
 	if checked then
-		local checked = b:CreateTexture() -- checked
+		local checked = b:CreateTexture() --("frame", nil, self) -- checked
 		checked:SetColorTexture(0,1,0,0.3)
 		checked:SetHeight(button:GetHeight())
 		checked:SetWidth(button:GetWidth())

@@ -28,7 +28,7 @@ local widgetLists = AceGUIWidgetLSMlists
 local db, dbd
 local GetBags = {
 	["Bags"] = {0, 1, 2, 3, 4},
-	["Bank"] = {-1, 5, 6, 7, 8, 9, 10, 11},
+	["Bank"] = {-1, 6, 7, 8, 9, 10, 11, 12},
 }
 local isCreated = {}
 
@@ -47,20 +47,20 @@ local MAX_WATCHED_TOKENS = MAX_WATCHED_TOKENS
 local GetItemInfo = GetItemInfo
 local GetKeyRingSize = GetKeyRingSize
 local GetMoneyString = GetMoneyString
-local GetContainerNumSlots = GetContainerNumSlots
-local GetContainerItemInfo = GetContainerItemInfo
-local GetContainerItemLink = GetContainerItemLink
-local GetContainerItemCooldown = GetContainerItemCooldown
-local GetContainerNumFreeSlots = GetContainerNumFreeSlots
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local GetContainerItemInfo = C_Container.GetContainerItemInfo
+local GetContainerItemLink = C_Container.GetContainerItemLink
+local GetContainerItemCooldown = C_Container.GetContainerItemCooldown
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 
-local CreateFrame = CreateFrame
-local OpenEditbox = OpenEditbox
-local SetItemButtonCount = SetItemButtonCount
-local SetItemButtonTexture = SetItemButtonTexture
-local SetItemButtonDesaturated = SetItemButtonDesaturated
+local CreateFrame = _G.CreateFrame
+local OpenEditbox = _G.OpenEditbox
+local SetItemButtonCount = _G.SetItemButtonCount
+local SetItemButtonTexture = _G.SetItemButtonTexture
+local SetItemButtonDesaturated = _G.SetItemButtonDesaturated
 
-local BankFrameItemButton_Update = BankFrameItemButton_Update
-local BankFrameItemButton_UpdateLocked = BankFrameItemButton_UpdateLocked
+local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
+local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
 
 -- Constants. Do NOT Edit those.
 local ST_NORMAL = 1	--Flagged for possible deletion
@@ -234,6 +234,7 @@ function module:SlotUpdate(item)
 	local battlePayTexture = item.frame.BattlepayItemTexture
 	local flashAnim = item.frame.flashAnim
 	local newItemAnim = item.frame.newitemglowAnim
+	-- Not all item slots have a newItemTexture
 	if newItemTexture then
 		if db.Bags.ShowNew and C_NewItems.IsNewItem(item.bag, item.slot) then
 			if IsBattlePayItem(item.bag, item.slot) then
@@ -264,21 +265,23 @@ function module:SlotUpdate(item)
 		battlePayTexture:SetSize(item.frame:GetSize())
 		newItemTexture:SetSize(item.frame:GetSize())
 	end
-
+	
 	if (clink) then
 		local name, _, itemQuality, _, _, iType, _, _, _, _, _, classID = GetItemInfo(clink)
 		item.name, item.itemQuality = name, itemQuality
 		-- color slot according to item quality
 		if db.Bags.Rarity and not item.frame.lock and itemQuality > 1 then
-			item.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
+		    -- SetBackdropBorderColor changed, see: https://github.com/Stanzilla/WoWUIBugs/wiki/9.0.1-Consolidated-UI-Changes#backdrop-system-changes
+			--item.frame:SetBackdropBorderColor(GetItemQualityColor(itemQuality))
 		-- color slot according to quest item.
 		elseif db.Bags.ShowQuest and not item.frame.lock and classID == 12 then
-			item.frame:SetBackdropBorderColor(1,1,0)
+			--item.frame:SetBackdropBorderColor(1,1,0)
 		end
 	else
 		item.name, item.itemQuality = nil, nil
 	end
 
+    -- These are not working...
 	SetItemButtonTexture(item.frame, texture)
 	SetItemButtonCount(item.frame, count)
 	SetItemButtonDesaturated(item.frame, locked, 0.5, 0.5, 0.5)
@@ -366,7 +369,7 @@ function module:SlotNew(bag, slot)
 			return v, false
 		end
 	end
-
+	
 	local template = "ContainerFrameItemButtonTemplate"
 
 	if bag == -1 then
@@ -383,7 +386,6 @@ function module:SlotNew(bag, slot)
 			b = tonumber(b)
 			s = tonumber(s)
 
-			--print (b .. " " .. s)
 			if b == bag and s == slot then
 				f = i
 				break
@@ -391,7 +393,6 @@ function module:SlotNew(bag, slot)
 		end
 
 		if f ~= -1 then
-			--print("found it")
 			ret.frame = trashButton[f]
 			table.remove(trashButton, f)
 		end
@@ -880,7 +881,7 @@ function module:Layout(bagType)
 					item.frame:SetPushedTexture("")
 					item.frame:SetNormalTexture("")
 					item.frame:Show()
-
+				
 					item.frame:SetBackdrop( {
 						bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 						edgeFile = borderTex,
@@ -892,7 +893,7 @@ function module:Layout(bagType)
 					item.frame:SetBackdropBorderColor(unpack(border_color))
 
 				end
-
+				
 				LUI:StyleButton(item.frame)
 				module:SlotUpdate(item)
 
@@ -906,7 +907,6 @@ function module:Layout(bagType)
 
 				idx = idx + 1
 			end
-
 		end
 
 	end
