@@ -247,8 +247,11 @@ do
 
 	function WeaponEnchant:Update(enchantNum, ...)
 		self.icon:SetTexture(GetInventoryItemTexture(...))
-		local borderColorR, borderColorG, borderColorB = (GetItemQualityColor(GetInventoryItemQuality(...)) or 1)
-		self.border:SetVertexColor(borderColorR, borderColorG, borderColorB, 1)
+		local inventoryItemQuality = GetInventoryItemQuality(...)
+		local r, g, b, hex = GetItemQualityColor(inventoryItemQuality)
+		self.border:SetVertexColor(r, g, b)
+		--self.border:SetVertexColor(GetItemQualityColor(GetInventoryItemQuality(...) or 1))
+
 		local remaining, charges = weaponInfo(enchantNum)
 		if charges and charges > 1 then
 			self.enchantNum = enchantNum
