@@ -1660,7 +1660,7 @@ function module:SetGF()
 					toast.class:SetTexture("")
 				end
 			else
-				--toast.class:SetTexture(BNet_GetClientTexture(client))
+				toast.class:SetTexture(_G.BNet_GetClientTexture(client))
 				toast.class:SetTexture(_G.BNet_GetClientEmbeddedAtlas(client))
 				toast.class:SetTexCoord(0.2, 0.8, 0.2, 0.8)
 				toast.name:SetTextColor(0.8, 0.8, 0.8)
