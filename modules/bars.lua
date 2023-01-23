@@ -1405,7 +1405,7 @@ function module:SetBars()
 		-- -- because of an ugly bug...
 		-- module:SecureHook(CharacterFrame, "Show", function() TokenFrame_Update() end)
 		-- module:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	-- else
+	else
 		g_isBarAddOnLoaded = true
 	end
 
