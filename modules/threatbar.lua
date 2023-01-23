@@ -16,7 +16,7 @@ local LUIThreat
 local LEVEL_CAP = MAX_PLAYER_LEVEL_TABLE[GetServerExpansionLevel()]
 LUI.Versions.threatbar = 2.0
 
-local fontflags = {"OUTLINE", "THICK", "MONOCHROME", "NONE"}
+local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
 local positions = { "TOP", "TOPRIGHT", "TOPLEFT", "BOTTOM", "BOTTOMRIGHT", "BOTTOMLEFT", "RIGHT", "LEFT", "CENTER"}
 
 local aggrocolors = {0, 1, 0, 1, 1, 0, 1, 0, 0}

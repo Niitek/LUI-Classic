@@ -250,7 +250,6 @@ do
 		local inventoryItemQuality = GetInventoryItemQuality(...)
 		local r, g, b, hex = GetItemQualityColor(inventoryItemQuality)
 		self.border:SetVertexColor(r, g, b)
-		--self.border:SetVertexColor(GetItemQualityColor(GetInventoryItemQuality(...) or 1))
 
 		local remaining, charges = weaponInfo(enchantNum)
 		if charges and charges > 1 then

@@ -70,7 +70,7 @@ if class == "ROGUE" or class == "DRUID" then
 	barNames.Energy = "Combo Points"
 end
 
-local fontflags = {"OUTLINE", "THICK", "MONOCHROME", "NONE"}
+local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
 local directions = {"TOP", "BOTTOM", "RIGHT", "LEFT"}
 local positions = {"TOP", "TOPRIGHT", "TOPLEFT", "BOTTOM", "BOTTOMRIGHT", "BOTTOMLEFT", "RIGHT", "LEFT", "CENTER"}
 local justifications = {"RIGHT", "LEFT", "CENTER"}

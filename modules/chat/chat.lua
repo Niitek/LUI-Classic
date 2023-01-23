@@ -970,9 +970,9 @@ function module:OnDisable()
 		local chatFrame = _G[name]
 		chatFrame:SetFading(true)
 		local fontFlag = db.General.Font.Flag
-	    if fontFlag == "NONE" then
+		if fontFlag == "NONE" then
 			fontFlag = ""
-	    end
+		end
 		chatFrame:SetFont(Media:Fetch("font", dbd.General.Font.Font), 14, fontFlag)
 	end
 

@@ -202,14 +202,13 @@ function module:InitSelect(bag)
 end
 
 function module:SlotUpdate(item)
+	local itemInfo = GetContainerItemInfo(item.bag, item.slot)
 
-	-- local texture, count, locked, quality = C_Container.GetContainerItemInfo(item.bag, item.slot)
-	-- local clink = C_Container.GetContainerItemLink(item.bag, item.slot)
-	local itemInfo = C_Container.GetContainerItemInfo(item.bag, item.slot)
-    local texture = itemInfo and itemInfo.iconFileID
-    local count = itemInfo and itemInfo.stackCount
-    local quality = itemInfo and itemInfo.quality
-    local clink = itemInfo and itemInfo.itemLink
+	local texture = itemInfo and itemInfo.iconFileID
+	local count = itemInfo and itemInfo.stackCount
+	local quality = itemInfo and itemInfo.quality
+	local clink = itemInfo and itemInfo.hyperlink
+
 	local color = db.Colors.Border
 
 	if not item.frame.lock then
@@ -267,26 +266,25 @@ function module:SlotUpdate(item)
 	end
 	
 	if (clink) then
-		local name, _, itemQuality, _, _, iType, _, _, _, _, _, classID = GetItemInfo(clink)
+		local name, _, itemQuality, _, _, iType, _, _, _, itemTexture, _, classID = GetItemInfo(clink)
 		item.name, item.itemQuality = name, itemQuality
 		-- color slot according to item quality
-		if db.Bags.Rarity and not item.frame.lock and itemQuality > 1 then
-		    -- SetBackdropBorderColor changed, see: https://github.com/Stanzilla/WoWUIBugs/wiki/9.0.1-Consolidated-UI-Changes#backdrop-system-changes
-			--item.frame:SetBackdropBorderColor(GetItemQualityColor(itemQuality))
+		if db.Bags.Rarity and not item.frame.lock and itemQuality and itemQuality > 1 then
+			local r, g, b, hex = GetItemQualityColor(itemQuality)
+			item.frame:SetBackdropBorderColor(r, g, b)
 		-- color slot according to quest item.
 		elseif db.Bags.ShowQuest and not item.frame.lock and classID == 12 then
-			--item.frame:SetBackdropBorderColor(1,1,0)
+			item.frame:SetBackdropBorderColor(1, 1, 0)
 		end
 	else
 		item.name, item.itemQuality = nil, nil
 	end
-
-    -- These are not working...
+	
 	SetItemButtonTexture(item.frame, texture)
 	SetItemButtonCount(item.frame, count)
 	SetItemButtonDesaturated(item.frame, locked, 0.5, 0.5, 0.5)
-	if db.Bags.ShowOverlay and itemLink then
-		SetItemButtonOverlay(item.frame, itemLink, itemQuality, isBound)
+	if db.Bags.ShowOverlay and clink then
+		--_G.SetItemButtonOverlay(item.frame, clink, quality, isBound)
 	else
 		item.frame.IconOverlay:Hide()
 		if item.frame.IconOverlay2 then

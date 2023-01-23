@@ -3396,7 +3396,7 @@ module.defaults = {
 function module:LoadOptions()
 	-- Local variables
 	local msvalues = {"Both", "Home", "World"}
-	local fontflags = {"NONE", "OUTLINE", "THICK", "MONOCHROME"}
+	local fontflags = {"NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME"}
 	local removeTrackedKey
 	local TrackedList = {}
 	
