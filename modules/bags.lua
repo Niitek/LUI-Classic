@@ -209,7 +209,7 @@ function module:SlotUpdate(item)
     local texture = itemInfo and itemInfo.iconFileID
     local count = itemInfo and itemInfo.stackCount
     local quality = itemInfo and itemInfo.quality
-    local clink = itemInfo and itemInfo.itemLink
+    local clink = itemInfo and itemInfo.hyperlink
 	local color = db.Colors.Border
 
 	if not item.frame.lock then
@@ -270,7 +270,8 @@ function module:SlotUpdate(item)
 		item.name, item.itemQuality = name, itemQuality
 		-- color slot according to item quality
 		if db.Bags.Rarity and not item.frame.lock and itemQuality > 1 then
-			item.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
+			local r, g, b, hex = GetItemQualityColor(itemQuality)
+			item.frame:SetBackdropBorderColor(r, g, b)
 		-- color slot according to quest item.
 		elseif db.Bags.ShowQuest and not item.frame.lock and classID == 12 then
 			item.frame:SetBackdropBorderColor(1,1,0)
@@ -282,8 +283,8 @@ function module:SlotUpdate(item)
 	SetItemButtonTexture(item.frame, texture)
 	SetItemButtonCount(item.frame, count)
 	SetItemButtonDesaturated(item.frame, locked, 0.5, 0.5, 0.5)
-	if db.Bags.ShowOverlay and itemLink then
-		SetItemButtonOverlay(item.frame, itemLink, itemQuality, isBound)
+	if db.Bags.ShowOverlay and clink then
+		--_G.SetItemButtonOverlay(item.frame, clink, quality, isBound)
 	else
 		item.frame.IconOverlay:Hide()
 		if item.frame.IconOverlay2 then
@@ -697,7 +698,7 @@ function module:Layout(bagType)
 
 	local slots = 0
 	local rows = 0
-	local off = 26
+	local off = 28
 
 	local padding = db[bagType].Padding
 	local spacing = db[bagType].Spacing
@@ -724,7 +725,7 @@ function module:Layout(bagType)
 		frame.gold:SetFont(Media:Fetch("font", db.Bags.Font), 12, "")
 
 		frame.search:ClearAllPoints()
-		frame.search:SetPoint("TOPLEFT", frame, LUI:Scale(db.Bags.Padding), LUI:Scale(-10))
+		frame.search:SetPoint("TOPLEFT", frame, LUI:Scale(db.Bags.Padding), LUI:Scale(-1))
 		frame.search:SetPoint("RIGHT", LUI:Scale(-(16 + 24)), 0)
 	end
 
@@ -836,8 +837,8 @@ function module:Layout(bagType)
 			rows = rows + 1
 		end
 
-		frame:SetWidth(LUI:Scale(cols * 31 + (cols - 1) * spacing + padding * 2))
-		frame:SetHeight(LUI:Scale(rows * 31 + (rows - 1) * spacing + off + padding * 2) + frame.sortButton:GetHeight());
+		frame:SetWidth(LUI:Scale(cols * 34 + 4 + (cols - 1) * spacing + padding * 2))
+		frame:SetHeight(LUI:Scale(rows * 34 + (rows - 1) * spacing + off + padding * 2) + frame.sortButton:GetHeight());
 
 	end
 
@@ -869,14 +870,14 @@ function module:Layout(bagType)
 					local x = (idx % cols)
 					local y = floor(idx / cols)
 
-					xoff = padding + (x * 31) + (x * spacing)
-					yoff = off + padding + (y * 31) + ((y - 1) * spacing)
+					xoff = padding + (x * 34) + (x * spacing) + 4
+					yoff = off + padding + (y * 34) + ((y - 1) * spacing) + 7
 					yoff = yoff * -1
 
 					item.frame:ClearAllPoints()
 					item.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", LUI:Scale(xoff), LUI:Scale(yoff))
-					item.frame:SetHeight(LUI:Scale(32))
-					item.frame:SetWidth(LUI:Scale(32))
+					item.frame:SetHeight(LUI:Scale(34))
+					item.frame:SetWidth(LUI:Scale(34))
 					item.frame:SetPushedTexture("")
 					item.frame:SetNormalTexture("")
 					item.frame:Show()
@@ -1141,8 +1142,8 @@ module.defaults = {
 			Font = "AvantGarde_LT_Medium",
 			FontSize = 12,
 			Cols = 12,
-			Padding = 8,
-			Spacing = 3,
+			Padding = 7,
+			Spacing = 7,
 			Scale = 1,
 			BagScale = 1,
 			BagFrame = true,
