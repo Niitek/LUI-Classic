@@ -263,7 +263,6 @@ function module:SetBags()
 		end
 	
 		-- Localized functions
-		local GetContainerNumFreeSlots, GetContainerNumSlots = GetContainerNumFreeSlots, GetContainerNumSlots
 
 		local bagTypes = {
 			[0x0000] = "Normal", -- 0
@@ -301,7 +300,7 @@ function module:SetBags()
 			local free, total, used = 0, 0, 0
 
 			for i = 0, NUM_BAG_SLOTS do
-				free, total = free + GetContainerNumFreeSlots(i), total + GetContainerNumSlots(i)
+				free, total = free + C_Container.GetContainerNumFreeSlots(i), total + C_Container.GetContainerNumSlots(i)
 			end
 			used = total - free
 			self.text:SetFormattedText("Bags: %d/%d (%d)", used, total, count) 
@@ -321,8 +320,8 @@ function module:SetBags()
 			if CombatTips() then
 				local freeslots, totalslots = {}, {}
 				for i=0, NUM_BAG_SLOTS do
-					local free, bagType = GetContainerNumFreeSlots(i)
-					local total = GetContainerNumSlots(i)
+					local free, bagType = C_Container.GetContainerNumFreeSlots(i)
+					local total = C_Container.GetContainerNumSlots(i)
 					if bagType then
 						freeslots[bagType] = (freeslots[bagType] and freeslots[bagType] + free) or free
 						totalslots[bagType] = (totalslots[bagType] and totalslots[bagType] + total) or total
@@ -1660,7 +1659,7 @@ function module:SetGF()
 					toast.class:SetTexture("")
 				end
 			else
-				toast.class:SetTexture(BNet_GetClientTexture(client))
+				toast.class:SetTexture(BNet_GetClientEmbeddedAtlas(client))
 				toast.class:SetTexCoord(0.2, 0.8, 0.2, 0.8)
 				toast.name:SetTextColor(0.8, 0.8, 0.8)
 				toast.faction:SetTexture("")
@@ -3395,7 +3394,7 @@ module.defaults = {
 function module:LoadOptions()
 	-- Local variables
 	local msvalues = {"Both", "Home", "World"}
-	local fontflags = {"NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME"}
+	local fontflags = {"NONE", "OUTLINE", "THICK", "MONOCHROME"}
 	local removeTrackedKey
 	local TrackedList = {}
 	

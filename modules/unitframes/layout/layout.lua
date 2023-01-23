@@ -833,7 +833,7 @@ local TotemsOverride = function(self, event, slot)
 		if totem.Name then
 			totem.Name:SetText(name)
 		end
-		if(duration >= 0) then
+		if(duration > 0) then
 			totem:SetValue(1 - ((GetTime() - startTime) / duration))
 			-- Status bar update
 			totem:SetScript("OnUpdate", TotemsUpdate)

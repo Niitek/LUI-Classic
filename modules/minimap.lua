@@ -109,7 +109,7 @@ function module:SetMinimapFrames()
 
 	local fminimap_border = LUI:CreateMeAFrame("FRAME","fminimap_border",Minimap,143,143,1,"BACKGROUND",2,"CENTER",Minimap,"CENTER",0,0,1)
 	fminimap_border:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile=glowTex, tile=0, tileSize=0, edgeSize=7, insets={left=0, right=0, top=0, bottom=0}})
-	fminimap_border:SetBackdropColor(color_r,color_g,color_b,0)
+	fminimap_border:SetBackdropColor(minimap_r,minimap_g,minimap_b,0)
 	fminimap_border:SetBackdropBorderColor(0,0,0,1)
 
 	local fminimap_texture1 = LUI:CreateMeAFrame("FRAME","fminimap_texture1",Minimap,50,50,1,"BACKGROUND",1,"BOTTOMLEFT",Minimap,"BOTTOMLEFT",-7,-7,1)
@@ -119,7 +119,7 @@ function module:SetMinimapFrames()
 
 	local fminimap_texture2 = LUI:CreateMeAFrame("FRAME","fminimap_texture2",Minimap,56,56,1,"BACKGROUND",0,"BOTTOMLEFT",Minimap,"BOTTOMLEFT",-10,-10,1)
 	fminimap_texture2:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile=glowTex, tile=0, tileSize=0, edgeSize=6, insets={left=3, right=3, top=3, bottom=3}})
-	fminimap_texture2:SetBackdropColor(color_r,color_g,color_b,0)
+	fminimap_texture2:SetBackdropColor(minimap_r,minimap_g,minimap_b,0)
 	fminimap_texture2:SetBackdropBorderColor(0,0,0,1)
 
 	local fminimap_texture3 = LUI:CreateMeAFrame("FRAME","fminimap_texture3",Minimap,50,50,1,"BACKGROUND",1,"BOTTOMRIGHT",Minimap,"BOTTOMRIGHT",7,-7,1)
@@ -129,7 +129,7 @@ function module:SetMinimapFrames()
 
 	local fminimap_texture4 = LUI:CreateMeAFrame("FRAME","fminimap_texture4",Minimap,56,56,1,"BACKGROUND",0,"BOTTOMRIGHT",Minimap,"BOTTOMRIGHT",10,-10,1)
 	fminimap_texture4:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile=glowTex, tile=0, tileSize=0, edgeSize=6, insets={left=3, right=3, top=3, bottom=3}})
-	fminimap_texture4:SetBackdropColor(color_r,color_g,color_b,0)
+	fminimap_texture4:SetBackdropColor(minimap_r,minimap_g,minimap_b,0)
 	fminimap_texture4:SetBackdropBorderColor(0,0,0,1)
 
 	local fminimap_texture5 = LUI:CreateMeAFrame("FRAME","fminimap_texture5",Minimap,50,50,1,"BACKGROUND",1,"TOPRIGHT",Minimap,"TOPRIGHT",7,7,1)
@@ -139,7 +139,7 @@ function module:SetMinimapFrames()
 
 	local fminimap_texture6 = LUI:CreateMeAFrame("FRAME","fminimap_texture6",Minimap,56,56,1,"BACKGROUND",0,"TOPRIGHT",Minimap,"TOPRIGHT",10,10,1)
 	fminimap_texture6:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile=glowTex, tile=0, tileSize=0, edgeSize=6, insets={left=3, right=3, top=3, bottom=3}})
-	fminimap_texture6:SetBackdropColor(color_r,color_g,color_b,0)
+	fminimap_texture6:SetBackdropColor(minimap_r,minimap_g,minimap_b,0)
 	fminimap_texture6:SetBackdropBorderColor(0,0,0,1)
 
 	local fminimap_texture7 = LUI:CreateMeAFrame("FRAME","fminimap_texture7",Minimap,50,50,1,"BACKGROUND",1,"TOPLEFT",Minimap,"TOPLEFT",-7,7,1)
@@ -149,7 +149,7 @@ function module:SetMinimapFrames()
 
 	local fminimap_texture8 = LUI:CreateMeAFrame("FRAME","fminimap_texture8",Minimap,56,56,1,"BACKGROUND",0,"TOPLEFT",Minimap,"TOPLEFT",-10,10,1)
 	fminimap_texture8:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile=glowTex, tile=0, tileSize=0, edgeSize=6, insets={left=3, right=3, top=3, bottom=3}})
-	fminimap_texture8:SetBackdropColor(color_r,color_g,color_b,0)
+	fminimap_texture8:SetBackdropColor(minimap_r,minimap_g,minimap_b,0)
 	fminimap_texture8:SetBackdropBorderColor(0,0,0,1)
 
 	for i=1, 8, 1 do

@@ -163,7 +163,7 @@ function module:LibSharedMedia_Registered(mediaType, key)
 		for i, name in ipairs(CHAT_FRAMES) do
 			local editBox = _G[name].editBox
 			if editBox then
-				local font = Media:Fetch("font", db.Font.Font)
+				local font = Media:Fetch("font", db.Font.Font, db.Font.Flag)
 				editBox:SetFont(font, db.Font.Size, db.Font.Flag)
 				editBox.header:SetFont(font, db.Font.Size, db.Font.Flag)
 			end
@@ -338,7 +338,7 @@ module.defaults = {
 				end
 			end)(),
 			Size = 14,
-			Flag = "NONE",
+			Flag = "",
 		},
 		Background = {
 			Texture = "Blizzard Tooltip",

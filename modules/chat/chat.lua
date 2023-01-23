@@ -755,7 +755,7 @@ module.defaults = {
 					end
 				end)(),
 				Size = 14,
-				Flag = "NONE",
+				Flag = "",
 			},
 			ShortChannelNames = true,
 			ClassColor = "Always",

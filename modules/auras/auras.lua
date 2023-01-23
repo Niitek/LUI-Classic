@@ -247,8 +247,8 @@ do
 
 	function WeaponEnchant:Update(enchantNum, ...)
 		self.icon:SetTexture(GetInventoryItemTexture(...))
-		self.border:SetVertexColor(GetItemQualityColor(GetInventoryItemQuality(...) or 1))
-		
+		local borderColorR, borderColorG, borderColorB = (GetItemQualityColor(GetInventoryItemQuality(...)) or 1)
+		self.border:SetVertexColor(borderColorR, borderColorG, borderColorB, 1)
 		local remaining, charges = weaponInfo(enchantNum)
 		if charges and charges > 1 then
 			self.enchantNum = enchantNum
@@ -704,7 +704,7 @@ local function OnAnyEvent(self, event, addon)
 		if TempEnchant then
 			group:AddButton(f)
 		end
-		_G["TempEnchant"..i.."Border"]:SetVertexColor(.75, 0, 1)
+		_G["TempEnchant"..i.."Border"]:SetVertexColor(0.75, 0, 1)
 	end
 	group:ReSkin()
 end

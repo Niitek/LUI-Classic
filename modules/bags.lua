@@ -203,8 +203,13 @@ end
 
 function module:SlotUpdate(item)
 
-	local texture, count, locked, quality = GetContainerItemInfo(item.bag, item.slot)
-	local clink = GetContainerItemLink(item.bag, item.slot)
+	-- local texture, count, locked, quality = C_Container.GetContainerItemInfo(item.bag, item.slot)
+	-- local clink = C_Container.GetContainerItemLink(item.bag, item.slot)
+	local itemInfo = C_Container.GetContainerItemInfo(item.bag, item.slot)
+    local texture = itemInfo and itemInfo.iconFileID
+    local count = itemInfo and itemInfo.stackCount
+    local quality = itemInfo and itemInfo.quality
+    local clink = itemInfo and itemInfo.itemLink
 	local color = db.Colors.Border
 
 	if not item.frame.lock then
@@ -220,7 +225,7 @@ function module:SlotUpdate(item)
 	end
 
 	if item.Cooldown then
-		local cd_start, cd_finish, cd_enable = GetContainerItemCooldown(item.bag, item.slot)
+		local cd_start, cd_finish, cd_enable = C_Container.GetContainerItemCooldown(item.bag, item.slot)
 		CooldownFrame_Set(item.Cooldown, cd_start, cd_finish, cd_enable)
 	end
 
@@ -414,7 +419,7 @@ function module:BagType(bag)
 	--From OneBag. Still wondering the use of those.
 	--[[
 	local bagProfession = 0x0008 + 0x0010 + 0x0020 + 0x0040 + 0x0080 + 0x0200 + 0x0400
-	local bagType = select(2, GetContainerNumFreeSlots(bag))
+	local bagType = select(2, C_Container.GetContainerNumFreeSlots(bag))
 
 	if bit.band(bagType, bagProfession) > 0 then
 		return ST_SPECIAL
@@ -423,7 +428,7 @@ function module:BagType(bag)
 	return ST_NORMAL
 	]]
 
-	local bagType = select(2, GetContainerNumFreeSlots(bag))
+	local bagType = select(2, C_Container.GetContainerNumFreeSlots(bag))
 	if bagType and bagType > 0 then
 		return ST_SPECIAL
 	end
@@ -714,9 +719,9 @@ function module:Layout(bagType)
 		isBank = true
 	else
 		frame.gold:SetText(GetMoneyString(GetMoney(), 12)) 
-		frame.editbox:SetFont(Media:Fetch("font", db.Bags.Font), 12)
-		frame.search:SetFont(Media:Fetch("font", db.Bags.Font), 12)
-		frame.gold:SetFont(Media:Fetch("font", db.Bags.Font), 12)
+		frame.editbox:SetFont(Media:Fetch("font", db.Bags.Font), 12, "")
+		frame.search:SetFont(Media:Fetch("font", db.Bags.Font), 12, "")
+		frame.gold:SetFont(Media:Fetch("font", db.Bags.Font), 12, "")
 
 		frame.search:ClearAllPoints()
 		frame.search:SetPoint("TOPLEFT", frame, LUI:Scale(db.Bags.Padding), LUI:Scale(-10))
@@ -816,13 +821,13 @@ function module:Layout(bagType)
 		end
 
 		for _, id in ipairs(bagId) do
-			local bagCount = GetContainerNumSlots(id)
+			local bagCount = C_Container.GetContainerNumSlots(id)
 			if bagCount > 0 then
 				if not BagsInfo[id] then
 					BagsInfo[id] = module:BagNew(id, frame)
 				end
 
-				slots = slots + GetContainerNumSlots(id)
+				slots = slots + C_Container.GetContainerNumSlots(id)
 			end
 		end
 
@@ -843,7 +848,7 @@ function module:Layout(bagType)
 	end
 	local idx = 0
 	for _, id in ipairs(bagId) do
-		local bagCount = GetContainerNumSlots(id)
+		local bagCount = C_Container.GetContainerNumSlots(id)
 
 		if bagCount > 0 then
 			BagsInfo[id] = module:BagNew(id, frame)
@@ -1410,10 +1415,10 @@ function module:PrepareSort(frame)
 	local specialBags = {};
 
 	for _, v in pairs(bagOrder) do
-		local maxSlots = GetContainerNumSlots(v);
+		local maxSlots = C_Container.GetContainerNumSlots(v);
 
 		if maxSlots > 0 then
-			local bagFamily = select(2, GetContainerNumFreeSlots(v));
+			local bagFamily = select(2, C_Container.GetContainerNumFreeSlots(v));
 
 			if bagFamily > 0 then
 				table.insert(specialBags, {bagId = v, slot = maxSlots, maxSlots = maxSlots, bagFamily = bagFamily});
@@ -1428,11 +1433,11 @@ function module:PrepareSort(frame)
 	end
 
 	for _, bag in pairs(self.sortBags) do
-		for j = 1, GetContainerNumSlots(bag.bagId) do
-			local itemId = GetContainerItemID(bag.bagId, j);
+		for j = 1, C_Container.GetContainerNumSlots(bag.bagId) do
+			local itemId = C_Container.GetContainerItemID(bag.bagId, j);
 
 			if itemId then
-				local _, count, locked = GetContainerItemInfo(bag.bagId, j);
+				local _, count, locked = C_Container.GetContainerItemInfo(bag.bagId, j);
 
 				if locked then
 					return;
@@ -1546,7 +1551,7 @@ function module:Sort(elapsed)
 	while module.sortItems[key] do
 		local item = module.sortItems[key];
 
-		if not select(3, GetContainerItemInfo(item.sBag, item.sSlot)) and not select(3, GetContainerItemInfo(item.tBag, item.tSlot)) then
+		if not select(3, C_Container.GetContainerItemInfo(item.sBag, item.sSlot)) and not select(3, C_Container.GetContainerItemInfo(item.tBag, item.tSlot)) then
 			if item.sBag ~= item.tBag or item.sSlot ~= item.tSlot then
 				PickupContainerItem(item.sBag, item.sSlot);
 				PickupContainerItem(item.tBag, item.tSlot);
