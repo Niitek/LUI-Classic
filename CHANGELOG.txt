@@ -1,3 +1,5 @@
+2023.1.23 Core: Updated to client version 3.4.1 and fixed a host of issues. Bags are working with colored borders now, side bars have been fixed as well to open/close like they used to.
+
 2022.10.11 Hotfix: Memory infotext causing lag.
 
 2022.24.10 Hotfix: For error `LUI.args.Bars.args.Bottombar5.args.Fader.args: expected a table, got 'nil'`
