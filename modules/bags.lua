@@ -236,18 +236,14 @@ function module:SlotUpdate(item)
 	local newItemAnim = item.frame.newitemglowAnim
 	if newItemTexture then
 		if db.Bags.ShowNew and C_NewItems.IsNewItem(item.bag, item.slot) then
-			if IsBattlePayItem(item.bag, item.slot) then
-				newItemTexture:Hide()
-				battlePayTexture:Show()
+			if quality and NEW_ITEM_ATLAS_BY_QUALITY[quality] then
+				newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality])
 			else
-				if quality and NEW_ITEM_ATLAS_BY_QUALITY[quality] then
-					newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality])
-				else
-					newItemTexture:SetAtlas("bags-glow-white")
-				end
-				newItemTexture:Show()
-				battlePayTexture:Hide()
+				newItemTexture:SetAtlas("bags-glow-white")
 			end
+			newItemTexture:Show()
+			battlePayTexture:Hide()
+
 			if not flashAnim:IsPlaying() and not newItemAnim:IsPlaying() then
 				flashAnim:Play()
 				newItemAnim:Play()
