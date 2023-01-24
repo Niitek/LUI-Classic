@@ -270,18 +270,18 @@ local OverrideHealth = function(self, event, unit, powerType)
 
 	if not UnitIsConnected(unit) then
 		health:SetValue(0)
-		health.value:SetText(health.value.ShowDead and "|cffD7BEA5<Offline>|r")
-		health.valuePercent:SetText(health.valuePercent.ShowDead and "|cffD7BEA5<Offline>|r")
+		health.value:SetText("|cffD7BEA5<Offline>|r")
+		health.valuePercent:SetText("|cffD7BEA5<Offline>|r")
 		health.valueMissing:SetText()
 	elseif UnitIsGhost(unit) then
 		health:SetValue(0)
-		health.value:SetText(health.value.ShowDead and "|cffD7BEA5<Ghost>|r")
-		health.valuePercent:SetText(health.valuePercent.ShowDead and "|cffD7BEA5<Ghost>|r")
+		health.value:SetText("|cffD7BEA5<Ghost>|r")
+		health.valuePercent:SetText("|cffD7BEA5<Ghost>|r")
 		health.valueMissing:SetText()
 	elseif UnitIsDead(unit) then
 		health:SetValue(0)
-		health.value:SetText(health.value.ShowDead and "|cffD7BEA5<Dead>|r")
-		health.valuePercent:SetText(health.valuePercent.ShowDead and "|cffD7BEA5<Dead>|r")
+		health.value:SetText("|cffD7BEA5<Dead>|r")
+		health.valuePercent:SetText("|cffD7BEA5<Dead>|r")
 		health.valueMissing:SetText()
 	else
 		local healthPercent = 100 * (min / max)
