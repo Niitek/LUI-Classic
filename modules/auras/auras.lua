@@ -263,7 +263,7 @@ do
 			    self:SetScript('OnUpdate', self.OnUpdate)
 		    else
 		    	self:SetScript('OnUpdate', nil)
-				self.duration:SetText()
+		    	self.duration:SetText()
 		    end
 		end
 	end
