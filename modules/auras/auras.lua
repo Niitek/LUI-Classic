@@ -245,22 +245,26 @@ do
 		self.count:SetFormattedText("%d", charges)
 	end
 
-	function WeaponEnchant:Update(enchantNum, ...)
-		self.icon:SetTexture(GetInventoryItemTexture(...))
-		local borderColorR, borderColorG, borderColorB = (GetItemQualityColor(GetInventoryItemQuality(...)) or 1)
-		self.border:SetVertexColor(borderColorR, borderColorG, borderColorB, 1)
-		local remaining, charges = weaponInfo(enchantNum)
-		if charges and charges > 1 then
-			self.enchantNum = enchantNum
-			self.nextUpdate = 0 -- force an update
-			self:SetScript('OnUpdate', self.OnUpdate_Charges)
-		elseif remaining then
-			self.remaining = remaining / 1000
-			self.nextUpdate = nil -- force an update
-			self:SetScript('OnUpdate', self.OnUpdate)
-		else
-			self:SetScript('OnUpdate', nil)
-			self.duration:SetText()
+	function WeaponEnchant:Update(enchantNum, unit, invSlotId)
+	    local texture = GetInventoryItemTexture(unit, invSlotId);
+		self.icon:SetTexture(texture)
+		local inventoryItemQuality = GetInventoryItemQuality(unit, invSlotId)
+		if(inventoryItemQuality) then
+		    local r, g, b, hex = GetItemQualityColor(inventoryItemQuality)
+		    self.border:SetVertexColor(r, g, b)
+		    local remaining, charges = weaponInfo(enchantNum)
+		    if charges and charges > 1 then
+			    self.enchantNum = enchantNum
+			    self.nextUpdate = 0 -- force an update
+			    self:SetScript('OnUpdate', self.OnUpdate_Charges)
+		    elseif remaining then
+			    self.remaining = remaining / 1000
+			    self.nextUpdate = nil -- force an update
+			    self:SetScript('OnUpdate', self.OnUpdate)
+		    else
+		    	self:SetScript('OnUpdate', nil)
+			    self.duration:SetText()
+		    end
 		end
 	end
 
