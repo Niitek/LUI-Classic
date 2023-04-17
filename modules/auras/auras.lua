@@ -247,7 +247,7 @@ do
 
 	function WeaponEnchant:Update(enchantNum, unit, invSlotId)
 	    local texture = GetInventoryItemTexture(unit, invSlotId);
-		self.icon:SetTexture(texture)
+	    self.icon:SetTexture(texture)
 		local inventoryItemQuality = GetInventoryItemQuality(unit, invSlotId)
 		if(inventoryItemQuality) then
 		    local r, g, b, hex = GetItemQualityColor(inventoryItemQuality)
