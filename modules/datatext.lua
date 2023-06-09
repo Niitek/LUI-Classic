@@ -760,14 +760,14 @@ function module:SetDualSpec()
 
 		-- Local variables
 
-        local numSpecs = GetNumSpecializations() -- num of specs available
+        local numSpecs = GetNumTalentTabs() -- num of specs available
 		local specCache = {}
 		for i = 1, numSpecs do -- for each spec choice
 			if not specCache[i] then
 				specCache[i] = {}
-				local _, name, _, icon = GetSpecializationInfo(i)
+				local name, texture = GetTalentTabInfo(i)
 				specCache[i].name = name
-				specCache[i].icon = icon
+				specCache[i].icon = texture
 
 				if not specCache[i].name then
 					specCache[i].name = "|cffff0000Talents undefined!|r"
@@ -775,7 +775,7 @@ function module:SetDualSpec()
 				end
 			end
 		end
-        local switch1, switch2, switch3 = nil, nil, nil -- specs to switch to
+        local switch1, switch2 = nil, nil -- specs to switch to
 
 		-- Event functions
 		stat.Events = (UnitLevel("player") < 10) and {"PLAYER_LEVEL_UP"} or {"PLAYER_TALENT_UPDATE"}
@@ -2759,6 +2759,70 @@ function module:SetMemory()
 	end
 end
 
+------------------------------------------------------
+-- / PET HAPPYNESS && HUNGER / --
+------------------------------------------------------
+
+function module:SetPetHappiness()
+	local stat = NewStat("PetHappiness")
+	if db.PetHappiness.Enable and not stat.Created then
+		NewIcon(stat)
+		local dmgPercent, loyalLevel, loyalRate = "nil","nil","nil"
+		local icon = ("Interface\\AddOns\\LUI\\media\\textures\\icons\\pet1.tga")
+		stat.Events = {"PLAYER_ENTERING_WORLD", "UNIT_HAPPINESS", "UNIT_AURA", "UNIT_PET"}
+
+		stat.UNIT_AURA = function(self, unit)
+			if UnitExists("pet") then
+				local petName = UnitName("pet")
+				local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
+				local petLoyaltyText = GetPetLoyalty()
+				if happiness == nil then happiness = 1 end
+				icon =  ("Interface\\AddOns\\LUI\\media\\textures\\icons\\pet"..happiness..".tga")
+				dmgPercent = damagePercentage
+				loyalRate = loyaltyRate
+				
+				text = string.format(petName)
+			else
+				text = "No Pet"
+			end
+			self.text:SetFormattedText(" "..text)
+			self.icon:SetBackdrop({bgFile = icon, edgeFile = nil, tile = false, edgeSize = 0, insets = {top = 0, right = 0, bottom = 0, left = 0}})
+			UpdateTooltip(self)
+
+		end
+
+		stat.UNIT_HAPPINESS = stat.UNIT_AURA
+		stat.UNIT_PET = stat.UNIT_AURA
+		stat.PLAYER_ENTERING_WORLD = stat.UNIT_AURA
+
+		stat.OnEnable = function(self)
+			self:UNIT_AURA(self, "pet")
+		end
+
+		-- Local variables
+		stat.UpdateText = function(self)
+			self.text:SetText("Test")
+			UpdateTooltip(self)
+		end
+
+		stat.OnEnter = function(self)
+			if CombatTips() then
+				GameTooltip:SetOwner(self, getOwnerAnchor(self))
+				GameTooltip:ClearLines()
+				GameTooltip:AddLine("Pet Happiness and Loyalty:", 0.4, 0.78, 1)
+				GameTooltip:AddLine("Damage Percentage: ".. (dmgPercent), 0.4, 0.78, 1)
+				GameTooltip:AddLine("Loyalty Rate: ".. (loyalRate), 0.4, 0.78, 1)
+				GameTooltip:Show()
+			end
+		end
+
+		stat.OnLeave = function()
+			GameTooltip:Hide()
+		end
+
+		stat.Created = true
+	end
+end
 
 ------------------------------------------------------
 -- / WEAPON INFO USAGE / --
@@ -2804,13 +2868,13 @@ function module:SetWeaponInfo()
 				local mtext = string.format("%.2fs", tonumber(mspeed))
 				if ospeed ~= nil and ospeed ~= 0 then
 					local otext = string.format(" %.2fs", tonumber(ospeed))
-				else local otext = "-"
+				else local otext = "0"
 				end
 				GameTooltip:SetOwner(self, getOwnerAnchor(self))
 				GameTooltip:ClearLines()
 				GameTooltip:AddLine("Weapon Speed:", 0.4, 0.78, 1)
 				GameTooltip:AddLine("Main Hand Weapon: ".. (mtext), 0.4, 0.78, 1)
-				GameTooltip:AddLine("Offhand Weapon: ".. (otext), 0.4, 0.78, 1)
+				-- GameTooltip:AddLine("Offhand Weapon: ".. (otext), 0.4, 0.78, 1)
 				GameTooltip:AddLine(" ")
 				GameTooltip:Show()
 			end
@@ -3119,25 +3183,25 @@ module.defaults = {
 				a = 1,
 			},
 		}, ]]  -- added with 3.0 WOTLK
-		-- DualSpec = {
-		-- 	Enable = false,
-		-- 	ShowSpentPoints = true,
-		-- 	X = 320,
-		-- 	Y = 0,
-		-- 	InfoPanel = {
-		-- 		Horizontal = "Left",
-		-- 		Vertical = "Bottom",
-		-- 	},
-		-- 	Font = "vibroceb",
-		-- 	FontSize = 12,
-		-- 	Outline = "NONE",
-		-- 	Color = {
-		-- 		r = 1,
-		-- 		g = 1,
-		-- 		b = 1,
-		-- 		a = 1,
-		-- 	},
-		-- },
+		DualSpec = {
+			Enable = false,
+			ShowSpentPoints = true,
+			X = 320,
+			Y = 0,
+			InfoPanel = {
+				Horizontal = "Left",
+				Vertical = "Bottom",
+			},
+			Font = "vibroceb",
+			FontSize = 12,
+			Outline = "NONE",
+			Color = {
+				r = 1,
+				g = 1,
+				b = 1,
+				a = 1,
+			},
+		},
 		Durability = {
 			Enable = true,
 			X = 365,
@@ -3293,6 +3357,24 @@ module.defaults = {
 			InfoPanel = {
 				Horizontal = "Left",
 				Vertical = "Top",
+			},
+			Font = "vibroceb",
+			FontSize = 12,
+			Outline = "NONE",
+			Color = {
+				r = 1,
+				g = 1,
+				b = 1,
+				a = 1,
+			},
+		},
+		PetHappiness = {
+			Enable = false,
+			X = 350,
+			Y = 0,
+			InfoPanel = {
+				Horizontal = "Left",
+				Vertical = "Bottom",
 			},
 			Font = "vibroceb",
 			FontSize = 12,
@@ -3868,7 +3950,7 @@ function module:LoadOptions()
 				Reset = ResetOption(7),
 			},
 		}, ]]
---[[ 		DualSpec = { -- Added in 3.1.0 WOTLK
+	--[[ 	DualSpec = { -- Added in 3.1.0 WOTLK
 			name = function(info) return NameLabel(info, "Dual Spec") end,
 			type = "group",
 			order = 6,
@@ -3906,7 +3988,7 @@ function module:LoadOptions()
 				Font = FontOptions(5, "Dual Spec"),
 				Reset = ResetOption(6),
 			}, 
-		},]]
+		}, ]]
 		Durability = {
 			name = NameLabel,
 			type = "group",
@@ -4321,6 +4403,33 @@ function module:LoadOptions()
 		-- 		Reset = ResetOption(5),
 		-- 	},
 		-- },
+		PetHappiness = {
+			name = function(info) return NameLabel(info, "Pet Happiness/Loyalty") end,
+			type = "group",
+			order = 14,
+			args = {
+				Header = {
+					name = "Pet Happiness and Loyalty",
+					type = "header",
+					order = 1,
+				},
+				Enable = {
+					name = "Enable",
+					desc = "Whether you want to show your pet's happiness and loyalty or not.",
+					type = "toggle",
+					width = "full",
+					get = function() return db.PetHappiness.Enable end,
+					set = function(info, value)
+						db.PetHappiness.Enable = value
+						ToggleStat("PetHappiness")
+					end,
+					order = 2,
+				},
+				Position = PositionOptions(3, "Pet happiness/Loyalty"),
+				Font = FontOptions(4, "Pet happiness/Loyalty"),
+				Reset = ResetOption(5),
+			},
+		},
 		WeaponInfo = {
 			name = function(info) return NameLabel(info, "Weapon Information") end,
 			type = "group",
@@ -4497,7 +4606,7 @@ function module:OnEnable()
 	EnableStat("Bags")
 	EnableStat("Clock")
  	EnableStat("Currency")
---[[ 	EnableStat("DualSpec") ]]
+ 	EnableStat("DualSpec")
 	EnableStat("Durability")
 	-- EnableStat("EXP")
 	EnableStat("FPS")
@@ -4507,6 +4616,7 @@ function module:OnEnable()
 	EnableStat("Friends")
 	EnableStat("Instance")
 	EnableStat("Memory")
+	if UnitClass("player") == "Hunter" then EnableStat("PetHappiness") end
 	EnableStat("WeaponInfo")
 --[[  	EnableStat("EquipmentSets") ]]
 --[[ 	EnableStat("LootSpec") ]]
@@ -4518,6 +4628,7 @@ function module:OnDisable()
 	DisableStat("FPS")
 	DisableStat("Memory")
 	DisableStat("Bags")
+	DisableStat("DualSpec")
 	DisableStat("Durability")
 	DisableStat("Gold")
 	DisableStat("EXP")
@@ -4525,6 +4636,7 @@ function module:OnDisable()
 	DisableStat("Guild")
 	DisableStat("Friends")
 	DisableStat("GF")
+	DisableStat("PetHappiness")
 	DisableStat("WeaponInfo")
 	DisableStat("EquipmentSet")
 	DisableStat("LootSpec")
