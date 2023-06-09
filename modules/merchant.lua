@@ -144,11 +144,11 @@ function module:AutoSell()
 				local _, itemLink, itemQuality, _,_,_,_,_,_,_, itemPrice = GetItemInfo(item)
 
 				if itemQuality and (db.AutoSell.ItemQualities[itemQuality + 1] == not db.AutoSell.Exclusions[item]) then -- don't use ~= (itemQuality can be true or false, exclusion can be true or nil (false ~= nil will return true and sell the item))
-					local _, itemCount  = C_Container.GetContainerItemInfo(bag, slot)
-					totalPrice = totalPrice + (itemCount * itemPrice)
+					local containerInfo = C_Container.GetContainerItemInfo(bag, slot)
+					totalPrice = totalPrice + (containerInfo.stackCount * itemPrice)
 
 					-- Sell item.
-					UseContainerItem(bag, slot)
+					C_Container.UseContainerItem(bag, slot)
 				end
 			end
 		end
