@@ -74,8 +74,7 @@ L["Top Right"] = true
 L["Version: "] = true
 L["Version %s available for download."] = true
 L["Vertical Position"] = true
-L["Welcome to LUI v3 for The Burning Crusade Classic"] = [=[Welcome to |c0090ffffLUI v3|r, a complete
-World of Warcraft User Interface overhaul for The Burning Crusade Classic.]=]
+L["Welcome to LUI v3 for Wrath of the Lich King Classic"] = [=[Welcome to |c0090ffffLUI v3|r, a complete World of Warcraft User Interface overhaul for Wrath of the Lich King Classic.]=]
 L["Width"] = true
 
 

@@ -175,8 +175,8 @@ L["Use minimalist style tabs"] = "开启简约风格的聊天标签"
 L["Version %s available for download."] = "版本%s可供下载"
 L["Version: "] = "版本："
 L["Vertical Position"] = "纵向位置"
-L["Welcome to LUI v3 for The Burning Crusade Classic"] = [=[欢迎使用 |c0090ffffLUI v3|r！！
-第一个也是唯一一个次世代魔兽世界用户界面。]=]
+L["Welcome to LUI v3 for Wrath of the Lich King Classic"] = [=[
+    欢迎使用 |c0090ffffLUI v3|r，这是针对巫妖王之怒经典版的完整魔兽世界用户界面大修。]=]
 L["Width"] = "宽度"
 L["WorldDefense"] = "世界防务"
 L["Wrath Instances"] = "火焰的愤怒副本"

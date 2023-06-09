@@ -275,8 +275,7 @@ L["Use minimalist style tabs"] = "Use minimalist style tabs"
 L["Version %s available for download."] = "新版本 %s 可以下載了。"
 L["Version: "] = "版本："
 L["Vertical Position"] = "垂直位置"
-L["Welcome to LUI v3 for The Burning Crusade Classic"] = [=[歡迎使用 |c0090ffffLUI v3|r，世界首創，也是唯一的
-次世代魔獸世界使用者介面。]=]
+L["Welcome to LUI v3 for Wrath of the Lich King Classic"] = [=[歡迎使用 |c0090ffffLUI v3|r，這是針對巫妖王之怒經典版的完整魔獸世界用戶界面大修。]=]
 L["Width"] = "寬度"
 --Translation missing
 L["WorldDefense"] = "WorldDefense"

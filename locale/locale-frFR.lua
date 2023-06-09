@@ -168,8 +168,7 @@ L["Use minimalist style tabs"] = "Utiliser le style d'onglets minimalistes"
 L["Version %s available for download."] = "Version %s disponible au téléchargement"
 L["Version: "] = "Version :"
 L["Vertical Position"] = "Position Verticale"
-L["Welcome to LUI v3 for The Burning Crusade Classic"] = [=[Bienvenue sur |c0090ffffLUI v3|r la première et la seule interface
-World of Warcraft Next-Gen.]=]
+L["Welcome to LUI v3 for Wrath of the Lich King Classic"] = [=[Bienvenue dans |c0090ffffLUI v3|r, une refonte complète de l'interface utilisateur de World of Warcraft pour Wrath of the Lich King Classic.]=]
 L["Width"] = "Largeur"
 L["WorldDefense"] = "DéfenseGénérale"
 L["Wrath Instances"] = "Instances \"Wrath\""

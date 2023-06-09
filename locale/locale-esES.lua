@@ -275,7 +275,7 @@ L["Use minimalist style tabs"] = "Use minimalist style tabs"
 L["Version %s available for download."] = "Version %s disponible para descarga."
 L["Version: "] = "Versión:"
 L["Vertical Position"] = "Posición Vertical"
-L["Welcome to LUI v3 for The Burning Crusade Classic"] = "Bienvenido a LUI v3"
+L["Welcome to LUI v3 for Wrath of the Lich King Classic"] = "Bienvenido a |c0090ffffLUI v3|r, una revisión completa de la interfaz de usuario de World of Warcraft para Wrath of the Lich King Classic."
 L["Width"] = "Ancho"
 --Translation missing
 L["WorldDefense"] = "WorldDefense"

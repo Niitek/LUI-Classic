@@ -826,11 +826,11 @@ local function getOptions()
 							args = {
 								IntroImage = {
 									order = 1,
-									image = [[Interface\AddOns\LUI\media\textures\logobc.tga]],
+									image = [[Interface\AddOns\LUI\media\textures\logoWotlkc.tga]],
 									imageWidth = 512,
 									width = "full",
 									imageHeight = 225,
-									imageCoords = { 0, 1, 0, .9 },
+									imageCoords = { 0, 1, -0.08, 1 },
 									type = "description",
 									name = " ",
 								},
@@ -844,7 +844,7 @@ local function getOptions()
 									order = 3,
 									width = "full",
 									type = "description",
-									name = L["Welcome to LUI v3 for The Burning Crusade Classic"].."\n\n"..L["Please read the FAQ"].."\n\n\n",
+									name = L["Welcome to LUI v3 for Wrath of the Lich King Classic"].."\n\n"..L["Please read the FAQ"].."\n\n\n",
 								},
 								VerText = {
 									order = 4,
@@ -861,7 +861,7 @@ local function getOptions()
 										if revision and strmatch(revision,"-%d+") then
 											revision = gsub( strmatch(revision,"-%d+"), "-", "r")
 										elseif revision and strmatch(revision, "%d") then
-											revision = "r"..revision
+											revision = revision
 										end
 										return L["Revision: "]..(revision or "???")
 									end,
