@@ -29,6 +29,7 @@ local db, dbd
 local GetBags = {
 	["Bags"] = {0, 1, 2, 3, 4},
 	["Bank"] = {-1, 5, 6, 7, 8, 9, 10, 11},
+	-- ["Bank"] = {5, 6, 7, 8, 9, 10, 11},
 }
 local isCreated = {}
 
@@ -202,12 +203,9 @@ function module:InitSelect(bag)
 end
 
 function module:SlotUpdate(item)
-
-	-- local texture, count, locked, quality = C_Container.GetContainerItemInfo(item.bag, item.slot)
-	-- local clink = C_Container.GetContainerItemLink(item.bag, item.slot)
 	local itemInfo = C_Container.GetContainerItemInfo(item.bag, item.slot)
     local texture = itemInfo and itemInfo.iconFileID
-    local count = itemInfo and itemInfo.stackCount
+    local itemCount = itemInfo and itemInfo.stackCount
     local quality = itemInfo and itemInfo.quality
     local clink = itemInfo and itemInfo.hyperlink
 	local color = db.Colors.Border
@@ -225,8 +223,8 @@ function module:SlotUpdate(item)
 	end
 
 	if item.Cooldown then
-		local cd_start, cd_finish, cd_enable = C_Container.GetContainerItemCooldown(item.bag, item.slot)
-		CooldownFrame_Set(item.Cooldown, cd_start, cd_finish, cd_enable)
+		local startTime, duration, enable = C_Container.GetContainerItemCooldown(item.bag, item.slot)
+		CooldownFrame_Set(item.Cooldown, startTime, duration, enable)
 	end
 
 	-- New item code from Blizzard's ContainerFrame.lua
@@ -277,7 +275,7 @@ function module:SlotUpdate(item)
 	end
 
 	SetItemButtonTexture(item.frame, texture)
-	SetItemButtonCount(item.frame, count)
+	SetItemButtonCount(item.frame, itemCount)
 	SetItemButtonDesaturated(item.frame, locked, 0.5, 0.5, 0.5)
 	if db.Bags.ShowOverlay and clink then
 		--_G.SetItemButtonOverlay(item.frame, clink, quality, isBound)
@@ -413,18 +411,6 @@ function module:SlotNew(bag, slot)
 end
 
 function module:BagType(bag)
-	--From OneBag. Still wondering the use of those.
-	--[[
-	local bagProfession = 0x0008 + 0x0010 + 0x0020 + 0x0040 + 0x0080 + 0x0200 + 0x0400
-	local bagType = select(2, C_Container.GetContainerNumFreeSlots(bag))
-
-	if bit.band(bagType, bagProfession) > 0 then
-		return ST_SPECIAL
-	end
-
-	return ST_NORMAL
-	]]
-
 	local bagType = select(2, C_Container.GetContainerNumFreeSlots(bag))
 	if bagType and bagType > 0 then
 		return ST_SPECIAL
@@ -1354,6 +1340,7 @@ function module:OnEnable()
 	self:RawHook("CloseAllBags", LUIBags_Close, true)
 
 	BankFrame:UnregisterAllEvents()
+	BankFrame:SetAlpha(0)
 
 	module:SetBags()
 	module:EnableBags()
@@ -1385,6 +1372,7 @@ function module:OnDisable()
 	ContainerFrame1BackgroundMiddle1:SetAlpha(1)
 	ContainerFrame1BackgroundMiddle2:SetAlpha(1)
 	ContainerFrame1BackgroundBottom:SetAlpha(1)
+	BankFrame:SetAlpha(1)
 
 end
 
@@ -1432,10 +1420,9 @@ function module:PrepareSort(frame)
 	for _, bag in pairs(self.sortBags) do
 		for j = 1, C_Container.GetContainerNumSlots(bag.bagId) do
 			local itemId = C_Container.GetContainerItemID(bag.bagId, j);
-
 			if itemId then
-				local _, count, locked = C_Container.GetContainerItemInfo(bag.bagId, j);
-
+				local containerInfo  = C_Container.GetContainerItemInfo(bag.bagId, j);
+				local count, locked = containerInfo.stackCount, containerInfo.isLocked
 				if locked then
 					return;
 				end
@@ -1550,8 +1537,8 @@ function module:Sort(elapsed)
 
 		if not select(3, C_Container.GetContainerItemInfo(item.sBag, item.sSlot)) and not select(3, C_Container.GetContainerItemInfo(item.tBag, item.tSlot)) then
 			if item.sBag ~= item.tBag or item.sSlot ~= item.tSlot then
-				PickupContainerItem(item.sBag, item.sSlot);
-				PickupContainerItem(item.tBag, item.tSlot);
+				C_Container.PickupContainerItem(item.sBag, item.sSlot);
+				C_Container.PickupContainerItem(item.tBag, item.tSlot);
 
 				for i = 1, #module.sortItems do
 					if module.sortItems[i].sBag == item.tBag and module.sortItems[i].sSlot == item.tSlot then
