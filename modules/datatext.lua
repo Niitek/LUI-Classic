@@ -759,23 +759,20 @@ function module:SetDualSpec()
 		local tonumber, tostring = tonumber, tostring
 
 		-- Local variables
-
-        local numSpecs = GetNumTalentTabs() -- num of specs available
-		local specCache = {}
-		for i = 1, numSpecs do -- for each spec choice
-			if not specCache[i] then
-				specCache[i] = {}
-				local name, texture = GetTalentTabInfo(i)
-				specCache[i].name = name
-				specCache[i].icon = texture
-
-				if not specCache[i].name then
-					specCache[i].name = "|cffff0000Talents undefined!|r"
-					specCache[i].icon = [[Interface\Icons\Spell_Nature_MoonKey]]
+        local numSpecs = GetNumTalentGroups() -- num of specs available
+		
+		local function GetTalentText(group)
+			local maxPoints, finalIcon, text = 0, DEFAULT_ICON, ""
+			for tab = 1, 3 do
+				local name, icon, points = GetTalentTabInfo(tab,nil,nil,group)
+				if points > maxPoints then
+					maxPoints = points
+					finalIcon = icon
+					text = name
 				end
 			end
+			return text, finalIcon
 		end
-        local switch1, switch2 = nil, nil -- specs to switch to
 
 		-- Event functions
 		stat.Events = (UnitLevel("player") < 10) and {"PLAYER_LEVEL_UP"} or {"PLAYER_TALENT_UPDATE"}
@@ -794,19 +791,11 @@ function module:SetDualSpec()
 		end
 
 		stat.PLAYER_TALENT_UPDATE = function(self)
-			--local activeTalentGroup = GetActiveSpecGroup()
-			local activeSpec = GetSpecialization()
-			local curCache = specCache[activeSpec]
-			if not curCache then
-				self.text:SetText("|cffff0000Talents unavailable!|r")
-				return
-			end
-			local text = " "..curCache.name
+			local activeSpec = GetActiveTalentGroup()
+			local specName, specIcon = GetTalentText(activeSpec)
 
-			self.text:SetText(text)
-			self.icon:SetNormalTexture(curCache.icon)
-			--self.icon:SetBackdrop({bgFile = tostring(curCache.icon), edgeFile = nil, tile = false, edgeSize = 0, insets = {top = 0, right = 0, bottom = 0, left = 0}})
-
+			self.text:SetText(" "..specName)
+			self.icon:SetNormalTexture(specIcon)
 			-- Update tooltip if open
 			UpdateTooltip(self)
 		end
@@ -823,25 +812,12 @@ function module:SetDualSpec()
 		end
 
 		stat.OnClick = function(self, button)
-            --[[
-            if IsShiftKeyDown() then -- on shift toggle talent frame, function copied from original
-                if PlayerTalentFrame:IsVisible() and (PanelTemplates_GetSelectedTab(PlayerTalentFrame) == 1) then
-    				HideUIPanel(PlayerTalentFrame)
-    			else
-    				PanelTemplates_SetTab(PlayerTalentFrame, 1)
-    				PlayerTalentFrame_Refresh()
-    				ShowUIPanel(PlayerTalentFrame)
-    			end
-            ]]-- comment block is original functionality supported via shift click
-			if button == "LeftButton" and switch1 then -- switch 1 if valid
-                SetSpecialization( switch1 )
-            elseif button == "RightButton" and switch2 then -- switch 2
-                SetSpecialization( switch2 )
-            elseif button == "MiddleButton" and switch3 then -- switch 3
-                SetSpecialization( switch3 )
+			if button == "LeftButton" then
+            	SetActiveTalentGroup(1)
+            elseif button == "RightButton" then
+                SetActiveTalentGroup(2)
             end
 		end
-
 		stat.OnEnter = function(self)
 			if CombatTips() then
 				GameTooltip:SetOwner(self, getOwnerAnchor(self))
@@ -849,33 +825,23 @@ function module:SetDualSpec()
 				GameTooltip:AddLine("Specialization", 0.4, 0.78, 1)
 				GameTooltip:AddLine(" ")
 
-				local activeSpecGroup = GetSpecialization() -- get current spec ID
-                switch1, switch2, switch3 = nil, nil, nil -- reset switch vars
+				local activeSpecGroup = GetActiveTalentGroup() -- get current spec ID
 
 				for i = 1, numSpecs do -- loop through all specs
-                    if i ~= activeSpecGroup then -- not the active spec, is a switch option
-                        if not switch1 then -- switch1 not set yet, use it
-                            switch1 = i
-                        elseif not switch2 then -- use switch2
-                            switch2 = i
-                        elseif not switch3 then -- use switch3
-                            switch3 = i
-                        end
-                    end
+					if i == 1 then spec = "Primary" elseif i == 2 then spec = "Secondary" end
+					if activeSpecGroup == i then specActive = "Active" else specActive = "Inactive" end
 
                     local colorY, colorW = "|cFFFFFF00", "|r" -- text color flags
-                    local text = ((( i == activeSpecGroup ) and colorY  or "" ) .. "Spec " .. i .. ":" .. colorW ) -- numerate specs, coloring active
-                    local text2 = ((( i == activeSpecGroup ) and colorY  or "" ) .. ( specCache[ i ].name or "None" ) .. colorW ) -- list spec names, coloring active
+                    local text = ((( i == activeSpecGroup ) and colorY  or "" ) .. spec .. ":" .. colorW ) -- numerate specs, coloring active
+                    local text2 = ((( i == activeSpecGroup ) and colorY  or "" ) .. specActive .. colorW ) -- list spec names, coloring active
 
 					GameTooltip:AddDoubleLine(text, text2, 1,1,1, 1,1,1)
 				end
 
 				GameTooltip:AddLine(" \nHint:", 0, 1, 0 ) -- hint shows what spec a click will switch to
                 GameTooltip:AddLine(
-                ( switch1 and "- Left-Click to switch to " .. ( specCache[ switch1 ].name or "Error" ) or "" ) ..
-                ( switch2 and ".\n- Right-Click to switch to " .. ( specCache[ switch2 ].name or "Error" ) or "" ) ..
-                ( switch3 and ".\n- Middle-Click to switch to " .. ( specCache[ switch3 ].name or "Error" ) or "" ) ..
-                --[[ ".\n- Shift-Click to toggle talent frame" .. ]] ".", 0, 1, 0 ) -- original functionality hint commented out
+					("- Left-Click to switch to primary spec") ..
+					(".\n- Right-Click to switch to secondary spec") .. ".", 0, 1, 0 )
 				GameTooltip:Show()
 			end
 		end
@@ -3950,7 +3916,7 @@ function module:LoadOptions()
 				Reset = ResetOption(7),
 			},
 		}, ]]
-	--[[ 	DualSpec = { -- Added in 3.1.0 WOTLK
+		DualSpec = { -- Added in 3.1.0 WOTLK
 			name = function(info) return NameLabel(info, "Dual Spec") end,
 			type = "group",
 			order = 6,
@@ -3988,7 +3954,7 @@ function module:LoadOptions()
 				Font = FontOptions(5, "Dual Spec"),
 				Reset = ResetOption(6),
 			}, 
-		}, ]]
+		},
 		Durability = {
 			name = NameLabel,
 			type = "group",
