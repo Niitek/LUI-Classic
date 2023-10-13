@@ -1,5 +1,5 @@
-## Interface: 30402
-## Version: 3.50
+## Interface: 30403
+## Version: 3.51
 ## Title: LUI_WotLK
 ## Author: Siku, Mule, Nitsah
 ## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista
