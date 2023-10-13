@@ -739,6 +739,22 @@ function module:SetDualSpec()
 	local stat = NewStat("DualSpec")
 
 	if db.DualSpec.Enable and not stat.Created then
+		
+		local iconTexture = {
+			["DEATHKNIGHT"] = 135771,
+			["DEMONHUNTER"] = 236415,
+			["DRUID"] = 625999,
+			["HUNTER"] = 626000,
+			["MAGE"] = 626001,
+			["MONK"] = 626002,
+			["PALADIN"] = 626003,
+			["PRIEST"] = 626004,
+			["ROGUE"] = 626005,
+			["SHAMAN"] = 626006,
+			["WARLOCK"] = 626007,
+			["WARRIOR"] = 626008
+		}
+		
 		NewIcon(stat)
 		stat.icon:SetScript("OnMouseDown", function(self, button) -- Toggle Specialization
 			if not PlayerTalentFrame then
@@ -794,8 +810,15 @@ function module:SetDualSpec()
 			local activeSpec = GetActiveTalentGroup()
 			local specName, specIcon = GetTalentText(activeSpec)
 
-			self.text:SetText(" "..specName)
+			if specIcon == nil then -- specIcon returns nil when reseting talents
+				local className, class = UnitClass("player")
+				specIcon = iconTexture[class]
+				specName = className
+			end
+
 			self.icon:SetNormalTexture(specIcon)
+			self.text:SetText(" "..specName)
+
 			-- Update tooltip if open
 			UpdateTooltip(self)
 		end
@@ -3152,11 +3175,11 @@ module.defaults = {
 		DualSpec = {
 			Enable = false,
 			ShowSpentPoints = true,
-			X = 320,
+			X = -650,
 			Y = 0,
 			InfoPanel = {
-				Horizontal = "Left",
-				Vertical = "Bottom",
+				Horizontal = "Right",
+				Vertical = "Top",
 			},
 			Font = "vibroceb",
 			FontSize = 12,
