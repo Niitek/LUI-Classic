@@ -82,7 +82,7 @@ function module:SetMicroMenu()
 	LUI.MicroMenu.Anchor:SetBackdropBorderColor(0, 0, 0, 0)
 
 	--LUI.MicroMenu.Button = LUI:CreateMeAFrame("Frame", nil, UIParent, 640, 512, 1, "BACKGROUND", 1, "TOPRIGHT", UIParent, "TOPRIGHT", 0, -1, 1)
-	LUI.MicroMenu.Button = LUI:CreateMeAFrame("Frame", nil, UIParent, 590, 490, 1, "BACKGROUND", 1, "TOPRIGHT", UIParent, "TOPRIGHT", 0, -1, 1)
+	LUI.MicroMenu.Button = LUI:CreateMeAFrame("Frame", nil, UIParent, 550, 490, 1, "BACKGROUND", 1, "TOPRIGHT", UIParent, "TOPRIGHT", 0, -1, 1)
 	LUI.MicroMenu.Button:SetBackdrop({
 		bgFile = fdir.."micro_button",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -92,7 +92,7 @@ function module:SetMicroMenu()
 	LUI.MicroMenu.Button:SetBackdropColor(unpack(Themes.db.profile.micromenu_bg))
 	LUI.MicroMenu.Button:SetBackdropBorderColor(0, 0, 0, 0)
 
-	LUI.MicroMenu.Button.BG = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Button, 590, 490, 1, "BACKGROUND", 0, "TOPRIGHT", LUI.MicroMenu.Button, "TOPRIGHT", 0, 0, 1)
+	LUI.MicroMenu.Button.BG = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Button, 550, 490, 1, "BACKGROUND", 0, "TOPRIGHT", LUI.MicroMenu.Button, "TOPRIGHT", 0, -2, 1)
 	LUI.MicroMenu.Button.BG:SetBackdrop({
 		bgFile = fdir.."micro_button_bg",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -604,7 +604,7 @@ function module:SetMicroMenu()
 		end
 	end)
 
-	LUI.MicroMenu.Buttons.Journal = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Buttons.LFG, 64, 64, 1, "BACKGROUND", 3, "LEFT", LUI.MicroMenu.Buttons.LFG, "LEFT", -33, 0, 1)
+	--[[ LUI.MicroMenu.Buttons.Journal = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Buttons.LFG, 64, 64, 1, "BACKGROUND", 3, "LEFT", LUI.MicroMenu.Buttons.LFG, "LEFT", -33, 0, 1)
 	LUI.MicroMenu.Buttons.Journal:SetBackdrop({
 		-- bgFile = fdir.."micro_encounter",
 		bgFile = fdir.."micro_gm",
@@ -644,8 +644,8 @@ function module:SetMicroMenu()
 	end)
 
 	LUI.MicroMenu.Buttons.Journal.Clicker:SetScript("OnClick", function(self)
-		-- ToggleEncounterJournal()
-		ToggleHelpFrame()
+		ToggleEncounterJournal()
+		-- ToggleHelpFrame()
 	end)
 
 	LUI.MicroMenu.Buttons.Journal.Clicker:SetScript("OnUpdate", function(self)
@@ -656,9 +656,9 @@ function module:SetMicroMenu()
 				LUI.MicroMenu.Buttons.Journal.Clicker:SetAlpha(1)
 			end
 		end
-	end)
+	end) ]]
 
-	LUI.MicroMenu.Buttons.PVP = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Buttons.Journal, 64, 64, 1, "BACKGROUND", 3, "LEFT", LUI.MicroMenu.Buttons.Journal, "LEFT", -33, 0, 1)
+	LUI.MicroMenu.Buttons.PVP = LUI:CreateMeAFrame("Frame", nil, LUI.MicroMenu.Buttons.LFG, 64, 64, 1, "BACKGROUND", 3, "LEFT", LUI.MicroMenu.Buttons.LFG, "LEFT", -33, 0, 1)
 	LUI.MicroMenu.Buttons.PVP:SetBackdrop({
 		bgFile = fdir.."micro_pvp",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
