@@ -230,9 +230,10 @@ function module:SetMinimap()
 	--------------------------------------------------------------------
 	-- MINIMAP SETTINGS
 	--------------------------------------------------------------------
-	-- Hide Close Button
-	MinimapToggleButton:Hide()
-	
+	if LUI.IsClassic then
+		-- Hide Close Button
+		MinimapToggleButton:Hide()
+	end
 	-- Hide Border
 	MinimapBorder:Hide()
 	MinimapBorderTop:Hide()
