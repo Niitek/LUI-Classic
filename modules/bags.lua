@@ -51,6 +51,7 @@ local GetMoneyString = GetMoneyString
 local GetContainerNumSlots = GetContainerNumSlots
 local GetContainerItemInfo = GetContainerItemInfo
 local GetContainerItemLink = GetContainerItemLink
+local PickupContainerItem = PickupContainerItem or (C_Container and (C_Container.PickupContainerItem))
 local GetContainerItemCooldown = GetContainerItemCooldown
 local GetContainerNumFreeSlots = GetContainerNumFreeSlots
 
@@ -1514,7 +1515,7 @@ function module:PrepareSort(frame)
 end
 
 function module:Sort(elapsed)
-	if not module.sortTime or module.sortTime > 0.1 then
+	if not module.sortTime or module.sortTime > 0.5 then
 		module.sortTime = 0;
 	else
 		module.sortTime = module.sortTime + elapsed;
@@ -1537,8 +1538,8 @@ function module:Sort(elapsed)
 
 		if not select(3, C_Container.GetContainerItemInfo(item.sBag, item.sSlot)) and not select(3, C_Container.GetContainerItemInfo(item.tBag, item.tSlot)) then
 			if item.sBag ~= item.tBag or item.sSlot ~= item.tSlot then
-				C_Container.PickupContainerItem(item.sBag, item.sSlot);
-				C_Container.PickupContainerItem(item.tBag, item.tSlot);
+				PickupContainerItem(item.sBag, item.sSlot);
+				PickupContainerItem(item.tBag, item.tSlot);
 
 				for i = 1, #module.sortItems do
 					if module.sortItems[i].sBag == item.tBag and module.sortItems[i].sSlot == item.tSlot then
@@ -1560,7 +1561,7 @@ function module:Sort(elapsed)
 				table.remove(module.sortItems, key);
 				key = key - 1;
 
-				if changes > 5 then
+				if changes > 0.5 then
 					module.sorting = false;
 
 					return;

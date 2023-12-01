@@ -25,8 +25,10 @@ local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
 
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end
+	if not LUI.IsClassic then 
+		self:SecureHook(WatchFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
+	end
 	self:SecureHook(DurabilityFrame, "SetPoint", "DurabilityFrame_SetPoint")
-	self:SecureHook(WatchFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
 	self:SecureHook(UIWidgetTopCenterContainerFrame, "SetPoint", "AlwaysUpFrame_SetPoint")
 	self:SecureHook(TicketStatusFrame, "SetPoint", "TicketStatus_SetPoint")
 	self:SecureHook(UIWidgetBelowMinimapContainerFrame, "SetPoint", "CaptureBar_SetPoint")
@@ -42,7 +44,7 @@ function module:SetPosition(frame)
 	elseif frame == "DurabilityFrame" and db.Minimap.Frames.SetDurabilityFrame then
 		DurabilityFrame:ClearAllPoints()
 		DurabilityFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.DurabilityFrameX, db.Minimap.Frames.DurabilityFrameY)
-	elseif frame == "ObjectiveTrackerFrame" and db.Minimap.Frames.SetObjectiveTrackerFrame then
+	elseif frame == "ObjectiveTrackerFrame" and not LUI.IsClassic and db.Minimap.Frames.SetObjectiveTrackerFrame then
 		WatchFrame:ClearAllPoints() -- Cause a lot of odd behaviors with the quest tracker.
 		WatchFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.ObjectiveTrackerFrameX, db.Minimap.Frames.ObjectiveTrackerFrameY) -- uncommented for classic compatibility
 	elseif frame == "TicketStatus" and db.Minimap.Frames.SetTicketStatus then
@@ -228,15 +230,9 @@ function module:SetMinimap()
 	--------------------------------------------------------------------
 	-- MINIMAP SETTINGS
 	--------------------------------------------------------------------
-
-	--MiniMap TrackingIcon
-	MiniMapTracking:Hide()
-	if db.Minimap.General.TrackingIcon then
-		MiniMapTracking:ClearAllPoints()
-		MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
-		MiniMapTracking:Show()
-		MiniMapTrackingButtonBorder:Hide()
-	end
+	-- Hide Close Button
+	MinimapToggleButton:Hide()
+	
 	-- Hide Border
 	MinimapBorder:Hide()
 	MinimapBorderTop:Hide()
@@ -246,9 +242,29 @@ function module:SetMinimap()
 	MinimapZoomOut:Hide()
 
 	-- MiniMapInstanceDifficulty
-	MiniMapInstanceDifficulty.NewShow = MiniMapInstanceDifficulty.Show
-	MiniMapInstanceDifficulty.Show = MiniMapInstanceDifficulty.Hide
-	MiniMapInstanceDifficulty:Hide()
+	if not LUI.IsClassic then 
+			--MiniMap TrackingIcon
+		MiniMapTracking:Hide()
+		if db.Minimap.General.TrackingIcon then
+			MiniMapTracking:ClearAllPoints()
+			MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
+			MiniMapTracking:Show()
+			MiniMapTrackingButtonBorder:Hide()
+		end
+		MiniMapInstanceDifficulty.NewShow = MiniMapInstanceDifficulty.Show
+		MiniMapInstanceDifficulty.Show = MiniMapInstanceDifficulty.Hide
+		MiniMapInstanceDifficulty:Hide()
+			-- shitty 3.3 flag to move
+		MiniMapInstanceDifficulty:ClearAllPoints()
+		MiniMapInstanceDifficulty:SetParent(Minimap)
+		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+
+			-- Move LFG Eye icon
+		MiniMapLFGFrame:ClearAllPoints()
+		MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
+		-- MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
+		MiniMapLFGFrameBorder:Hide()
+	end
 
 	MinimapNorthTag:SetTexture(nil) -- Hide North texture at top
 	LUI:Kill(MiniMapWorldMapButton) -- Hide world map button
@@ -273,19 +289,6 @@ function module:SetMinimap()
 	end)
 	MiniMapMailFrame:HookScript("OnHide", function()
 	end)
-
-	-- shitty 3.3 flag to move
-	MiniMapInstanceDifficulty:ClearAllPoints()
-	MiniMapInstanceDifficulty:SetParent(Minimap)
-	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-
-	local function UpdateLFG()
-		MiniMapLFGFrame:ClearAllPoints()
-		MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
-		-- MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
-		MiniMapLFGFrameBorder:Hide()
-	end
-	hooksecurefunc("EyeTemplate_OnUpdate", UpdateLFG)
 
 	-- Enable mouse scrolling
 	Minimap:EnableMouseWheel(true)
@@ -500,7 +503,7 @@ local defaults = {
 			Tracking = "TOPLEFT",
 			BG = "BOTTOMRIGHT",
 			LFG = "TOPRIGHT", -- LFG and MAIL icon positions changed for better visibilty of the Tooltip
-			GMTicket = "TOPLEFT",
+			GMTicket = "TOP",
 		},
 		Frames = {
 			AlwaysUpFrameX = "300",

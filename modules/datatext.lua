@@ -374,8 +374,10 @@ function module:SetClock()
 		stat.Events = {"CALENDAR_UPDATE_PENDING_INVITES", "PLAYER_ENTERING_WORLD"}
 		-- , "UPDATE_24HOUR", "UPDATE_LOCALTIME"
 
-		stat.CALENDAR_UPDATE_PENDING_INVITES = function(self) -- A change to number of pending invites for calendar events occurred
-			invitesPending = GameTimeFrame and (GameTimeFrame.pendingCalendarInvites > 0) or false
+		if not LUI.IsClassic then
+			stat.CALENDAR_UPDATE_PENDING_INVITES = function(self) -- A change to number of pending invites for calendar events occurred
+				invitesPending = GameTimeFrame and (GameTimeFrame.pendingCalendarInvites > 0) or false
+			end
 		end
 
 
@@ -447,7 +449,7 @@ function module:SetClock()
 				instanceInfo, guildParty = nil, ""
 			end
 
-			if not module:IsHooked(GameTimeFrame, "OnClick") then
+			if not module:IsHooked(GameTimeFrame, "OnClick") and not LUI.IsClassic then
 				module:SecureHookScript(GameTimeFrame, "OnClick", stat.CALENDAR_UPDATE_PENDING_INVITES) -- hook the OnClick function of the GameTimeFrame to update the pending invites
 			end
 			if not module:IsHooked(TimeManagerMilitaryTimeCheck, "OnClick") then
@@ -456,8 +458,9 @@ function module:SetClock()
 			if not module:IsHooked(TimeManagerLocalTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerLocalTimeCheck, "OnClick", stat.UPDATE_LOCALTIME)
 			end
-			self:CALENDAR_UPDATE_PENDING_INVITES()
-
+			if not LUI.IsClassic then
+				self:CALENDAR_UPDATE_PENDING_INVITES()
+			end
 			self:PLAYER_ENTERING_WORLD()
 		end
 
@@ -516,7 +519,7 @@ function module:SetClock()
 					TimeManagerLocalTimeCheck:SetChecked(false)
 				end
 			else -- Toggle CalendarFrame
-				GameTimeFrame:Click() -- using just :Click() wont fire the hook
+				-- GameTimeFrame:Click() -- using just :Click() wont fire the hook
 			end
 		end
 
