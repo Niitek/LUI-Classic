@@ -518,8 +518,8 @@ function module:SetClock()
 				else
 					TimeManagerLocalTimeCheck:SetChecked(false)
 				end
-			else -- Toggle CalendarFrame
-				-- GameTimeFrame:Click() -- using just :Click() wont fire the hook
+			elseif not LUI.IsClassic then -- Toggle CalendarFrame
+				GameTimeFrame:Click() -- using just :Click() wont fire the hook
 			end
 		end
 
