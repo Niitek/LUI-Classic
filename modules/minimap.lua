@@ -25,7 +25,7 @@ local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
 
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end
-	if not LUI.IsClassic then 
+	if not LUI.isClassic then 
 		self:SecureHook(WatchFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
 	end
 	self:SecureHook(DurabilityFrame, "SetPoint", "DurabilityFrame_SetPoint")
@@ -44,7 +44,7 @@ function module:SetPosition(frame)
 	elseif frame == "DurabilityFrame" and db.Minimap.Frames.SetDurabilityFrame then
 		DurabilityFrame:ClearAllPoints()
 		DurabilityFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.DurabilityFrameX, db.Minimap.Frames.DurabilityFrameY)
-	elseif frame == "ObjectiveTrackerFrame" and not LUI.IsClassic and db.Minimap.Frames.SetObjectiveTrackerFrame then
+	elseif frame == "ObjectiveTrackerFrame" and not LUI.isClassic and db.Minimap.Frames.SetObjectiveTrackerFrame then
 		WatchFrame:ClearAllPoints() -- Cause a lot of odd behaviors with the quest tracker.
 		WatchFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.ObjectiveTrackerFrameX, db.Minimap.Frames.ObjectiveTrackerFrameY) -- uncommented for classic compatibility
 	elseif frame == "TicketStatus" and db.Minimap.Frames.SetTicketStatus then
@@ -230,7 +230,7 @@ function module:SetMinimap()
 	--------------------------------------------------------------------
 	-- MINIMAP SETTINGS
 	--------------------------------------------------------------------
-	if LUI.IsClassic then
+	if LUI.isClassic then
 		-- Hide Close Button
 		MinimapToggleButton:Hide()
 	end
@@ -243,7 +243,7 @@ function module:SetMinimap()
 	MinimapZoomOut:Hide()
 
 	-- MiniMapInstanceDifficulty
-	if not LUI.IsClassic then 
+	if not LUI.isClassic then 
 			--MiniMap TrackingIcon
 		MiniMapTracking:Hide()
 		if db.Minimap.General.TrackingIcon then
@@ -280,7 +280,7 @@ function module:SetMinimap()
 	MiniMapMailIcon:SetTexture(LUI.Media.mail)
 
 	-- Move battleground icon
-	if (LUI.IsRetail) then
+	if (LUI.isRetail) then
 		QueueStatusMinimapButton:ClearAllPoints()
 		QueueStatusMinimapButton:SetPoint(db.Minimap.Icon.BG, Minimap, LUI:Scale(3), 0)
 		-- QueueStatusMinimapButtonBorder:Hide()

@@ -2734,7 +2734,7 @@ local SetStyle = function(self, unit, isSingle)
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "SHAMAN" then
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
-			if oufdb.Bars.Totems.Enable and (LUI.IsWrath or LUI.IsRetail) then module.funcs.Totems(self, unit, oufdb) end
+			if oufdb.Bars.Totems.Enable and (LUI.isWrath or LUI.isRetail) then module.funcs.Totems(self, unit, oufdb) end
 		elseif class == "PRIEST" then 
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 		end

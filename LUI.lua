@@ -15,10 +15,10 @@ local AceAddon = LibStub("AceAddon-3.0")
 _G.LUI = LUI
 _G.oUF = LUI.oUF
 
-LUI.IsRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
-LUI.IsClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
-LUI.IsBCC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
-LUI.IsWrath = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
+LUI.isRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
+LUI.isClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
+LUI.isBCC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+LUI.isWrath = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
 
 local Media = LibStub("LibSharedMedia-3.0")
 local Profiler = LUI.Profiler
@@ -1352,14 +1352,14 @@ local function getOptions()
 									width = "full",
 									type = "description",
 									fontSize = "medium",
-									name = "Current V3 Devs: |cffe6cc80Siku, Mule, Nitsah|r\n",
+									name = "Current V3 Devs: |cffe6cc80Nitsah, Siku|r\n",
 								},
 								OldStaff = {
 									order = 5,
 									width = "full",
 									type = "description",
 									fontSize = "medium",
-									name = "Former V3 Devs: |cffe6cc80Loui, Sinaris, Zista, hix, Thaly, Shendrela, Darkruler, Yunai|r\n\n",
+									name = "Former V3 Devs: |cffe6cc80Loui, Sinaris, Zista, hix, Thaly, Shendrela, Darkruler, Yunai, Mule|r\n\n",
 								},
 								Donators = {
 									order = 6,

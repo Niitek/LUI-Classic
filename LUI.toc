@@ -1,8 +1,8 @@
 ## Interface: 30403
-## Version: 3.52
-## Title: LUI_WotLK
-## Author: Siku, Mule, Nitsah
-## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista
+## Version: 3.6
+## Title: LUI_Classic
+## Author: Siku, Nitsah
+## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista, Mule
 ## Notes: User Interface Modification
 ## SavedVariables: LUIDB, LUIGold, LUI_Themes, LUI_Layouts
 ## SavedVariablesPerCharacter: LUICONFIG

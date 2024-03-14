@@ -1255,7 +1255,7 @@ end
 
 local flyoutButtons = 0
 local function StyleFlyout(self)
-	if not LUI.IsRetail then return end
+	if not LUI.isRetail then return end
 	if not self.FlyoutArrow then return end
 
 	self.FlyoutBorder:SetAlpha(0)

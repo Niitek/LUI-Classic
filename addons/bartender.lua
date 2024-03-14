@@ -506,7 +506,7 @@ function LUI:InstallBartender()
 		Bartender4DB.namespaces.StanceBar.profiles[k] = v
 	end
 		--Totembar Defaults
-	if CharClass == "SHAMAN" and not LUI.IsClassic then
+	if CharClass == "SHAMAN" and not LUI.isClassic then
 		local MultiCastDefaults = {
 			[CharName] = {
 				["position"] = {
