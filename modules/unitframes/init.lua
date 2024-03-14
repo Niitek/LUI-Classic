@@ -12,7 +12,10 @@ local Blizzard = LUI.Blizzard
 local unitsSpawn = {"Player", "Target", "Focus", "FocusTarget", "ToT", "ToToT", "Pet", "PetTarget", "Boss", "Party", "Maintank", "Arena", "Raid"}
 
 local units = {"Player", "Target", "ToT", "ToToT", "Focus", "FocusTarget", "Pet", "PetTarget", "Party", "PartyTarget", "PartyPet", "Boss", "BossTarget", "Maintank", "MaintankTarget", "MaintankToT", "Arena", "ArenaTarget", "ArenaPet", "Raid"}
-
+if LUI.isClassic then
+	table.remove(units,5)
+	table.remove(units,5)
+end
 LUI.Versions.ouf = 3600
 
 do

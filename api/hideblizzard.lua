@@ -66,8 +66,10 @@ do
 			ComboFrame:UnregisterAllEvents()
 		end,
 		focus = function()
-			FocusFrame:UnregisterAllEvents()
-			FocusFrame:Hide()
+			if LUI.isClassic == false  then
+				FocusFrame:UnregisterAllEvents()
+				FocusFrame:Hide()
+			end
 		end,
 		party = function()
 			for i = 1, 4 do
@@ -178,7 +180,9 @@ do
 			ComboFrame:GetScript("OnLoad")(ComboFrame)
 		end,
 		focus = function()
-			FocusFrame:GetScript("OnLoad")(FocusFrame)
+			if(LUI.isClassic == false) then
+				FocusFrame:GetScript("OnLoad")(FocusFrame)
+			end
 		end,
 		party = function()
 			Blizzard:Unhook("CompactPartyFrame_Generate")
