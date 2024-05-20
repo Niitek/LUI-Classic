@@ -9,24 +9,19 @@ if not _G.oUF_RaidDebuffs then
 	_G.oUF_RaidDebuffs = addon
 end
 
-local GetSpellInfo = _G.GetSpellInfo
-local UnitClass = _G.UnitClass
-local UnitAura = _G.UnitAura
-
 local debuff_data = {}
 addon.DebuffData = debuff_data
 
 addon.ShowDispelableDebuff = true
 addon.FilterDispellableDebuff = true
 addon.MatchBySpellName = true
+addon.SHAMAN_CAN_DECURSE = true
 
 local function add(spell, priority)
 	if addon.MatchBySpellName and type(spell) == 'number' then
 		spell = GetSpellInfo(spell)
 	end
-	if spell then
-		debuff_data[spell] = priority
-	end
+	debuff_data[spell] = priority
 end
 
 function addon:RegisterDebuffs(t)
@@ -63,9 +58,9 @@ do
 			['Disease'] = true,
 		},
 		['SHAMAN'] = {
-			['Magic'] = true,
+			['Poison'] = true,
 			['Disease'] = true,
-			['Curse'] = true,
+			['Curse'] = SHAMAN_CAN_DECURSE,
 		},
 		['PALADIN'] = {
 			['Poison'] = true,
@@ -76,14 +71,8 @@ do
 			['Curse'] = true,
 		},
 		['DRUID'] = {
-			['Magic'] = true,
 			['Curse'] = true,
 			['Poison'] = true,
-		},
-		['MONK'] = {
-			['Poison'] = true,
-			['Magic'] = true,
-			['Disease'] = true,
 		},
 	}
 
@@ -116,9 +105,6 @@ end
 local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTime)
 	local f = self.RaidDebuffs
 	if name then
-		-- if (not duration or type(duration) ~= "number") or (not expires or type(expires) ~= "number") then
-		-- 	LUI:Printf("Name: %s, iconID: %s, type: %s, duration: %s, expires: %s, caster: %s", name, icon, count, dispelType, duration, expires, caster)
-		-- end
 		f.icon:SetTexture(icon)
 		f.icon:Show()
 
@@ -163,10 +149,10 @@ end
 
 local function Update(self, event, unit)
 	if unit ~= self.unit then return end
-	local _name, _icon, _count, _dtype, _duration, _endTime, priority
-	local _priority = 0
+	local _name, _icon, _count, _dtype, _duration, _endTime
+	local _priority, priority = 0, nil
 	for i = 1, 40 do
-		local name, icon, count, debuffType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, 'HARMFUL')
+		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId = UnitAura(unit, i, 'HARMFUL')
 		if (not name) then break end
 
 		if addon.ShowDispelableDebuff and debuffType then

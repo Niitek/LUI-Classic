@@ -2,7 +2,7 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: maintank.lua
 	Description: oUF Maintank Defaults
-]]
+]] 
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
@@ -116,6 +116,16 @@ module.defaults.profile.Maintank = {
 				g = 1,
 				b = 0,
 				a = 0.25
+			},
+		},
+		TotalAbsorb = {
+			Enable = false,
+			Texture = "LUI_Gradient",
+			MyColor = {
+				r = 0,
+				g = 1,
+				b = 0,
+				a = 0.5
 			},
 		},
 	},

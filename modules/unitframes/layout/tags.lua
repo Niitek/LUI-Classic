@@ -2,19 +2,13 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: tags.lua
 	Description: oUF Tags
-]]
+]] 
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
 local oUF = LUI.oUF
 
 local Media = LibStub("LibSharedMedia-3.0")
-
-local UnitIsConnected, UnitIsGhost, UnitIsDead, UnitIsAFK = _G.UnitIsConnected, _G.UnitIsGhost, _G.UnitIsDead, _G.UnitIsAFK
-local UnitQuestTrivialLevelRange, GetQuestGreenRange = _G.UnitQuestTrivialLevelRange, _G.GetQuestGreenRange
-local UnitPower, UnitPowerMax, UnitPowerType = _G.UnitPower, _G.UnitPowerMax, _G.UnitPowerType
-local UnitClass, UnitLevel, UnitReaction = _G.UnitClass, _G.UnitLevel, _G.UnitReaction
-local UnitIsPlayer, UnitName = _G.UnitIsPlayer, _G.UnitName
 
 local nameCache = {}
 
@@ -95,7 +89,7 @@ module.RecreateNameCache = function()
 	end
 end
 
---oUF.Tags.Events["GetNameColor"] = "UNIT_HAPPINESS"
+oUF.Tags.Events["GetNameColor"] = "UNIT_HAPPINESS"
 oUF.Tags.Methods["GetNameColor"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
 	local pClass, pToken = UnitClass(unit)
@@ -140,11 +134,19 @@ oUF.Tags.Methods["DiffColor"] = function(unit)
 			r, g, b = unpack(module.colors.leveldiff[2])
 		elseif difference >= -2 then
 			r, g, b = unpack(module.colors.leveldiff[3])
+		elseif -difference <= GetQuestGreenRange() then
+			r, g, b = unpack(module.colors.leveldiff[4])
 		else
 			r, g, b = unpack(module.colors.leveldiff[5])
 		end
 	end
 	return string.format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+end
+
+oUF.Tags.Events["level2"] = "UNIT_LEVEL"
+oUF.Tags.Methods["level2"] = function(unit)
+	local l = UnitLevel(unit)
+	return l > 0 and l
 end
 
 oUF.Tags.Events["NameShort"] = "UNIT_NAME_UPDATE"
@@ -225,7 +227,7 @@ oUF.Tags.Methods["druidmana2"] = function(unit)
 
 	if not module.db then return "" end
 
-	local min, max = UnitPower("player", Enum.PowerType.Mana), UnitPowerMax("player", Enum.PowerType.Mana)
+	local min, max = UnitPower("player", SPELL_POWER_MANA), UnitPowerMax("player", SPELL_POWER_MANA)
 	if module.db.Player.Texts.DruidMana.HideIfFullMana and min == max then return "" end
 	local perc = min / max * 100
 

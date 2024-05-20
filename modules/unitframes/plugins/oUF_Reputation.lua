@@ -2,8 +2,6 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, 'oUF Reputation was unable to locate oUF install')
 
-local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
-
 for tag, func in pairs({
 	['currep'] = function()
 		local _, _, _, _, value = GetWatchedFactionInfo()

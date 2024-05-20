@@ -10,7 +10,6 @@ local argcheck = Private.argcheck
 local print = Private.print
 local error = Private.error
 
----@diagnostic disable-next-line: unbalanced-assignments
 local styles, style = {}
 local callback, objects, headers = {}, {}, {}
 
@@ -534,11 +533,11 @@ do
 		end
 
 		if(visibility) then
-			local type, list = strsplit(' ', visibility, 2)
+			local type, list = string.split(' ', visibility, 2)
 			if(list and type == 'custom') then
 				RegisterAttributeDriver(header, 'state-visibility', list)
 			else
-				local condition = getCondition(strsplit(',', visibility))
+				local condition = getCondition(string.split(',', visibility))
 				RegisterAttributeDriver(header, 'state-visibility', condition)
 			end
 		end

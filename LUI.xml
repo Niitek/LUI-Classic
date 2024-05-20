@@ -58,7 +58,7 @@
 
 	<!-- Initialize Unitframes -->
  	<Include file="modules\unitframes\templates.xml"/>
-	<Script file="modules\unitframes\init.lua"/> -->
+	<Script file="modules\unitframes\init.lua"/>
 
 	<!-- Unitframe Default Values -->
 	<Script file="modules\unitframes\defaults\player.lua"/>
@@ -103,6 +103,14 @@
 	<Script file="modules\unitframes\plugins\raiddebuffs.lua"/>
 	<Script file="modules\unitframes\plugins\maintank.lua"/>
 	<Script file="modules\unitframes\plugins\vehicle.lua"/>
+
+	<!-- Class powers -->
+	<Script file="modules\unitframes\plugins\arcanecharges.lua"/>
+	<Script file="modules\unitframes\plugins\chi.lua"/>
+	<Script file="modules\unitframes\plugins\holypower.lua"/>
+	<Script file="modules\unitframes\plugins\shadoworbs.lua"/>
+	<Script file="modules\unitframes\plugins\warlockbar.lua"/>
+	<!-- <Script file="modules\unitframes\plugins\totalabsorb.lua"/> -->
 
 	<!-- Unitframe Layout -->
 	<Script file="modules\unitframes\layout\tags.lua"/>

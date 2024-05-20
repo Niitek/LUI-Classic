@@ -774,7 +774,7 @@ function module:SetDualSpec()
 		end)
 
 		-- Localized functions
-		local GetActiveSpecGroup, GetSpecializationInfo, GetSpecialization = GetActiveSpecGroup, GetSpecializationInfo, GetSpecialization
+		local GetActiveTalentGroup, GetTalentTabInfo, GetPrimaryTalentTree = GetActiveTalentGroup, GetTalentTabInfo, GetPrimaryTalentTree
 		local tonumber, tostring = tonumber, tostring
 
 		-- Local variables
@@ -2988,8 +2988,8 @@ function module:SetLootSpec()
 			local lootspec = GetLootSpecialization()
 			local text
 			if lootspec == 0 then
-			   local curspec = GetSpecialization()
-			   _, name, _, _, _, _ = GetSpecializationInfo(curspec)
+			   local curspec = GetPrimaryTalentTree()
+			   _, name, _, _, _, _ = GetTalentTabInfo(curspec)
 			else
 			   _, name, _, _, _, _ = GetSpecializationInfoByID(lootspec)
 			end

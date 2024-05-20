@@ -18,6 +18,10 @@
 
  Options
 
+ .displayAltPower   - Use this to let the widget display alternate power if the
+                      unit has one. If no alternate power the display will fall
+                      back to primary power.
+
  The following options are listed by priority. The first check that returns
  true decides the color of the bar.
 
@@ -25,6 +29,8 @@
                       isn't tapped by the player.
  .colorDisconnected - Use `self.colors.disconnected` to color the bar if the
                       unit is offline.
+ .altPowerColor     - A table containing the RGB values to use for a fixed
+                      color if the alt power bar is being displayed instead
  .colorPower        - Use `self.colors.power[token]` to color the bar based on
                       the unit's power type. This method will fall-back to
                       `:GetAlternativeColor()` if it can't find a color matching
@@ -125,12 +131,12 @@ oUF.colors.power[16] = oUF.colors.power.ARCANE_CHARGES
 oUF.colors.power[17] = oUF.colors.power.FURY
 oUF.colors.power[18] = oUF.colors.power.PAIN
 
--- local GetDisplayPower = function(unit)
--- 	local _, min, _, _, _, _, showOnRaid = UnitAlternatePowerInfo(unit)
--- 	if(showOnRaid) then
--- 		return ALTERNATE_POWER_INDEX, min
--- 	end
--- end
+local GetDisplayPower = function(unit)
+	local _, min, _, _, _, _, showOnRaid = UnitAlternatePowerInfo(unit)
+	if(showOnRaid) then
+		return ALTERNATE_POWER_INDEX, min
+	end
+end
 
 local Update = function(self, event, unit)
 	if(self.unit ~= unit) then return end
@@ -139,7 +145,9 @@ local Update = function(self, event, unit)
 	if(power.PreUpdate) then power:PreUpdate(unit) end
 
 	local displayType, min
-
+	if power.displayAltPower then
+		displayType, min = GetDisplayPower(unit)
+	end
 	local cur, max = UnitPower(unit, displayType), UnitPowerMax(unit, displayType)
 	local disconnected = not UnitIsConnected(unit)
 	power:SetMinMaxValues(min or 0, max)
@@ -158,6 +166,8 @@ local Update = function(self, event, unit)
 		t = self.colors.tapped
 	elseif(power.colorDisconnected and disconnected) then
 		t = self.colors.disconnected
+	elseif(displayType == ALTERNATE_POWER_INDEX and power.altPowerColor) then
+		t = power.altPowerColor
 	elseif(power.colorPower) then
 		local ptype, ptoken, altR, altG, altB = UnitPowerType(unit)
 

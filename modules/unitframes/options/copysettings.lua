@@ -6,6 +6,8 @@
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
+local Fader = LUI:Module("Fader")
+-- local Forte = LUI:Module("Forte")
 
 local oUF = LUI.oUF
 
@@ -82,7 +84,7 @@ local settings = {
 	withPosition = false
 }
 	
-_G.StaticPopupDialogs["COPY_SETTINGS"] = {
+StaticPopupDialogs["COPY_SETTINGS"] = {
 	preferredIndex = 3,
 	text = "Are you sure you want to copy the Settings?",
 	button1 = "Yes",

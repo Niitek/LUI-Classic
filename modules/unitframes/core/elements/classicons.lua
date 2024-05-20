@@ -71,7 +71,7 @@ local UpdateTexture = function(element)
 end
 
 local Update = function(self, event, unit, powerType)
-	if(not (unit == 'player' and (not powerType or powerType == ClassPowerType))
+	if(not (unit == 'player' and powerType == ClassPowerType)
 		and not (unit == 'vehicle' and powerType == 'COMBO_POINTS')) then
 		return
 	end
@@ -151,11 +151,11 @@ local function Visibility(self, event, unit)
 	local shouldEnable
 
 	if(UnitHasVehicleUI('player')) then
-	 	if(UnitPowerType('vehicle') == Enum.PowerType.Energy) then
+	 	if(UnitPowerType('vehicle') == SPELL_POWER_ENERGY) then
 			shouldEnable = true
 		end
 	elseif(ClassPowerID) then
-		if(not RequireSpec or RequireSpec == GetSpecialization()) then
+		if(not RequireSpec or RequireSpec == GetPrimaryTalentTree()) then
 			if(not RequireForm or RequireForm == GetShapeshiftFormID()) then
 				if(not RequireSpell or IsPlayerSpell(RequireSpell)) then
 					self:UnregisterEvent('SPELLS_CHANGED', Visibility)
@@ -220,27 +220,28 @@ do
 	end
 
 	if(PlayerClass == 'MONK') then
-		ClassPowerID = Enum.PowerType.Chi or 12
+		ClassPowerID = Enum.PowerType.Chi
 		ClassPowerType = "CHI"
 		RequireSpec = SPEC_MONK_WINDWALKER
 	elseif(PlayerClass == 'PALADIN') then
-		ClassPowerID = Enum.PowerType.HolyPower or 9
+		ClassPowerID = Enum.PowerType.HolyPower
 		ClassPowerType = "HOLY_POWER"
+		RequireSpec = SPEC_PALADIN_RETRIBUTION
 	elseif(PlayerClass == 'WARLOCK') then
-		ClassPowerID = Enum.PowerType.SoulShards or 7
+		ClassPowerID = Enum.PowerType.SoulShards
 		ClassPowerType = "SOUL_SHARDS"
 	elseif(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
-		ClassPowerID = Enum.PowerType.ComboPoints or 4
+		ClassPowerID = Enum.PowerType.ComboPoints
 		ClassPowerType = 'COMBO_POINTS'
 
 		if(PlayerClass == 'DRUID') then
 			RequireForm = CAT_FORM
-			-- RequireSpell = 5221 -- Shred
+			RequireSpell = 5221 -- Shred
 		end
-	elseif(PlayerClass == 'MAGE') then
-		ClassPowerID = Enum.PowerType.ArcaneCharges or 16
-		ClassPowerType = 'ARCANE_CHARGES'
-		RequireSpec = SPEC_MAGE_ARCANE
+	-- elseif(PlayerClass == 'MAGE') then
+	-- 	ClassPowerID = Enum.PowerType.ArcaneCharges
+	-- 	ClassPowerType = 'ARCANE_CHARGES'
+	-- 	RequireSpec = SPEC_MAGE_ARCANE
 	end
 end
 

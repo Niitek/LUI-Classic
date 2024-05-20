@@ -6,6 +6,7 @@ local ORD = ns.oUF_RaidDebuffs or oUF_RaidDebuffs
 -- credits to authors of GridStatusRaidDebuff_Cata
 
 if not ORD then return end
+
 ORD.ShowDispelableDebuff = true
 ORD.FilterDispellableDebuff = true
 ORD.MatchBySpellName = true
@@ -38,7 +39,7 @@ local debuff_data = {
 	[88219] = 6, -- Burning Twilight
 	[88079] = 6, -- Frostfire Bolt
 	[76622] = 4, -- Sunder Armor
-	[84832] = 5, -- Dismantle
+	[88079] = 5, -- Dismantle
 	[84856] = 6, -- Hungering Shadows
 	[85643] = 6, -- Mind Sear
 	[93277] = 7, -- Rending Gale
@@ -130,6 +131,7 @@ local debuff_data = {
 	[77699] = 7, -- Flash Freeze
 
 	-- Nefarian
+	[81118] = 6, -- Magma
 	[77827] = 6, -- Tail Lash
 
 	------------------------------------------------------------------------
@@ -158,6 +160,7 @@ local debuff_data = {
 	------------------------------------------------------------------------
 	
 	-- Trash
+	[76622] = 4, -- Sunder Armor
 	[99610] = 5, -- Shockwave
 	[99695] = 4, -- Flaming Spear
 	[99800] = 4, -- Ensnare

@@ -7,22 +7,12 @@
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
 local Fader = LUI:Module("Fader")
-local Blizzard = LUI.Blizzard
+
 local oUF = LUI.oUF
+local Blizzard = LUI.Blizzard
+local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
 
-local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
-
-local UnregisterStateDriver = _G.UnregisteredStateDriver
-local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
-local RegisterAttributeDriver = _G.RegisterAttributeDriver
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoadOnDemand
-local GetCVarBool = _G.GetCVarBool
-local UnitLevel = _G.UnitLevel
-local IsInRaid = _G.IsInRaid
-local SetCVar = _G.SetCVar
+local _, class = UnitClass("player")
 
 local ufUnits = {
 	Player = "player",
@@ -208,7 +198,7 @@ module.ToggleUnit = setmetatable({
 		if override == nil then override = module.db.BossTarget.Enable end
 
 		if override and module.db.Boss.Enable then
-			if _G.oUF_LUI_bosstarget1 then
+			if oUF_LUI_bosstarget1 then
 				for i = 1, MAX_BOSS_FRAMES do
 					if _G["oUF_LUI_bosstarget"..i] then
 						_G["oUF_LUI_bosstarget"..i]:Enable()
@@ -694,19 +684,12 @@ module.ToggleUnit = setmetatable({
 	end,
 
 	Raid = function(override)
-		-- print('raid')
-		local raidAddon = {
-			"Plexus",
-			"Grid2",
-			"VudHo",
-			"Healbot",
-			
-		}
-		if IsAddOnLoaded("Plexus") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("Vuhdo") or IsAddOnLoaded("Healbot") then	print("Player") return end
-
 		if override == nil then override = module.db.Raid.Enable end
 
 		if override then
+			if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("Healbot") then
+				return
+			end
 			if oUF_LUI_raid then
 				for i = 1, 5 do
 					if i ~= 1 then
@@ -840,11 +823,11 @@ module.ToggleUnit = setmetatable({
 				end
 
 				if oUF_LUI_raid_25 then
-					UnregisterAttributeDriver(oUF_LUI_raid_25, "visibility")
+					UnregisterStateDriver(oUF_LUI_raid_25, "visibility")
 					oUF_LUI_raid_25:Hide()
 				end
 				if oUF_LUI_raid_40 then
-					UnregisterAttributeDriver(oUF_LUI_raid_40, "visibility")
+					UnregisterStateDriver(oUF_LUI_raid_40, "visibility")
 					oUF_LUI_raid_40:Hide()
 				end
 
@@ -855,7 +838,7 @@ module.ToggleUnit = setmetatable({
 }, ToggleMT)
 
 module.ApplySettings = function(unit)
-	if module.db[unit].Enable == false then return end
+	-- if module.db[unit].Enable == false then return end
 
 	for _, framename in pairs(module.framelist[unit]) do
 		local frame = _G[framename]
@@ -915,7 +898,7 @@ module.ApplySettings = function(unit)
 				module.funcs.Experience(frame, frame.__unit, module.db.XP_Rep)
 				module.funcs.Reputation(frame, frame.__unit, module.db.XP_Rep)
 
-				if module.db.XP_Rep.Experience.Enable and UnitLevel("player") ~= LEVEL_CAP then
+				if module.db.XP_Rep.Experience.Enable and UnitLevel("player") ~= MAX_PLAYER_LEVEL then
 					frame.Experience:ForceUpdate()
 					frame.XP:Show()
 					frame.Rep:Hide()
@@ -929,16 +912,109 @@ module.ApplySettings = function(unit)
 					end
 				end
 
-				 -- runes
-				 if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
-				 	module.funcs.Runes(frame, frame.__unit, module.db.Player)
-				 	if module.db[unit].Bars.Runes.Enable then
-				 		frame:EnableElement("Runes")
-				 	else
-				 		frame:DisableElement("Runes")
-				 		frame.Runes:Hide()
-				 	end
-				 end
+				-- totems
+				if class == "SHAMAN" and not LUI.Legion then
+					module.funcs.Totems(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.Totems.Enable then
+						frame:EnableElement("Totems")
+					else
+						frame:DisableElement("Totems")
+						frame.Totems:Hide()
+					end
+				end
+
+				-- runes
+				if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
+					module.funcs.Runes(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.Runes.Enable then
+						frame:EnableElement("Runes")
+					else
+						frame:DisableElement("Runes")
+						frame.Runes:Hide()
+					end
+				end
+
+				-- holy power
+				if class == "PALADIN" then
+					if LUI.Legion then
+						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					else
+						module.funcs.HolyPower(frame, frame.__unit, module.db.Player)
+						if module.db[unit].Bars.HolyPower.Enable then
+							frame:EnableElement("HolyPower")
+						else
+							frame:DisableElement("HolyPower")
+							frame.HolyPower:Hide()
+						end
+					end
+				end
+				
+				-- arcane changes
+				if class == "MAGE" and LUI.isRetail then
+					if LUI.Legion then
+						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					else
+						module.funcs.ArcaneCharges(frame, frame.__unit, module.db.Player)
+						if module.db[unit].Bars.ArcaneCharges.Enable then
+							frame:EnableElement("ArcaneCharges")
+						else
+							frame:DisableElement("ArcaneCharges")
+							frame.ArcaneCharges:Hide()
+						end
+					end
+				end
+
+				-- warlock stuff
+				if class == "WARLOCK" then
+					if LUI.Legion then
+						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					else
+						module.funcs.WarlockBar(frame, frame.__unit, module.db.Player)
+						if module.db[unit].Bars.WarlockBar.Enable then
+							frame:EnableElement("WarlockBar")
+						else
+							frame:DisableElement("WarlockBar")
+							frame.WarlockBar:Hide()
+						end
+					end
+				end
+
+				-- chi
+				if class == "MONK" then
+					if LUI.Legion then
+						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+						else
+						module.funcs.Chi(frame, frame.__unit, module.db.Player)
+						if module.db[unit].Bars.Chi.Enable then
+							frame:EnableElement("Chi")
+						else
+							frame:DisableElement("Chi")
+							frame.Chi:Hide()
+						end
+					end
+				end
+
+				-- shadow orbs
+				if class == "PRIEST" and not LUI.Legion then
+					module.funcs.ShadowOrbs(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.ShadowOrbs.Enable then
+						frame:EnableElement("ShadowOrbs")
+					else
+						frame:DisableElement("ShadowOrbs")
+						frame.ShadowOrbs:Hide()
+					end
+				end
+				
+				-- druid eclipse
+				if class == "DRUID" and not LUI.Legion then
+					module.funcs.EclipseBar(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.Eclipse.Enable then
+						frame:EnableElement("EclipseBar")
+					else
+						frame:DisableElement("EclipseBar")
+						frame.EclipseBar:Hide()
+					end
+				end
 
 				-- druid mana bar
 				if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
@@ -949,6 +1025,18 @@ module.ApplySettings = function(unit)
 						frame:DisableElement("DruidMana")
 						frame.DruidMana.SetPosition()
 					end
+				end
+			end
+
+			-- target specific
+			if unit == "Target" and (class == "DRUID" or class == "ROGUE") then
+				module.funcs.CPoints(frame, frame.__unit, module.db.Target)
+				if module.db.Target.Bars.ComboPoints.Enable then
+					frame:EnableElement("CPoints")
+					frame.CPoints:Show()
+				else
+					frame:DisableElement("CPoints")
+					frame.CPoints:Hide()
 				end
 			end
 
@@ -963,6 +1051,20 @@ module.ApplySettings = function(unit)
 					frame.Portrait:Hide()
 				end
 			end
+
+			-- alt power
+			-- if unit == "Player" or unit == "Pet" then
+			-- 	if module.db.Player.Bars.AltPower.Enable then
+			-- 		module.funcs.AltPowerBar(frame, frame.__unit, module.db[unit])
+			-- 		frame:EnableElement("AltPowerBar")
+			-- 		frame.AltPowerBar.SetPosition()
+			-- 	else
+			-- 		if frame.AltPowerBar then
+			-- 			frame:DisableElement("AltPowerBar")
+			-- 			frame.AltPowerBar.SetPosition()
+			-- 		end
+			-- 	end
+			-- end
 
 			-- auras
 			if module.db[unit].Aura then
@@ -1015,24 +1117,22 @@ module.ApplySettings = function(unit)
 					frame:DisableElement("HealPrediction")
 				end
 			end
-			if module.db.Target.Enable == true and module.db.Player.Enable == true then
-				if unit == "ToT" or unit == "ToToT" or unit == "FocusTarget" or unit == "Focus" then
-					if not frame.V2Tex then
-						if unit == "ToT" then
-							module.funcs.V2Textures(frame, oUF_LUI_target)
-						elseif unit == "ToToT" then
-							module.funcs.V2Textures(frame, oUF_LUI_targettarget)
-						elseif unit == "FocusTarget" then
-							module.funcs.V2Textures(frame, oUF_LUI_focus)
-						elseif unit == "Focus" then
-							module.funcs.V2Textures(frame, oUF_LUI_player)
-						end
+
+			if unit == "ToT" or unit == "ToToT" or unit == "FocusTarget" or unit == "Focus" then
+				if not frame.V2Tex then
+					if unit == "ToT" then
+						module.funcs.V2Textures(frame, oUF_LUI_target)
+					elseif unit == "ToToT" then
+						module.funcs.V2Textures(frame, oUF_LUI_targettarget)
+					elseif unit == "FocusTarget" then
+						module.funcs.V2Textures(frame, oUF_LUI_focus)
+					elseif unit == "Focus" then
+						module.funcs.V2Textures(frame, oUF_LUI_player)
 					end
-					frame.V2Tex:Reposition()
-					if module.db.Settings.ShowV2Textures then frame.V2Tex:Show() else frame.V2Tex:Hide() end
 				end
-			end
-			if unit == "PartyTarget" then
+				frame.V2Tex:Reposition()
+				if module.db.Settings.ShowV2Textures then frame.V2Tex:Show() else frame.V2Tex:Hide() end
+			elseif unit == "PartyTarget" then
 				if not frame.V2Tex then module.funcs.V2Textures(frame, _G["oUF_LUI_partyUnitButton"..frame:GetName():match("%d")]) end
 				frame.V2Tex:Reposition()
 				if module.db.Settings.ShowV2PartyTextures then frame.V2Tex:Show() else frame.V2Tex:Hide() end
