@@ -782,13 +782,19 @@ function module:SetDualSpec()
 		
 		local function GetTalentText(group)
 			local maxPoints, finalIcon, text = 0, DEFAULT_ICON, ""
-			for tab = 1, 3 do
-				local name, icon, points = GetTalentTabInfo(tab,nil,nil,group)
-				if points > maxPoints then
-					maxPoints = points
-					finalIcon = icon
-					text = name
+			if LUI.isClassic then
+				for tab = 1, 3 do
+					local name, icon, points = GetTalentTabInfo(tab,nil,nil,group)
+					if points > maxPoints then
+						maxPoints = points
+						finalIcon = icon
+						text = name
+					end
 				end
+			elseif GetPrimaryTalentTree() ~= nill then
+				local _, name, _, icon, points = GetTalentTabInfo(GetPrimaryTalentTree())
+				text = name
+				finalIcon = icon
 			end
 			return text, finalIcon
 		end
