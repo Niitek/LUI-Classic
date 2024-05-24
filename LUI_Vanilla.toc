@@ -1,5 +1,5 @@
 ## Interface: 11501
-## Version: 3.6
+## Version: 3.7
 ## Title: LUI_Classic
 ## Author: Siku, Nitsah
 ## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista, Mule
@@ -11,4 +11,4 @@
 ## Dependancies:
 
 libs\libs.xml
-LUI.xml
+LUI_Vanilla.xml

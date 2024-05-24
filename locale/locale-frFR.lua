@@ -168,7 +168,7 @@ L["Use minimalist style tabs"] = "Utiliser le style d'onglets minimalistes"
 L["Version %s available for download."] = "Version %s disponible au téléchargement"
 L["Version: "] = "Version :"
 L["Vertical Position"] = "Position Verticale"
-L["Welcome to LUI v3 for Wrath of the Lich King Classic"] = [=[Bienvenue dans |c0090ffffLUI v3|r, une refonte complète de l'interface utilisateur de World of Warcraft pour Wrath of the Lich King Classic.]=]
+L["Welcome to LUI v3 for World of Warcraft Classic"] = [=[Bienvenue dans |c0090ffffLUI v3|r, une refonte complète de l'interface utilisateur de World of Warcraft pour World of Warcraft Classic.]=]
 L["Width"] = "Largeur"
 L["WorldDefense"] = "DéfenseGénérale"
 L["Wrath Instances"] = "Instances \"Wrath\""

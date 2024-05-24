@@ -118,7 +118,7 @@ do
 			if IsAddOnLoaded("Blizzard_ArenaUI") then
 				ArenaEnemyFrames:UnregisterAllEvents()
 			else
-				hook("arena", "Arena_LoadUI")
+				-- hook("arena", "Arena_LoadUI")
 			end
 		end,
 		castbar = function()

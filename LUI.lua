@@ -826,10 +826,10 @@ local function getOptions()
 							args = {
 								IntroImage = {
 									order = 1,
-									image = [[Interface\AddOns\LUI\media\textures\logoWotlkc.tga]],
+									image = [[Interface\AddOns\LUI\media\textures\logo.blp]],
 									imageWidth = 512,
 									width = "full",
-									imageHeight = 225,
+									imageHeight = 190,
 									imageCoords = { 0, 1, -0.08, 1 },
 									type = "description",
 									name = " ",
@@ -844,7 +844,7 @@ local function getOptions()
 									order = 3,
 									width = "full",
 									type = "description",
-									name = L["Welcome to LUI v3 for Wrath of the Lich King Classic"].."\n\n"..L["Please read the FAQ"].."\n\n\n",
+									name = L["Welcome to LUI v3 for World of Warcraft Classic"].."\n\n"..L["Please read the FAQ"].."\n\n\n",
 								},
 								VerText = {
 									order = 4,
