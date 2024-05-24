@@ -3,12 +3,10 @@ if(select(2, UnitClass('player')) ~= 'WARLOCK') then return end
 local parent, ns = ...
 local oUF = ns.oUF
 local GetPrimaryTalentTree = GetPrimaryTalentTree
-local GetPrimaryTalentTree = GetPrimaryTalentTree
 
--- local spec = GetPrimaryTalentTree()
 local spec = GetPrimaryTalentTree()
 local specPower = { "SOUL_SHARDS", "DEMONIC_FURY", "BURNING_EMBERS" }
-local specType = { SPELL_POWER_SOUL_SHARDS, SPELL_POWER_DEMONIC_FURY, SPELL_POWER_BURNING_EMBERS } 
+local specType = { Enum.PowerType.SoulShards--[[ , SPELL_POWER_DEMONIC_FURY, SPELL_POWER_BURNING_EMBERS ]] } 
 
 local Update = function(self, event, unit, powerType)
 	

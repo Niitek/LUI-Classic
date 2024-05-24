@@ -2,7 +2,7 @@
 	Project....: LUI NextGenWoWUserInterface
 	File.......: player.lua
 	Description: oUF Player Defaults
-]]
+]] 
 
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes")
@@ -173,22 +173,34 @@ module.defaults.profile.Player = {
 				a = 0.25
 			},
 		},
-		ComboPoints = {
-			Enable = true,
-			ShowAlways = false,
-			X = 0,
-			Y = 0.5,
-			Height = 5,
-			Width = 249,
-			Texture = "LUI_Ruben",
-			Padding = 1,
-			Multiplier = 0.4,
-			IndividualBGColor = true,
-			BackgroundColor = {
-				r = 0.23,
-				g = 0.23,
-				b = 0.23,
+		TotalAbsorb = {
+			Enable = false,
+			Texture = "LUI_Gradient",
+			MyColor = {
+				r = 0,
+				g = 1,
+				b = 0,
+				a = 0.5
 			},
+		},
+		AltPower = {
+			Enable = false,
+			OverPower = false,
+			Height = 10,
+			Width = 250,
+			X = 0,
+			Y = -44,
+			Color = "By Type",
+			IndividualColor = {
+				r = 1,
+				g = 1,
+				b = 1,
+			},
+			Texture = "LUI_Gradient",
+			TextureBG = "LUI_Gradient",
+			BGAlpha = 1,
+			BGMultiplier = 0.4,
+			Smooth = true,
 		},
 		DruidMana = {
 			Enable = true,
@@ -276,16 +288,6 @@ module.defaults.profile.Player = {
 			Padding = 1,
 			Lock = true,
 		},
-		-- Energy= {
-		-- 	Enable = true,
-		-- 	X = 0,
-		-- 	Y = 0.5,
-		-- 	Height = 8,
-		-- 	Width = 250,
-		-- 	Texture = "LUI_Gradient",
-		-- 	Padding = 1,
-		-- 	Lock = true,
-		-- },
 		Eclipse = {
 			Enable = true,
 			X = 0,
@@ -656,23 +658,13 @@ module.defaults.profile.Player = {
 				b = 1,
 			},
 		},
-		Eclipse = {
+		WarlockBar = {
 			Enable = true,
-			Font = "Prototype",
-			Outline = "NONE",
-			Size = 14,
-			X = 0,
+			X = 220,
 			Y = 0,
-			Point = "BOTTOM",
-			RelativePoint = "BOTTOM",
-			Format = "Standard",
-			HideIfFullMana = true,
-			Color = "Individual",
-			IndividualColor = {
-				r = 1,
-				g = 1,
-				b = 1,
-			},
+			Font = "Prototype",
+			Size = 10,
+			Outline = "NONE",
 		},
 		Combat = {
 			Enable = false,
@@ -702,6 +694,29 @@ module.defaults.profile.Player = {
 				g = 0.1,
 				b = 0.1,
 			},
+		},
+		AltPower = {
+			Enable = false,
+			X = 0,
+			Y = 0,
+			Format = "Standard",
+			Font = "neuropol",
+			Size = 10,
+			Outline = "NONE",
+			Color = "Individual",
+			IndividualColor = {
+				r = 1,
+				g = 1,
+				b = 1,
+			},
+		},
+		Eclipse = {
+			Enable = true,
+			Font = "neuropol",
+			Size = 12,
+			Outline = "NONE",
+			X = 0,
+			Y = 0,
 		},
 	},
 	Fader = {

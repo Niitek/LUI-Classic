@@ -96,7 +96,7 @@ end
 
 local Path = function(self, event, ...)
 	local UpdateMethod = self.Runes.Override or Update
-	if(event == 'RUNE_POWER_UPDATE') then
+	if(event == 'RUNE_POWER_UPDATE') or (event == 'RUNE_TYPE_UPDATE') then
 		return UpdateMethod(self, event, ...)
 	else
 		for index = 1, 6 do
@@ -131,6 +131,7 @@ local Enable = function(self, unit)
 		end
 
 		self:RegisterEvent("RUNE_POWER_UPDATE", Path, true)
+		self:RegisterEvent("RUNE_TYPE_UPDATE", Path, true)
 
 		return true
 	end
@@ -138,6 +139,7 @@ end
 
 local Disable = function(self)
 	self:UnregisterEvent("RUNE_POWER_UPDATE", Path)
+	self:UnregisterEvent("RUNE_TYPE_UPDATE", Path)
 end
 
 oUF:AddElement("Runes", Path, Enable, Disable)

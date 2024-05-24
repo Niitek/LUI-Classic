@@ -51,7 +51,7 @@ local function Update(self, event, unit)
 	if(health + allAbsorbs > maxHealth * ta.maxOverflow) then
 		allAbsorbs = maxHealth * ta.maxOverflow - health
 	end
-
+     
 	if (ta) then
 		ta:SetMinMaxValues(0, maxHealth)
 		ta:SetValue(allAbsorbs)
@@ -62,15 +62,15 @@ local function Update(self, event, unit)
 		return ta:PostUpdate(unit)
 	end
 end
-
+     
 local function Path(self, ...)
 	return (self.TotalAbsorb.Override or Update) (self, ...)
 end
-
+     
 local ForceUpdate = function(element)
 	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
-
+     
 local function Enable(self)
 	local ta = self.TotalAbsorb
 	if(ta) then
@@ -92,7 +92,7 @@ local function Enable(self)
 		return true
 	end
 end
-
+     
 local function Disable(self)
 	local ta = self.TotalAbsorb
 	if(ta) then
@@ -102,5 +102,5 @@ local function Disable(self)
 		ta:Hide()
 	end
 end
-
+     
 oUF:AddElement('TotalAbsorb', Path, Enable, Disable)

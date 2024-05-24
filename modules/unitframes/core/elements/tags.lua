@@ -52,9 +52,9 @@ local tagStrings = {
 
 	["level"] = [[function(u)
 		local l = UnitLevel(u)
-		if(UnitIsWildBattlePet(u) or UnitIsBattlePetCompanion(u)) then
-			l = UnitBattlePetLevel(u)
-		end
+		-- if(UnitIsWildBattlePet(u) or UnitIsBattlePetCompanion(u)) then
+		-- 	l = UnitBattlePetLevel(u)
+		-- end
 
 		if(l > 0) then
 			return l
@@ -212,31 +212,45 @@ local tagStrings = {
 
 	["classification"] = [[function(u)
 		local c = UnitClassification(u)
+		local l = UnitLevel(u)
 		if(c == 'rare') then
 			return 'Rare'
 		elseif(c == 'rareelite') then
 			return 'Rare Elite'
+		elseif(c == 'elite' and l == -1) then
+			return 'Boss'
 		elseif(c == 'elite') then
 			return 'Elite'
 		elseif(c == 'worldboss') then
 			return 'Boss'
 		elseif(c == 'minus') then
-			return 'Affix'
+			return ''
+		elseif(c == 'trivial') then
+			return ''
+		elseif(c == 'normal') then
+			return ''
 		end
 	end]],
 
 	["shortclassification"] = [[function(u)
 		local c = UnitClassification(u)
+		local l = UnitLevel(u)
 		if(c == 'rare') then
 			return 'R'
 		elseif(c == 'rareelite') then
 			return 'R+'
+		elseif(c == 'elite' and l == -1) then
+			return 'B'
 		elseif(c == 'elite') then
 			return '+'
 		elseif(c == 'worldboss') then
 			return 'B'
 		elseif(c == 'minus') then
 			return '-'
+		elseif(c == 'trivial') then
+			return '-'
+		elseif(c == 'normal') then
+			return ''
 		end
 	end]],
 
@@ -264,15 +278,15 @@ local tagStrings = {
 	end]],
 
 	['curmana'] = [[function(unit)
-		return UnitPower(unit, SPELL_POWER_MANA)
+		return UnitPower(unit, Enum.PowerType.Mana)
 	end]],
 
 	['maxmana'] = [[function(unit)
-		return UnitPowerMax(unit, SPELL_POWER_MANA)
+		return UnitPowerMax(unit, Enum.PowerType.Mana)
 	end]],
 
 	['soulshards'] = [[function()
-		local num = UnitPower('player', SPELL_POWER_SOUL_SHARDS)
+		local num = UnitPower('player', Enum.PowerType.SoulShards)
 		if(num > 0) then
 			return num
 		end
@@ -280,7 +294,7 @@ local tagStrings = {
 
 	['holypower'] = [[function()
 		if(GetPrimaryTalentTree() == SPEC_PALADIN_RETRIBUTION) then
-			local num = UnitPower('player', SPELL_POWER_HOLY_POWER)
+			local num = UnitPower('player', Enum.PowerType.HolyPower)
 			if(num > 0) then
 				return num
 			end
@@ -289,7 +303,7 @@ local tagStrings = {
 
 	['chi'] = [[function()
 		if(GetPrimaryTalentTree() == SPEC_MONK_WINDWALKER) then
-			local num = UnitPower('player', SPELL_POWER_CHI)
+			local num = UnitPower('player', Enum.PowerType.Chi)
 			if(num > 0) then
 				return num
 			end
@@ -298,17 +312,17 @@ local tagStrings = {
 
 	['arcanecharges'] = [[function()
 		if(GetPrimaryTalentTree() == SPEC_MAGE_ARCANE) then
-			local num = UnitPower('player', SPELL_POWER_ARCANE_CHARGES)
+			local num = UnitPower('player', Enum.PowerType.ArcaneCharges)
 			if(num > 0) then
 				return num
 			end
 		end
 	end]],
 
-	['affix'] = [[function(u)
+	['minus'] = [[function(u)
 		local c = UnitClassification(u)
 		if(c == 'minus') then
-			return 'Affix'
+			return 'Minus'
 		end
 	end]],
 }
@@ -374,8 +388,8 @@ local tagEvents = {
 	["smartlevel"]          = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED",
 	["threat"]              = "UNIT_THREAT_SITUATION_UPDATE",
 	["threatcolor"]         = "UNIT_THREAT_SITUATION_UPDATE",
-	['cpoints']             = 'UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED UNIT_POWER_UPDATE',
-	['affix']				= 'UNIT_CLASSIFICATION_CHANGED',
+	['cpoints']             = 'UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED',
+	['minus']				= 'UNIT_CLASSIFICATION_CHANGED',
 	['plus']				= 'UNIT_CLASSIFICATION_CHANGED',
 	['rare']                = 'UNIT_CLASSIFICATION_CHANGED',
 	['classification']      = 'UNIT_CLASSIFICATION_CHANGED',

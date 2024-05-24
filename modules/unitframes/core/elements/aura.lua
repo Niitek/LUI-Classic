@@ -224,7 +224,7 @@ local updateIcon = function(unit, icons, index, offset, filter, isDebuff, visibl
 			end
 
 			icon.icon:SetTexture(texture)
-			if(count > 1 and count) then
+			if(count and count > 1) then
 				icon.count:SetText(count)
 			else
 			    icon.count:SetText()

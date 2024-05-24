@@ -687,7 +687,7 @@ module.ToggleUnit = setmetatable({
 		if override == nil then override = module.db.Raid.Enable end
 
 		if override then
-			if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("Healbot") then
+			if IsAddOnLoaded("Plexus") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("Healbot") then
 				return
 			end
 			if oUF_LUI_raid then
@@ -838,7 +838,7 @@ module.ToggleUnit = setmetatable({
 }, ToggleMT)
 
 module.ApplySettings = function(unit)
-	-- if module.db[unit].Enable == false then return end
+	if module.db[unit].Enable == false then return end
 
 	for _, framename in pairs(module.framelist[unit]) do
 		local frame = _G[framename]
@@ -912,17 +912,6 @@ module.ApplySettings = function(unit)
 					end
 				end
 
-				-- totems
-				if class == "SHAMAN" and not LUI.Legion then
-					module.funcs.Totems(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.Totems.Enable then
-						frame:EnableElement("Totems")
-					else
-						frame:DisableElement("Totems")
-						frame.Totems:Hide()
-					end
-				end
-
 				-- runes
 				if class == "DEATHKNIGHT" or class == "DEATH KNIGHT" then
 					module.funcs.Runes(frame, frame.__unit, module.db.Player)
@@ -950,71 +939,43 @@ module.ApplySettings = function(unit)
 				end
 				
 				-- arcane changes
-				if class == "MAGE" and LUI.isRetail then
-					if LUI.Legion then
-						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+				if class == "MAGE" then
+					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.ArcaneCharges.Enable then
+						frame:EnableElement("ClassIcons")
 					else
-						module.funcs.ArcaneCharges(frame, frame.__unit, module.db.Player)
-						if module.db[unit].Bars.ArcaneCharges.Enable then
-							frame:EnableElement("ArcaneCharges")
-						else
-							frame:DisableElement("ArcaneCharges")
-							frame.ArcaneCharges:Hide()
-						end
+						frame:DisableElement("ClassIcons")
+						frame.ClassIcons:Hide()
 					end
 				end
 
 				-- warlock stuff
-				if class == "WARLOCK" then
-					if LUI.Legion then
-						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-					else
-						module.funcs.WarlockBar(frame, frame.__unit, module.db.Player)
-						if module.db[unit].Bars.WarlockBar.Enable then
-							frame:EnableElement("WarlockBar")
-						else
-							frame:DisableElement("WarlockBar")
-							frame.WarlockBar:Hide()
-						end
-					end
-				end
+				-- if class == "WARLOCK" then
+				-- 	module.funcs.WarlockBar(frame, frame.__unit, module.db.Player)
+				-- 	if module.db[unit].Bars.WarlockBar.Enable then
+				-- 		frame:EnableElement("WarlockBar")
+				-- 	else
+				-- 		frame:DisableElement("WarlockBar")
+				-- 		frame.WarlockBar:Hide()
+				-- 	end
+				-- end
 
 				-- chi
-				if class == "MONK" then
-					if LUI.Legion then
-						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-						else
-						module.funcs.Chi(frame, frame.__unit, module.db.Player)
-						if module.db[unit].Bars.Chi.Enable then
-							frame:EnableElement("Chi")
-						else
-							frame:DisableElement("Chi")
-							frame.Chi:Hide()
-						end
-					end
-				end
-
-				-- shadow orbs
-				if class == "PRIEST" and not LUI.Legion then
-					module.funcs.ShadowOrbs(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.ShadowOrbs.Enable then
-						frame:EnableElement("ShadowOrbs")
-					else
-						frame:DisableElement("ShadowOrbs")
-						frame.ShadowOrbs:Hide()
-					end
-				end
-				
-				-- druid eclipse
-				if class == "DRUID" and not LUI.Legion then
-					module.funcs.EclipseBar(frame, frame.__unit, module.db.Player)
-					if module.db[unit].Bars.Eclipse.Enable then
-						frame:EnableElement("EclipseBar")
-					else
-						frame:DisableElement("EclipseBar")
-						frame.EclipseBar:Hide()
-					end
-				end
+				-- if class == "MONK" then
+				-- 		module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+				-- 		module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+				-- 		else
+				-- 		module.funcs.Chi(frame, frame.__unit, module.db.Player)
+				-- 	module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+				-- 		else
+				-- 		module.funcs.Chi(frame, frame.__unit, module.db.Player)
+				-- 	if module.db[unit].Bars.Chi.Enable then
+				-- 		frame:EnableElement("ClassIcons")
+				-- 	else
+				-- 		frame:DisableElement("ClassIcons")
+				-- 		frame.ClassIcons:Hide()
+				-- 	end
+				-- end
 
 				-- druid mana bar
 				if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then
@@ -1025,18 +986,6 @@ module.ApplySettings = function(unit)
 						frame:DisableElement("DruidMana")
 						frame.DruidMana.SetPosition()
 					end
-				end
-			end
-
-			-- target specific
-			if unit == "Target" and (class == "DRUID" or class == "ROGUE") then
-				module.funcs.CPoints(frame, frame.__unit, module.db.Target)
-				if module.db.Target.Bars.ComboPoints.Enable then
-					frame:EnableElement("CPoints")
-					frame.CPoints:Show()
-				else
-					frame:DisableElement("CPoints")
-					frame.CPoints:Hide()
 				end
 			end
 
@@ -1053,18 +1002,18 @@ module.ApplySettings = function(unit)
 			end
 
 			-- alt power
-			-- if unit == "Player" or unit == "Pet" then
-			-- 	if module.db.Player.Bars.AltPower.Enable then
-			-- 		module.funcs.AltPowerBar(frame, frame.__unit, module.db[unit])
-			-- 		frame:EnableElement("AltPowerBar")
-			-- 		frame.AltPowerBar.SetPosition()
-			-- 	else
-			-- 		if frame.AltPowerBar then
-			-- 			frame:DisableElement("AltPowerBar")
-			-- 			frame.AltPowerBar.SetPosition()
-			-- 		end
-			-- 	end
-			-- end
+			if unit == "Player" or unit == "Pet" then
+				if module.db.Player.Bars.AltPower.Enable then
+					module.funcs.AltPowerBar(frame, frame.__unit, module.db[unit])
+					frame:EnableElement("AltPowerBar")
+					frame.AltPowerBar.SetPosition()
+				else
+					if frame.AltPowerBar then
+						frame:DisableElement("AltPowerBar")
+						frame.AltPowerBar.SetPosition()
+					end
+				end
+			end
 
 			-- auras
 			if module.db[unit].Aura then

@@ -7,7 +7,6 @@
 local addonname, LUI = ...
 local module = LUI:Module("Unitframes", "AceSerializer-3.0")
 local Fader = LUI:Module("Fader")
--- local Forte = LUI:Module("Forte")
 local ACR = LibStub("AceConfigRegistry-3.0")
 
 local importLayoutName
@@ -563,11 +562,11 @@ local layouts = setmetatable({
 					TextureBG = "Otravi",
 					Texture = "Otravi",
 				},
-				-- AltPower = {
-				-- 	OverPower = true,
-				-- 	TextureBG = "Otravi",
-				-- 	Texture = "Otravi",
-				-- },
+				AltPower = {
+					OverPower = true,
+					TextureBG = "Otravi",
+					Texture = "Otravi",
+				},
 				Health = {
 					TextureBG = "Empty",
 					IndividualColor = {
@@ -594,7 +593,7 @@ local layouts = setmetatable({
 					Multiplier = 0,
 				},
 				HolyPower = {
-					X = 0,
+					X = 25,
 					Y = -4,
 					Width = 200,
 					Lock = false,
@@ -885,9 +884,9 @@ local layouts = setmetatable({
 				Alpha = 0.6,
 			},
 			Bars = {
-				-- AltPower = {
-				-- 	Enable = false,
-				-- },
+				AltPower = {
+					Enable = false,
+				},
 			},
 			X = -291.1,
 			Texts = {

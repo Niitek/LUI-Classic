@@ -151,7 +151,7 @@ local function Visibility(self, event, unit)
 	local shouldEnable
 
 	if(UnitHasVehicleUI('player')) then
-	 	if(UnitPowerType('vehicle') == SPELL_POWER_ENERGY) then
+	 	if(UnitPowerType('vehicle') == Enum.PowerType.Energy) then
 			shouldEnable = true
 		end
 	elseif(ClassPowerID) then
@@ -220,28 +220,27 @@ do
 	end
 
 	if(PlayerClass == 'MONK') then
-		ClassPowerID = Enum.PowerType.Chi
+		ClassPowerID = Enum.PowerType.Chi or 12
 		ClassPowerType = "CHI"
 		RequireSpec = SPEC_MONK_WINDWALKER
 	elseif(PlayerClass == 'PALADIN') then
-		ClassPowerID = Enum.PowerType.HolyPower
+		ClassPowerID = Enum.PowerType.HolyPower or 9
 		ClassPowerType = "HOLY_POWER"
-		RequireSpec = SPEC_PALADIN_RETRIBUTION
 	elseif(PlayerClass == 'WARLOCK') then
-		ClassPowerID = Enum.PowerType.SoulShards
+		ClassPowerID = Enum.PowerType.SoulShards or 7
 		ClassPowerType = "SOUL_SHARDS"
 	elseif(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
-		ClassPowerID = Enum.PowerType.ComboPoints
+		ClassPowerID = Enum.PowerType.ComboPoints or 4
 		ClassPowerType = 'COMBO_POINTS'
 
 		if(PlayerClass == 'DRUID') then
 			RequireForm = CAT_FORM
 			RequireSpell = 5221 -- Shred
 		end
-	-- elseif(PlayerClass == 'MAGE') then
-	-- 	ClassPowerID = Enum.PowerType.ArcaneCharges
-	-- 	ClassPowerType = 'ARCANE_CHARGES'
-	-- 	RequireSpec = SPEC_MAGE_ARCANE
+	elseif(PlayerClass == 'MAGE') then
+		ClassPowerID = Enum.PowerType.ArcaneCharges or 16
+		ClassPowerType = 'ARCANE_CHARGES'
+		RequireSpec = SPEC_MAGE_ARCANE
 	end
 end
 

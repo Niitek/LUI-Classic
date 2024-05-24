@@ -49,7 +49,7 @@ local oUF = ns.oUF
 
 local ECLIPSE_BAR_SOLAR_BUFF = GetSpellInfo(171744)
 local ECLIPSE_BAR_LUNAR_BUFF = GetSpellInfo(171743)
-local Enum.PowerType.Balance = Enum.PowerType.Balance
+-- local Enum.PowerType.Balance = Enum.PowerType.Balance
 local MOONKIN_FORM = MOONKIN_FORM
 
 local UNIT_POWER_UPDATE = function(self, event, unit, powerType)
@@ -93,10 +93,10 @@ local UPDATE_VISIBILITY = function(self, event)
 	local showBar
 	local form = GetShapeshiftFormID()
 	if(not form) then
-		local ptt = GetPrimaryTalentTree()
-		if(ptt and ptt == 1) then -- player has balance spec
+		-- local ptt = GetPrimaryTalentTree()
+		-- if(ptt and ptt == 1) then -- player has balance spec
 			showBar = true
-		end
+		-- end
 	elseif(form == MOONKIN_FORM) then
 		showBar = true
 	end
@@ -128,9 +128,9 @@ end
 local UNIT_AURA = function(self, event, unit)
 	if(self.unit ~= unit) then return end
 	local eb = self.EclipseBar
-
-	local hasSolarEclipse = not not UnitBuff(unit, ECLIPSE_BAR_SOLAR_BUFF)
-	local hasLunarEclipse = not not UnitBuff(unit, ECLIPSE_BAR_LUNAR_BUFF)
+	-- /dump UnitAura("player", 1)
+	-- local hasSolarEclipse = not not UnitAura(unit, GetPlayerAuraBySpellID(48517))
+	-- local hasLunarEclipse = not not UnitAura(unit, ECLIPSE_BAR_LUNAR_BUFF)
 
 	if(eb.hasSolarEclipse == hasSolarEclipse and eb.hasLunarEclipse == hasLunarEclipse) then return end
 

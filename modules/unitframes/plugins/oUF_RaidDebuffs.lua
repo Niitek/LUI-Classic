@@ -15,13 +15,14 @@ addon.DebuffData = debuff_data
 addon.ShowDispelableDebuff = true
 addon.FilterDispellableDebuff = true
 addon.MatchBySpellName = true
-addon.SHAMAN_CAN_DECURSE = true
 
 local function add(spell, priority)
 	if addon.MatchBySpellName and type(spell) == 'number' then
 		spell = GetSpellInfo(spell)
 	end
-	debuff_data[spell] = priority
+	if spell then
+		debuff_data[spell] = priority
+	end
 end
 
 function addon:RegisterDebuffs(t)
@@ -58,9 +59,9 @@ do
 			['Disease'] = true,
 		},
 		['SHAMAN'] = {
-			['Poison'] = true,
+			['Magic'] = true,
 			['Disease'] = true,
-			['Curse'] = SHAMAN_CAN_DECURSE,
+			['Curse'] = true,
 		},
 		['PALADIN'] = {
 			['Poison'] = true,
@@ -71,8 +72,14 @@ do
 			['Curse'] = true,
 		},
 		['DRUID'] = {
+			['Magic'] = true,
 			['Curse'] = true,
 			['Poison'] = true,
+		},
+		['MONK'] = {
+			['Poison'] = true,
+			['Magic'] = true,
+			['Disease'] = true,
 		},
 	}
 
@@ -105,6 +112,9 @@ end
 local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTime)
 	local f = self.RaidDebuffs
 	if name then
+		-- if (not duration or type(duration) ~= "number") or (not expires or type(expires) ~= "number") then
+		-- 	LUI:Printf("Name: %s, iconID: %s, type: %s, duration: %s, expires: %s, caster: %s", name, icon, count, dispelType, duration, expires, caster)
+		-- end
 		f.icon:SetTexture(icon)
 		f.icon:Show()
 
@@ -152,7 +162,7 @@ local function Update(self, event, unit)
 	local _name, _icon, _count, _dtype, _duration, _endTime
 	local _priority, priority = 0, nil
 	for i = 1, 40 do
-		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId = UnitAura(unit, i, 'HARMFUL')
+		local name, icon, count, debuffType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, 'HARMFUL')
 		if (not name) then break end
 
 		if addon.ShowDispelableDebuff and debuffType then

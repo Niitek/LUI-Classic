@@ -319,13 +319,6 @@ module.defaults.profile.Party = {
 			Y = 10,
 			Point = "TOPLEFT",
 		},
-		ReadyCheck = {
-			Enable = true,
-			Size = 20,
-			X = 0,
-			Y = 0,
-			Point = "CENTER",
-		},
 	},
 	Texts = {
 		Name = {

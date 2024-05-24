@@ -101,26 +101,27 @@ local updateSafeZone = function(self)
 	end
 end
 
-local UNIT_SPELLCAST_START = function(self, event, unit, spell)
+local UNIT_SPELLCAST_START = function(self, event, unit)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
 	local name, text, texture, startTime, endTime, _, castID, interrupt, spellID = UnitCastingInfo(unit)
 	if(not name) then
-		castbar:Hide()
-		return
+		return castbar:Hide()
 	end
 
 	endTime = endTime / 1e3
 	startTime = startTime / 1e3
 	local max = endTime - startTime
 
-	castbar.castID = castID
+	castbar.castid = castID
 	castbar.duration = GetTime() - startTime
 	castbar.max = max
 	castbar.delay = 0
 	castbar.casting = true
 	castbar.interrupt = interrupt
+	castbar.holdTime = 0
+	castbar.spellID = spellID
 
 	castbar:SetMinMaxValues(0, max)
 	castbar:SetValue(0)
@@ -146,16 +147,16 @@ local UNIT_SPELLCAST_START = function(self, event, unit, spell)
 	end
 
 	if(castbar.PostCastStart) then
-		castbar:PostCastStart(unit, name, castID)
+		castbar:PostCastStart(unit, name)
 	end
 	castbar:Show()
 end
 
-local UNIT_SPELLCAST_FAILED = function(self, event, unit, spellname, _, castID)
+local UNIT_SPELLCAST_FAILED = function(self, event, unit, castid)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
-	if(castbar.castID ~= castID) then
+	if(castbar.castid ~= castid) then
 		return
 	end
 
@@ -165,15 +166,15 @@ local UNIT_SPELLCAST_FAILED = function(self, event, unit, spellname, _, castID)
 	castbar:Hide()
 
 	if(castbar.PostCastFailed) then
-		return castbar:PostCastFailed(unit, spellname, castID)
+		return castbar:PostCastFailed(unit, spellname, castid)
 	end
 end
 
-local UNIT_SPELLCAST_INTERRUPTED = function(self, event, unit, spellname, _, castID)
+local UNIT_SPELLCAST_INTERRUPTED = function(self, event, unit, castid)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
-	if(castbar.castID ~= castID) then
+	if(castbar.castid ~= castid) then
 		return
 	end
 	castbar.casting = nil
@@ -183,7 +184,7 @@ local UNIT_SPELLCAST_INTERRUPTED = function(self, event, unit, spellname, _, cas
 	castbar:Hide()
 
 	if(castbar.PostCastInterrupted) then
-		return castbar:PostCastInterrupted(unit, spellname, castID)
+		return castbar:PostCastInterrupted(unit, spellname, castid)
 	end
 end
 
@@ -215,11 +216,11 @@ local UNIT_SPELLCAST_NOT_INTERRUPTIBLE = function(self, event, unit)
 	end
 end
 
-local UNIT_SPELLCAST_DELAYED = function(self, event, unit, spellname, _, castID)
+local UNIT_SPELLCAST_DELAYED = function(self, event, unit)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
-	local name, _, text, texture, startTime, endTime = UnitCastingInfo(unit)
+	local name, _, _, startTime = UnitCastingInfo(unit)
 	if(not startTime or not castbar:IsShown()) then return end
 
 	local duration = GetTime() - (startTime / 1000)
@@ -231,15 +232,15 @@ local UNIT_SPELLCAST_DELAYED = function(self, event, unit, spellname, _, castID)
 	castbar:SetValue(duration)
 
 	if(castbar.PostCastDelayed) then
-		return castbar:PostCastDelayed(unit, name, castID)
+		return castbar:PostCastDelayed(unit, name, castid)
 	end
 end
 
-local UNIT_SPELLCAST_STOP = function(self, event, unit, spellname, _, castID)
+local UNIT_SPELLCAST_STOP = function(self, event, unit, castid)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
-	if(castbar.castID ~= castID) then
+	if(castbar.castid ~= castid) then
 		return
 	end
 
@@ -249,15 +250,15 @@ local UNIT_SPELLCAST_STOP = function(self, event, unit, spellname, _, castID)
 	castbar:Hide()
 
 	if(castbar.PostCastStop) then
-		return castbar:PostCastStop(unit, spellname, castID)
+		return castbar:PostCastStop(unit, spellname, castid)
 	end
 end
 
-local UNIT_SPELLCAST_CHANNEL_START = function(self, event, unit, spellname)
+local UNIT_SPELLCAST_CHANNEL_START = function(self, event, unit, _, spellID)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
-	local name, text, texture, startTime, endTime, isTrade, interrupt, spellID = UnitChannelInfo(unit)
+	local name, _, texture, startTime, endTime, _, interrupt  = UnitChannelInfo(unit)
 	if(not name) then
 		return
 	end
@@ -272,12 +273,14 @@ local UNIT_SPELLCAST_CHANNEL_START = function(self, event, unit, spellname)
 	castbar.delay = 0
 	castbar.channeling = true
 	castbar.interrupt = interrupt
+	castbar.holdTime = 0
+	castbar.spellID = spellID
 
 	-- We have to do this, as it's possible for spell casts to never have _STOP
 	-- executed or be fully completed by the OnUpdate handler before CHANNEL_START
 	-- is called.
 	castbar.casting = nil
-	castbar.castID = nil
+	castbar.castid = nil
 
 	castbar:SetMinMaxValues(0, max)
 	castbar:SetValue(duration)
@@ -306,11 +309,11 @@ local UNIT_SPELLCAST_CHANNEL_START = function(self, event, unit, spellname)
 	castbar:Show()
 end
 
-local UNIT_SPELLCAST_CHANNEL_UPDATE = function(self, event, unit, spellname)
+local UNIT_SPELLCAST_CHANNEL_UPDATE = function(self, event, unit)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
-	local name, _, text, texture, startTime, endTime, oldStart = UnitChannelInfo(unit)
+	local name, text, texture, startTime, endTime, oldStart = UnitChannelInfo(unit)
 	if(not name or not castbar:IsShown()) then
 		return
 	end
@@ -329,7 +332,7 @@ local UNIT_SPELLCAST_CHANNEL_UPDATE = function(self, event, unit, spellname)
 	end
 end
 
-local UNIT_SPELLCAST_CHANNEL_STOP = function(self, event, unit, spellname)
+local UNIT_SPELLCAST_CHANNEL_STOP = function(self, event, unit)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local castbar = self.Castbar
@@ -414,7 +417,7 @@ local onUpdate = function(self, elapsed)
 	else
 		self.unitName = nil
 		self.casting = nil
-		self.castID = nil
+		self.castid = nil
 		self.channeling = nil
 
 		self:SetValue(1)

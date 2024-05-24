@@ -8,12 +8,7 @@ local enableTargetUpdate = Private.enableTargetUpdate
 function oUF:HandleUnit(object, unit)
 	local unit = object.unit or unit
 
-	if(unit == 'player') then
-		object:RegisterEvent('UNIT_AURA', object.UpdateAllElements)
-		object:RegisterEvent('UNIT_POWER_UPDATE', object.UpdateAllElements)
-		object:RegisterEvent('PLAYER_TALENT_UPDATE', object.UpdateAllElements)
-		object:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', object.UpdateAllElements)
-	elseif(unit == 'target') then
+	if(unit == 'target') then
 		object:RegisterEvent('PLAYER_TARGET_CHANGED', object.UpdateAllElements)
 	elseif(unit == 'mouseover') then
 		object:RegisterEvent('UPDATE_MOUSEOVER_UNIT', object.UpdateAllElements)

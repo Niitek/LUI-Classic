@@ -84,10 +84,10 @@ local function Update(self, event, unit)
 	local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
 
 	local overHealAbsorb = false
-	-- if(health < myCurrentHealAbsorb) then
-	-- 	overHealAbsorb = true
-	-- 	myCurrentHealAbsorb = health
-	-- end
+	if(health < myCurrentHealAbsorb) then
+		overHealAbsorb = true
+		myCurrentHealAbsorb = health
+	end
 
 	if(health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * hp.maxOverflow) then
 		allIncomingHeal = maxHealth * hp.maxOverflow - health + myCurrentHealAbsorb
