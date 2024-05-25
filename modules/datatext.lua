@@ -1736,7 +1736,7 @@ function module:SetGF()
 
 		broadcasts = setmetatable({}, {
 			__index = function(t, k)
-				local bc = CreateFrame("Button", nil, stat)
+				local bc = CreateFrame("Button", nil, stat, "BackdropTemplate")
 				t[k] = bc
 				bc:SetHeight(btnHeight)
 				bc:SetNormalFontObject(GameFontNormal)
@@ -1754,7 +1754,7 @@ function module:SetGF()
 
 		toasts = setmetatable({}, {
 			__index = function(t, k)
-				local btn = CreateFrame("Button", nil, stat)
+				local btn = CreateFrame("Button", nil, stat, "BackdropTemplate")
 				t[k] = btn
 				btn.index = k
 				btn:SetNormalFontObject(GameFontNormal)
