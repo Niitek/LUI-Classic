@@ -1236,24 +1236,24 @@ local DruidManaOverride = function(self, event, unit)
 end
 
 local PostEclipseUpdate = function(self, unit)
-		if self.ShowText then
-			if GetEclipseDirection() == "sun" then
-				self.LunarText:SetText(50+math.floor((UnitPower("player", Enum.PowerType.Balance)+1)/2))
-				self.LunarText:SetTextColor(unpack(module.colors.eclipsebar.Lunar))
-				self.SolarText:SetText("Starfire!")
-				self.SolarText:SetTextColor(unpack(module.colors.eclipsebar.Solar))
-			elseif GetEclipseDirection() == "moon" then
-				self.LunarText:SetText("Wrath!")
-				self.LunarText:SetTextColor(unpack(module.colors.eclipsebar.Lunar))
-				self.SolarText:SetText(50-math.floor((UnitPower("player", Enum.PowerType.Balance)+1)/2))
-				self.SolarText:SetTextColor(unpack(module.colors.eclipsebar.Solar))
-			elseif self:IsShown() then
-				self.LunarText:SetText(50+math.floor((UnitPower("player", Enum.PowerType.Balance)+1)/2))
-				self.LunarText:SetTextColor(unpack(module.colors.eclipsebar.Lunar))
-				self.SolarText:SetText(50-math.floor((UnitPower("player", Enum.PowerType.Balance)+1)/2))
-				self.SolarText:SetTextColor(unpack(module.colors.eclipsebar.Solar))
-			end
+	if self.ShowText then
+		if GetEclipseDirection() == "sun" then
+			self.LunarText:SetText(100+math.floor((UnitPower("player", Enum.PowerType.Balance))))
+			self.LunarText:SetTextColor(unpack(module.colors.eclipsebar.Lunar))
+			self.SolarText:SetText("Starfire!")
+			self.SolarText:SetTextColor(unpack(module.colors.eclipsebar.Solar))
+		elseif GetEclipseDirection() == "moon" then
+			self.LunarText:SetText("Wrath!")
+			self.LunarText:SetTextColor(unpack(module.colors.eclipsebar.Lunar))
+			self.SolarText:SetText(100-math.floor((UnitPower("player", Enum.PowerType.Balance))))
+			self.SolarText:SetTextColor(unpack(module.colors.eclipsebar.Solar))
+		elseif self:IsShown() then
+			self.LunarText:SetText(100+math.floor((UnitPower("player", Enum.PowerType.Balance))))
+			self.LunarText:SetTextColor(unpack(module.colors.eclipsebar.Lunar))
+			self.SolarText:SetText(100-math.floor((UnitPower("player", Enum.PowerType.Balance))))
+			self.SolarText:SetTextColor(unpack(module.colors.eclipsebar.Solar))
 		end
+	end
 end
 
 local EclipseBarBuff = function(self, unit)
