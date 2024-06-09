@@ -1045,47 +1045,48 @@ local RunesOverride = function(self, event, unit)
 		self:RegisterEvent("RUNE_TYPE_UPDATE")
 		self:RegisterEvent("RUNE_POWER_UPDATE")
 end
--- local WarlockBarOverride = function(self, event, unit, powerType)
--- 	local specNum = GetPrimaryTalentTree() 
--- 	local spec = self.WarlockBar.SpecInfo[specNum]
--- 	if not spec then return end
--- 	if self.unit ~= unit or (powerType and powerType ~= spec.powerType) then return end
--- 	local num = UnitPower(unit, spec.unitPower)
--- 	local text = ""
--- 	--Affliction
--- 	if specNum == 1 then
--- 		for i = 1, self.WarlockBar.Amount do
--- 			self.WarlockBar[i]:SetValue(spec.maxValue)
--- 			if i <= num then self.WarlockBar[i]:SetAlpha(1)
--- 			else self.WarlockBar[i]:SetAlpha(.4)
--- 			end
--- 		end
--- 	--Demonology
--- 	elseif specNum == 2 then
--- 		text = num
--- 		self.WarlockBar[1]:SetAlpha(1)
--- 		self.WarlockBar[1]:SetValue(num)	
--- 	--Destruction
--- 	elseif specNum == 3 then
--- 		local power = UnitPower(unit, spec.unitPower, true)
--- 		for i = 1, self.WarlockBar.Amount do
--- 			local numOver = power - (i-1)*10
--- 			if i <= num then
--- 				self.WarlockBar[i]:SetAlpha(1)
--- 				self.WarlockBar[i]:SetValue(spec.maxValue)
--- 			elseif numOver > 0 then
--- 				self.WarlockBar[i]:SetAlpha(.6)
--- 				self.WarlockBar[i]:SetValue(numOver)
--- 			else
--- 				self.WarlockBar[i]:SetAlpha(.6)
--- 				self.WarlockBar[i]:SetValue(0)
--- 			end
--- 		end
--- 	end
--- 	if self.WarlockBar.ShowText then
--- 		self.WarlockBar.Text:SetText(text)
--- 	end
--- end
+local WarlockBarOverride = function(self, event, unit, powerType)
+	-- local specNum = GetPrimaryTalentTree() 
+	-- local spec = self.WarlockBar.SpecInfo[specNum]
+	-- if not spec then return end
+	if UnitLevel("player") < 10 then return end
+	-- if self.unit ~= unit or (powerType and powerType ~= spec.powerType) then return end
+	local num = UnitPower(unit, Enum.PowerType.SoulShards)
+	local text = ""
+	-- --Affliction
+	-- if specNum == 1 then
+	-- 	for i = 1, self.WarlockBar.Amount do
+	-- 		self.WarlockBar[i]:SetValue(spec.maxValue)
+	-- 		if i <= num then self.WarlockBar[i]:SetAlpha(1)
+	-- 		else self.WarlockBar[i]:SetAlpha(.4)
+	-- 		end
+	-- 	end
+	-- --Demonology
+	-- elseif specNum == 2 then
+	-- 	text = num
+	-- 	self.WarlockBar[1]:SetAlpha(1)
+	-- 	self.WarlockBar[1]:SetValue(num)	
+	-- --Destruction
+	-- elseif specNum == 3 then
+		local power = UnitPower(unit, Enum.PowerType.SoulShards, true)
+		for i = 1, 3 do
+			local numOver = power - (i-1)*10
+			if i <= num then
+				self.WarlockBar[i]:SetAlpha(1)
+				self.WarlockBar[i]:SetValue(3)
+			elseif numOver > 0 then
+				self.WarlockBar[i]:SetAlpha(.6)
+				self.WarlockBar[i]:SetValue(numOver)
+			else
+				self.WarlockBar[i]:SetAlpha(.6)
+				self.WarlockBar[i]:SetValue(3)
+			end
+		end
+	-- end
+	if self.WarlockBar.ShowText then
+		self.WarlockBar.Text:SetText(text)
+	end
+end
 
 local ArcaneChargesOverride = function(self, event, unit, powerType)
 	if self.unit ~= unit then return end
@@ -2596,7 +2597,7 @@ module.funcs = {
 			self.WarlockBar.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
 			self.WarlockBar.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
 
-			-- self.WarlockBar.Override = WarlockBarOverride
+			self.WarlockBar.Override = WarlockBarOverride
 		end
 
 		local x = oufdb.Bars.WarlockBar.Lock and 0 or oufdb.Bars.WarlockBar.X
@@ -2623,13 +2624,14 @@ module.funcs = {
 					self.WarlockBar[i]:SetPoint("LEFT", self.WarlockBar[i-1], "RIGHT", oufdb.Bars.WarlockBar.Padding, 0)
 				end
 			end
-			-- WarlockBarOverride(self, "event", unit, 7)
+			WarlockBarOverride(self, "event", unit, 7)
 		end
 		checkBar()
 		module:RegisterEvent("GLYPH_ADDED", checkBar)
 		module:RegisterEvent("GLYPH_REMOVED", checkBar)
-		module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", checkBar)
+		module:RegisterEvent("UNIT_POWER_FREQUENT", checkBar)
 		module:RegisterEvent("PLAYER_ENTERING_WORLD", checkBar)
+		module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", checkBar)
 	end,
 	ArcaneCharges = function(self, unit, oufdb)
 		if LUI.Legion then return end
