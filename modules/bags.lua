@@ -1515,7 +1515,7 @@ function module:PrepareSort(frame)
 end
 
 function module:Sort(elapsed)
-	if not module.sortTime or module.sortTime > 0.5 then
+	if not module.sortTime or module.sortTime > 0.2 then
 		module.sortTime = 0;
 	else
 		module.sortTime = module.sortTime + elapsed;
@@ -1561,7 +1561,7 @@ function module:Sort(elapsed)
 				table.remove(module.sortItems, key);
 				key = key - 1;
 
-				if changes > 0.5 then
+				if changes > 0.2 then
 					module.sorting = false;
 
 					return;
