@@ -349,6 +349,7 @@ function module:CreatePlayerBarOptions(barType, order)
 		Enable = self:NewToggle("Enable", "Whether you want to show the "..barName.." or not", 1, applySettings, "full"),
 		empty1 = self:NewDesc(" ", 2),
 		Lock = self:NewToggle("Lock", "Whether you want to lock the "..barName.." to your PlayerFrame or not.", 3, applySettings, "full", disabledFunc),
+		ShowIcons = (barType == "Totems") and self:NewToggle("Show Totem Icons", "Whether you want to show the "..barName.." icons or not\nRequires a reload!", 3, applySettings, nil ,disabledFunc),
 		X = self:NewInputNumber("X Value", "Choose the X Value for your "..barName..".", 4, applySettings, nil, isLocked),
 		Y = self:NewInputNumber("Y Value", "Choose the Y Value for your "..barName..".", 5, applySettings, nil, isLocked),
 		Width = self:NewInputNumber("Width", "Choose the Width for your "..barName..".", 6, applySettings, nil, disabledFunc),

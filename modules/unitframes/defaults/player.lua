@@ -226,6 +226,7 @@ module.defaults.profile.Player = {
 			Padding = 1,
 			Multiplier = 0.35,
 			IconScale = 1.5,
+			ShowIcons = true,
 			Lock = true,
 		},
 		Runes = {

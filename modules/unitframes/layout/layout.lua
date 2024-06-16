@@ -1035,16 +1035,7 @@ local ShadowOrbsOverride = function(self, event, unit)
 		end
 	end
 end
-local RunesOverride = function(self, event, unit)
-	if self.unit ~= unit then return end
-		self:SetScript("OnEvent", function()
-			for i = 1, 6 do
-				self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[GetRuneType(i)]))
-			end
-		end)
-		self:RegisterEvent("RUNE_TYPE_UPDATE")
-		self:RegisterEvent("RUNE_POWER_UPDATE")
-end
+
 local WarlockBarOverride = function(self, event, unit, powerType)
 	-- local specNum = GetPrimaryTalentTree() 
 	-- local spec = self.WarlockBar.SpecInfo[specNum]
@@ -1161,8 +1152,10 @@ local TotemsOverride = function(self, event, slot)
 			totem:SetScript("OnUpdate",nil)
 			totem:SetValue(0)
 		end
-		if totemIcon then
+		if totemIcon and totem.ShowIcons then
 			totem.icon:SetTexture(totemIcon)
+		else
+			totem.icon:SetTexture()
 		end
 	else
 		-- No totem = no time 
@@ -2276,6 +2269,7 @@ module.funcs = {
 				bar:SetPoint("LEFT", self.Totems[totemPoints[i]], "RIGHT", oufdb.Bars.Totems.Padding, 0)
 			end
 
+			bar.ShowIcons = oufdb.Bars.Totems.ShowIcons
 			bar.bg.multiplier = oufdb.Bars.Totems.Multiplier
 		end
 	end,
@@ -2302,7 +2296,6 @@ module.funcs = {
 			self.Runes.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
 			self.Runes.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
 
-			-- self.Runes.Override = RunesOverride
 		end
 
 		local x = oufdb.Bars.Runes.Lock and 0 or oufdb.Bars.Runes.X
@@ -2327,16 +2320,16 @@ module.funcs = {
 				-- self.Runes[i]:SetPoint("LEFT", self.Runes[i-1], "RIGHT", oufdb.Bars.Runes.Padding, 0)
 			end
 		end
-		RunesOverride(self, unit, event)
-		-- 	self:SetScript("OnEvent", function()
-		-- 		for i = 1, 6 do
-		-- 			self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[GetRuneType(i)]))
-		-- 		end
-		-- 	end)
-		-- end
-		-- checkRunes()
-		-- module:RegisterEvent("RUNE_TYPE_UPDATE", checkRunes)
-		-- module:RegisterEvent("RUNE_POWER_UPDATE", checkRunes)
+		local function checkRunes()
+			self:SetScript("OnEvent", function()
+				for i = 1, 6 do
+					self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[GetRuneType(i)]))
+				end
+			end)
+		end
+		checkRunes()
+		module:RegisterEvent("RUNE_TYPE_UPDATE", checkRunes)
+		module:RegisterEvent("RUNE_POWER_UPDATE", checkRunes)
 	end,
 	ClassIcons = function(self, unit, oufdb)
 		local _, class = UnitClass("player")

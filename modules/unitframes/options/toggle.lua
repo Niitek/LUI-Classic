@@ -687,9 +687,6 @@ module.ToggleUnit = setmetatable({
 		if override == nil then override = module.db.Raid.Enable end
 
 		if override then
-			if IsAddOnLoaded("Plexus") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("Healbot") then
-				return
-			end
 			if oUF_LUI_raid then
 				for i = 1, 5 do
 					if i ~= 1 then
