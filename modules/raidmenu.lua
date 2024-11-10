@@ -257,7 +257,7 @@ local SizeRaidMenu = function(compact)
 		FormatMarker(StarRaidIcon,      60,  -170, 0,   0,   0,   1, 0,    0.25, 0,    0.25)
 		FormatMarker(ClearRaidIcon,     40,  -210, 0,   0,   0,   0, 0,    1,    0,    1)
 		-- Markers
---[[ 	FormatMarker(BlueWorldMarker,   110, -175, 0,   0.4, 0.9, 1)
+		FormatMarker(BlueWorldMarker,   110, -175, 0,   0.4, 0.9, 1)
 		FormatMarker(GreenWorldMarker,  145, -175, 0.1, 1,   0,   2)
 		FormatMarker(PurpleWorldMarker, 180, -175, 0.6, 0.2, 0.9, 3)
 		FormatMarker(RedWorldMarker,    110, -210, 1,   0.1, 0.1, 4)
@@ -265,7 +265,7 @@ local SizeRaidMenu = function(compact)
 		FormatMarker(OrangeWorldMarker, 180, -210, 1,   0.5, 0.2, 6)
 		FormatMarker(SilverWorldMarker, 110, -245, 0.7, 0.7, 0.7, 7)
 		FormatMarker(WhiteWorldMarker,  145, -245, 1,   1,   1,   8)
-		FormatMarker(ClearWorldMarkers, 180, -245, 0,   0,   0,   9) ]]
+		FormatMarker(ClearWorldMarkers, 180, -245, 0,   0,   0,   9)
 		-- Buttons
 		FormatMarker(ConvertRaid,       105, -50)
 		FormatMarker(LootMethod,        105, -90)
@@ -361,7 +361,7 @@ function module:SetRaidMenu()
 	local SilverWorldMarker = CreateFrame("Button", "SilverWorldMarker", RaidMenu, "SecureMarkerTemplate")
 	local ClearWorldMarkers = CreateFrame("Button", "ClearWorldMarkers", RaidMenu, "SecureMarkerTemplate")
 
-	local ConvertRaid = CreateFrame("Button", "ConvertRaid", RaidMenu, "OptionsButtonTemplate")
+	local ConvertRaid = CreateFrame("Button", "ConvertRaid", RaidMenu)
 	if GetNumGroupMembers() > 0 then
 		ConvertRaid:SetText("Convert to Party")
 	else
@@ -410,7 +410,7 @@ function module:SetRaidMenu()
 		end
 	end)
 
-	local LootMethod = CreateFrame("Button", "LootMethod", RaidMenu, "OptionsButtonTemplate")
+	local LootMethod = CreateFrame("Button", "LootMethod", RaidMenu --[[, "OptionsButtonTemplate" ]])
 	LootMethod:SetText("Loot Method")
 	LootMethod:SetScript("OnEnter", function(self)
 		if db.ShowToolTips then
@@ -446,7 +446,7 @@ function module:SetRaidMenu()
 		EasyMenu(LootMethodList, LootMenuFrame, "cursor", 0, 0, "MENU", 1)
 	end)
 
-	local LootThreshold = CreateFrame("Button", "LootThreshold", RaidMenu, "OptionsButtonTemplate")
+	local LootThreshold = CreateFrame("Button", "LootThreshold", RaidMenu --[[, "OptionsButtonTemplate" ]])
 	LootThreshold:SetText("Loot Threshold")
 	LootThreshold:SetScript("OnEnter", function(self)
 		if db.ShowToolTips then
@@ -479,7 +479,7 @@ function module:SetRaidMenu()
 		EasyMenu(LootThresholdList, LootMenuFrame, "cursor", 0, 0, "MENU", 1)
 	end)
 
-	local RoleChecker = CreateFrame("BUTTON", "RoleChecker", RaidMenu, "OptionsButtonTemplate")
+	local RoleChecker = CreateFrame("BUTTON", "RoleChecker", RaidMenu --[[, "OptionsButtonTemplate" ]])
 	RoleChecker:SetText("Role Check")
 	RoleChecker:SetScript("OnEnter", function(self)
 		if db.ShowToolTips then
@@ -501,7 +501,7 @@ function module:SetRaidMenu()
 		end
 	end)
 
-	local ReadyChecker = CreateFrame("Button", "ReadyChecker", RaidMenu, "OptionsButtonTemplate")
+	local ReadyChecker = CreateFrame("Button", "ReadyChecker", RaidMenu --[[, "OptionsButtonTemplate" ]])
 	ReadyChecker:SetText("Ready Check")
 	ReadyChecker:SetScript("OnEnter", function(self)
 		if db.ShowToolTips then

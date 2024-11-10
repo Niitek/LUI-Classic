@@ -1,4 +1,4 @@
-## Interface: 40400
+## Interface: 40401
 ## Version: 3.7
 ## Title: LUI_Classic
 ## Author: Siku, Nitsah

@@ -23,9 +23,9 @@ f:RegisterForDrag("LeftButton")
 f:SetScript("OnDragStart", f.StartMoving)
 f:SetScript("OnDragStop", f.StopMovingOrSizing)
 f:SetScript("OnUpdate", function(self)
-	if GetMouseFocus() == nil then return end
+	if GetMouseFoci() == nil then return end
 	
-	local name = GetMouseFocus():GetName()
+	local name = GetMouseFoci():GetName()
 	
 	if name == nil then
 		LUI_Frame_MouseOverActive:SetText("Not Defined")

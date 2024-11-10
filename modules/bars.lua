@@ -1274,7 +1274,7 @@ local function StyleFlyout(self)
 	end
 
 	local arrowDistance
-	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self then
+	if (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFoci() == self then
 		arrowDistance = 5
 	else
 		arrowDistance = 2

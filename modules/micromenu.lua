@@ -115,7 +115,7 @@ function module:SetMicroMenu()
 			Panels.db.profile.MicroMenu.IsShown = false
 
 			LUI.MicroMenu.Anchor:SetBackdrop({
-				bgFile = fdir..(GetMouseFocus() == LUI.MicroMenu.Clicker and "micro_anchor2" or "micro_anchor"),
+				bgFile = fdir..(GetMouseFoci() == LUI.MicroMenu.Clicker and "micro_anchor2" or "micro_anchor"),
 				edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 				tile = false, tileSize = 0, edgeSize = 1,
 				insets = {left = 0, right = 0, top = 0, bottom = 0}
@@ -127,7 +127,7 @@ function module:SetMicroMenu()
 			Panels.db.profile.MicroMenu.IsShown = true
 
 			LUI.MicroMenu.Anchor:SetBackdrop({
-				bgFile = fdir..(GetMouseFocus() == LUI.MicroMenu.Clicker and "micro_anchor4" or "micro_anchor3"),
+				bgFile = fdir..(GetMouseFoci() == LUI.MicroMenu.Clicker and "micro_anchor4" or "micro_anchor3"),
 				edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 				tile = false, tileSize = 0, edgeSize = 1,
 				insets = {left = 0, right = 0, top = 0, bottom = 0}

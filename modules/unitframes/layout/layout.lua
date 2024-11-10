@@ -2474,11 +2474,12 @@ module.funcs = {
 	
 		local function checkPowers(event, level)
 			local pLevel = (event == "UNIT_LEVEL") and tonumber(level) or UnitLevel("player")
-			if pLevel >= 85 then 
-				self.HolyPower.Powers = 5
-				module:UnregisterEvent("UNIT_LEVEL")
-			else self.HolyPower.Powers = 3
-			end
+			-- if pLevel >= 85 then j
+				-- self.HolyPower.Powers = 5
+				-- module:UnregisterEvent("UNIT_LEVEL")
+			-- else 
+				self.HolyPower.Powers = 3
+			-- end
 
 			for i = 1, 5 do
 				self.HolyPower[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.HolyPower.Texture))

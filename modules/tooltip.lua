@@ -143,7 +143,7 @@ function module:SetTooltip()
 
 	local GetTooltipUnit = function(self)
 		if not self.GetUnit then return end
-		--local GMF = GetMouseFocus()
+		--local GMF = GetMouseFoci()
 		--local unit = (select(2, self:GetUnit())) or (GMF and GMF:GetAttribute("unit"))
 		local unit = select(2, self:GetUnit())
 		return unit
@@ -248,7 +248,7 @@ function module:SetTooltip()
 
 		-- fix target of target returning nil
 		--if (not unit) then
-		--	local GMF = GetMouseFocus()
+		--	local GMF = GetMouseFoci()
 		--	unit = GMF and GMF:GetAttribute("unit")
 		--end
 

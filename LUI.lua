@@ -26,7 +26,7 @@ local widgetLists = AceGUIWidgetLSMlists
 local ACD = LibStub("AceConfigDialog-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 
-LUI.Versions = {lui = 3403}
+LUI.Versions = {lui = 3700}
 
 LUI.dummy = function() return end
 
@@ -508,9 +508,9 @@ end
 ------------------------------------------------------
 
 function LUI:Configure()
-	if InterfaceOptionsFrame:IsShown() then
-		InterfaceOptionsFrame:Hide()
-	end
+	-- if InterfaceOptionsFrame:IsShown() then
+	-- 	InterfaceOptionsFrame:Hide()
+	-- end
 
 	local configureBG = LUI:CreateMeAFrame("FRAME","configureBG",UIParent,2400,2000,1,"HIGH",5,"CENTER",UIParent,"CENTER",0,0,1)
 	configureBG:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", edgeSize=1, insets={left=0, right=0, top=0, bottom=0}})
