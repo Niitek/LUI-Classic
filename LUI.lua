@@ -493,10 +493,10 @@ function LUI:Update()
 			LUI:InstallOmen()
 		end
 
-		if IsAddOnLoaded("VuhDo") then
-			LUI.db.global.luiconfig[ProfileName].Versions.vudho = nil
-			LUI:InstallVudho()
-		end
+		-- if IsAddOnLoaded("VuhDo") then
+		-- 	LUI.db.global.luiconfig[ProfileName].Versions.vudho = nil
+		-- 	LUI:InstallVudho()
+		-- end
 
 		LUI.db.global.luiconfig[ProfileName].Versions.lui = LUI.Versions.lui
 		ReloadUI()

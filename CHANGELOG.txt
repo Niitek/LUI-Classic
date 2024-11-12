@@ -1,3 +1,7 @@
+2024.11.12  Core: Disabled install check for Vuhdo
+
+2024.11.09  Core: update for changes involved with retail patch 11.05 
+
 2024.6.8    Unitframes: Update to warlockbar so it updates properly.
 
             Bags: Increased sort speed.
