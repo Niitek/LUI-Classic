@@ -241,7 +241,8 @@ module.colors = setmetatable({
 local function UpdateColors()
 	if oUF_LUI_player.Runes then
 		for i = 1, 6 do
-			oUF_LUI_player.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[1]))
+			local id = oUF_LUI_player.Runes[i].id
+			oUF_LUI_player.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[GetRuneType(id)]))
 		end
 	end
 	local classIcons = oUF_LUI_player.ClassIcons
@@ -311,7 +312,7 @@ function module:CreateColorOptions(order)
 			RAGE = self:NewColorNoAlpha("Rage", "Rage ressource", 3, false, "full"),
 			FOCUS = self:NewColorNoAlpha("Focus", "Focus ressource", 4, false, "full"),
 			ENERGY = self:NewColorNoAlpha("Energy", "Energy ressource", 5, false, "full"),
-			-- RUNES = self:NewColorNoAlpha("Runes", "Runes ressource", 6, false, "full"),
+			-- RUNES = self:NewColorNoAlpha("Runes", "Runes ressource", 6, false, "full"), -- Runes aren't consolidate in classic
 			RUNIC_POWER = self:NewColorNoAlpha("Runic Power", "Runic Power ressource", 7, false, "full"),
 			AMMOSLOT = self:NewColorNoAlpha("Ammoslot", "Ammoslot ressource", 8, false, "full"),
 			FUEL = self:NewColorNoAlpha("Fuel", "Fuel ressource", 9, false, "full"),
