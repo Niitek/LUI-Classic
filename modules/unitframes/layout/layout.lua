@@ -2282,7 +2282,6 @@ module.funcs = {
 				self.Runes[i] = CreateFrame("StatusBar", nil, self.Runes, "BackdropTemplate")
 				self.Runes[i]:SetBackdrop(backdrop)
 				self.Runes[i]:SetBackdropColor(0.08, 0.08, 0.08)
-				-- self.Runes[i]:RegisterEvent("RUNE_TYPE_UPDATE")
 			end
 
 			self.Runes.FrameBackdrop = CreateFrame("Frame", nil, self.Runes, "BackdropTemplate")
@@ -2321,15 +2320,14 @@ module.funcs = {
 			end
 		end
 		local function checkRunes()
+			if self.unit ~= unit then return end
 			self:SetScript("OnEvent", function()
 				for i = 1, 6 do
 					self.Runes[i]:SetStatusBarColor(unpack(module.colors.runes[GetRuneType(i)]))
 				end
 			end)
 		end
-		checkRunes()
 		module:RegisterEvent("RUNE_TYPE_UPDATE", checkRunes)
-		module:RegisterEvent("RUNE_POWER_UPDATE", checkRunes)
 	end,
 	ClassIcons = function(self, unit, oufdb)
 		local _, class = UnitClass("player")

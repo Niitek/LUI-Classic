@@ -1,3 +1,5 @@
+2024.11.16  Unitframes: Hotfix for Deathknight not updating player frame.
+
 2024.11.12  Core: Disabled install check for Vuhdo
 
 2024.11.09  Core: update for changes involved with retail patch 11.05 
