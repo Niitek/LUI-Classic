@@ -233,6 +233,13 @@ function module:SetMinimap()
 	if LUI.isClassic then
 		-- Hide Close Button
 		MinimapToggleButton:Hide()
+		MinimapBackdrop:Hide()
+		-- Move LFG Eye icon
+		-- LFGMinimapFrame:Hide()
+		-- LFGMinimapFrame:ClearAllPoints()
+		-- LFGMinimapFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
+		-- -- LFGMinimapFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
+		-- LFGMinimapFrameBorder:Hide()
 	end
 	-- Hide Border
 	MinimapBorder:Hide()
@@ -244,7 +251,7 @@ function module:SetMinimap()
 
 	-- MiniMapInstanceDifficulty
 	if not LUI.isClassic then 
-			--MiniMap TrackingIcon
+		--MiniMap TrackingIcon
 		MiniMapTracking:Hide()
 		if db.Minimap.General.TrackingIcon then
 			MiniMapTracking:ClearAllPoints()
@@ -255,12 +262,12 @@ function module:SetMinimap()
 		MiniMapInstanceDifficulty.NewShow = MiniMapInstanceDifficulty.Show
 		MiniMapInstanceDifficulty.Show = MiniMapInstanceDifficulty.Hide
 		MiniMapInstanceDifficulty:Hide()
-			-- shitty 3.3 flag to move
+		-- shitty 3.3 flag to move
 		MiniMapInstanceDifficulty:ClearAllPoints()
 		MiniMapInstanceDifficulty:SetParent(Minimap)
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 
-			-- Move LFG Eye icon
+		-- Move LFG Eye icon
 		MiniMapLFGFrame:ClearAllPoints()
 		MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
 		-- MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
@@ -268,7 +275,7 @@ function module:SetMinimap()
 	end
 
 	MinimapNorthTag:SetTexture(nil) -- Hide North texture at top
-	LUI:Kill(MiniMapWorldMapButton) -- Hide world map button
+	-- LUI:Kill(MiniMapWorldMapButton) -- Hide world map button
 	LUI:Kill(MinimapZoneTextButton) -- Hide Zone Frame
 	LUI:Kill(TimeManagerClockButton) -- Hide Clock
 	LUI:Kill(GameTimeFrame)	-- Hide Calendar Button
