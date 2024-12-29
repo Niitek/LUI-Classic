@@ -25,7 +25,8 @@ f:SetScript("OnDragStop", f.StopMovingOrSizing)
 f:SetScript("OnUpdate", function(self)
 	if GetMouseFoci() == nil then return end
 	
-	local name = GetMouseFoci():GetName()
+	local name = GetMouseFoci()[1]:GetName()
+	-- local name = nil
 	
 	if name == nil then
 		LUI_Frame_MouseOverActive:SetText("Not Defined")
