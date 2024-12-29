@@ -1,3 +1,9 @@
+2024.12.29  Core: updated frame identifier.
+
+            Auras: Fixed backdrop error.
+
+            Minimap: Fixed tracking icon error.
+
 2024.11.16  Unitframes: Hotfix for Deathknight not updating player frame.
 
 2024.11.12  Core: Disabled install check for Vuhdo
