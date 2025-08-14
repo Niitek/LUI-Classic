@@ -2,6 +2,8 @@
 
             UnitFrames: Fixed Typo.
 
+            Unitframes: Fixed shadow orbs bar.
+
 2024.12.29  Core: updated frame identifier.
 
             Auras: Fixed backdrop error.
