@@ -58,7 +58,7 @@ local barKeys = {
 	-- AltPower = "AltPowerBar",
 	Chi = "Chi",
 	DruidMana = "DruidMana",
-	ShadowOrbs = "ShadowOrbs",
+	ShadowOrbsBar = "ShadowOrbsBar",
 	WarlockBar = "WarlockBar",
 	ArcaneCharges = "ArcaneCharges",
 	Energy = "ClassIcons",
@@ -71,7 +71,7 @@ local barNames = {
 	-- AltPower = "Alternate Power",
 	Chi = "Chi",
 	DruidMana = "Druid Mana",
-	ShadowOrbs = "Shadow Orbs",
+	ShadowOrbsBar = "Shadow Orbs Bar",
 	ArcaneCharges = "Arcane Charges",
 	WarlockBar = "Warlock Bar",
 	Energy = "Energy",
@@ -316,7 +316,7 @@ end
 --barName: Shown Name in the options
 --barType: Key in the options/db
 
---barType: Totems, Runes, HolyPower, Eclipse, ShadowOrbs, ArcaneCharges, WarlockBars
+--barType: Totems, Runes, HolyPower, Eclipse, ShadowOrbsBar, ArcaneCharges, WarlockBars
 function module:CreatePlayerBarOptions(barType, order)
 	local barName = barNames[barType]
 	local barKey = barKeys[barType]
@@ -332,14 +332,14 @@ function module:CreatePlayerBarOptions(barType, order)
 				oUF_LUI_player:EnableElement(barKey)
 				if barType == "Runes" then
 					Blizzard:Hide("runebar")
-				elseif barType == "Totems" or barType == "WarlockBar" or barType == "ShadowOrbs" then
+				elseif barType == "Totems" or barType == "WarlockBar" or barType == "ShadowOrbsBar" then
 					oUF_LUI_player[barKey]:Show()
 				end
 			else
 				oUF_LUI_player:DisableElement(barKey)
 				if barType == "Runes" then
 					Blizzard:Show("runebar")
-				elseif barType == "Totems" or barType == "WarlockBar" or barType == "ShadowOrbs" then
+				elseif barType == "Totems" or barType == "WarlockBar" or barType == "ShadowOrbsBar" then
 					oUF_LUI_player[barKey]:Hide()
 				end
 			end
@@ -1148,7 +1148,7 @@ function module:CreateUnitOptions(unit, order)
 			Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
 			HolyPower = (class == "PALADIN" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("HolyPower", 15) or nil,
 			WarlockBar = (class == "WARLOCK" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("WarlockBar", 16) or nil,
-			ShadowOrbs = (class == "PRIEST" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("ShadowOrbs", 16) or nil,
+			ShadowOrbsBar = (class == "PRIEST" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("ShadowOrbsBar", 16) or nil,
 			ArcaneCharges = (class == "MAGE" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("ArcaneCharges", 16) or nil,
 			Chi = ((class == "MONK") and unit == "Player") and self:CreatePlayerBarOptions("Chi", 16) or nil,
 			Energy = ((class == "MONK" or class == "DRUID" or class == "ROGUE") and unit == "Player") and self:CreatePlayerBarOptions("Energy", 16) or nil,

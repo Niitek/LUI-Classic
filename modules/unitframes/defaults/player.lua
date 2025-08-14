@@ -289,7 +289,7 @@ module.defaults.profile.Player = {
 			Padding = 1,
 			Lock = true,
 		},
-		ShadowOrbs = {
+		ShadowOrbsBar = {
 			Enable = true,
 			X = 0,
 			Y = 0.5,

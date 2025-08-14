@@ -2201,26 +2201,29 @@ module.funcs = {
 	ClassIcons = function(self, unit, oufdb)
 		local _, class = UnitClass("player")
 		local BASE_COUNT = {
+			DRUID = 5,
 			MAGE = 4,
 			MONK = 4,
 			PALADIN = 3,
+			PRIEST = 3,
 			ROGUE = 5,
 			WARLOCK = 1,
-			DRUID = 5,
 		}
 		-- The maximum of a ressource a given class can have
 		local MAX_COUNT = {
+			DRUID = 5,
 			MAGE = 4,
 			MONK = 5,
 			PALADIN = 3,
+			PRIEST = 5,
 			ROGUE = 5,
 			WARLOCK = 10,
-			DRUID = 5,
 		}
 		local r, g, b
 		if class == "MONK" then r, g, b = unpack(module.colors.chibar[1])
 		elseif class == "PALADIN" then r, g, b = unpack(module.colors.holypowerbar[1])
 		elseif class == "MAGE" then r, g, b = unpack(module.colors.arcanechargesbar[1])
+		elseif class == "PRIEST" then r, g, b = unpack(module.colors.ShadowOrbsBar[1])
 		elseif class == "WARLOCK" then r, g, b = unpack(module.colors.warlockbar.Shard1)
 		elseif class == "ROGUE" then r, g, b = unpack(module.colors.combopoints[1])
 		elseif class == "DRUID" then r, g, b = unpack(module.colors.combopoints[1])
@@ -2229,6 +2232,7 @@ module.funcs = {
 		if class == "MONK" then oufdb.Bars.ClassIcons = oufdb.Bars.Chi
 		elseif class == "PALADIN" then oufdb.Bars.ClassIcons = oufdb.Bars.HolyPower
 		elseif class == "MAGE" then oufdb.Bars.ClassIcons = oufdb.Bars.ArcaneCharges
+		elseif class == "PRIEST" then oufdb.Bars.ClassIcons = oufdb.Bars.ShadowOrbsBar
 		elseif class == "WARLOCK" then oufdb.Bars.ClassIcons = oufdb.Bars.WarlockBar
 		elseif class == "ROGUE" then oufdb.Bars.ClassIcons = oufdb.Bars.Energy
 		elseif class == "DRUID" then oufdb.Bars.ClassIcons = oufdb.Bars.Energy
@@ -3285,7 +3289,7 @@ local SetStyle = function(self, unit, isSingle)
 		elseif class == "WARLOCK" then 
 			if oufdb.Bars.WarlockBar.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "PRIEST" then
-			if oufdb.Bars.ShadowOrbs.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
+			if oufdb.Bars.ShadowOrbsBar.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 		end
 	end

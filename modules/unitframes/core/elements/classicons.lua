@@ -253,6 +253,10 @@ do
 		ClassPowerID = Enum.PowerType.ArcaneCharges or 16
 		ClassPowerType = 'ARCANE_CHARGES'
 		RequireSpec = SPEC_MAGE_ARCANE
+	elseif(PlayerClass == 'PRIEST') then
+		ClassPowerID = Enum.PowerType.ShadowOrbs or 28
+		ClassPowerType = 'SHADOW_ORBS'
+		RequireSpell = 95740
 	end
 end
 

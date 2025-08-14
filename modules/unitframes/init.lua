@@ -155,7 +155,7 @@ function module:OnInitialize()
 			end
 		end
 
-		local Bars = {"Health", "Power", "Full", "DruidMana", "Totems", "Runes", "HolyPower", "WarlockBar", "Eclipse", "AltPower", "HealPrediction", "ComboPoints", "ShadowOrbs", "ArcaneCharges"}
+		local Bars = {"Health", "Power", "Full", "DruidMana", "Totems", "Runes", "HolyPower", "WarlockBar", "Eclipse", "AltPower", "HealPrediction", "ComboPoints", "ShadowOrbsBar", "ArcaneCharges"}
 
 		local checkauras = {
 			Enable = "_enable",
