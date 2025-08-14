@@ -291,7 +291,7 @@ module.defaults.profile.Arena = {
 			Outline = "NONE",
 			Point = "BOTTOMLEFT",
 			RelativePoint = "BOTTOMRIGHT",
-			Format = "Absolut Short",
+			Format = "Absolute Short",
 			ShowDead = false,
 		},
 		Power = {
@@ -311,7 +311,7 @@ module.defaults.profile.Arena = {
 			Outline = "NONE",
 			Point = "BOTTOMLEFT",
 			RelativePoint = "BOTTOMRIGHT",
-			Format = "Absolut Short",
+			Format = "Absolute Short",
 		},
 		HealthPercent = {
 			Enable = true,

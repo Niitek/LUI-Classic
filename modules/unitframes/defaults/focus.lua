@@ -352,7 +352,7 @@ module.defaults.profile.Focus = {
 			Outline = "NONE",
 			Point = "BOTTOMLEFT",
 			RelativePoint = "BOTTOMRIGHT",
-			Format = "Absolut Short",
+			Format = "Absolute Short",
 			ShowDead = false,
 		},
 		Power = {
@@ -372,7 +372,7 @@ module.defaults.profile.Focus = {
 			Outline = "NONE",
 			Point = "BOTTOMLEFT",
 			RelativePoint = "BOTTOMRIGHT",
-			Format = "Absolut Short",
+			Format = "Absolute Short",
 		},
 		HealthPercent = {
 			Enable = true,
