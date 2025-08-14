@@ -58,7 +58,7 @@ function module:SetColors()
 	LUI.MicroMenu.Buttons.Store:SetBackdropColor(r, g, b, 1)
 	LUI.MicroMenu.Buttons.Pets:SetBackdropColor(r, g, b, 1)
 	LUI.MicroMenu.Buttons.LFG:SetBackdropColor(r, g, b, 1)
-	LUI.MicroMenu.Buttons.Journal:SetBackdropColor(r, g, b, 1)
+	-- LUI.MicroMenu.Buttons.Journal:SetBackdropColor(r, g, b, 1)
 	LUI.MicroMenu.Buttons.PVP:SetBackdropColor(r, g, b, 1)
 	LUI.MicroMenu.Buttons.Guild:SetBackdropColor(r, g, b, 1)
 	LUI.MicroMenu.Buttons.Quests:SetBackdropColor(r, g, b, 1)
@@ -590,7 +590,11 @@ function module:SetMicroMenu()
 	end)
 
 	LUI.MicroMenu.Buttons.LFG.Clicker:SetScript("OnClick", function(self, button)
-		PVEFrame_ToggleFrame()
+		if LUI.isClassic then
+			ToggleFrame(LFGParentFrame)
+		else
+			PVEFrame_ToggleFrame()
+		end
 	end)
 
 	LUI.MicroMenu.Buttons.LFG.Clicker:SetScript("OnUpdate", function(self, button)

@@ -371,7 +371,11 @@ function module:SetClock()
 		local invitesPending = false
 
 		-- Event functions
-		stat.Events = {"CALENDAR_UPDATE_PENDING_INVITES", "PLAYER_ENTERING_WORLD"}
+		if not LUI.isClassic then
+			stat.Events = {"CALENDAR_UPDATE_PENDING_INVITES", "PLAYER_ENTERING_WORLD"}
+		else 
+			stat.Events = {"PLAYER_ENTERING_WORLD"}
+		end
 		-- , "UPDATE_24HOUR", "UPDATE_LOCALTIME"
 
 		if not LUI.isClassic then
@@ -778,8 +782,10 @@ function module:SetDualSpec()
 		local tonumber, tostring = tonumber, tostring
 
 		-- Local variables
-        local numSpecs = GetNumTalentGroups() -- num of specs available
-		
+        local numSpecs -- num of specs available
+		if LUI.isClassic then numSpecs = GetNumTalentGroups() -- num of specs available
+		else numSpecs = GetNumSpecGroups() end
+
 		local function GetTalentText(group)
 			local maxPoints, finalIcon, text = 0, DEFAULT_ICON, ""
 			if LUI.isClassic then
@@ -795,6 +801,8 @@ function module:SetDualSpec()
 				local _, name, _, icon, points = GetTalentTabInfo(GetPrimaryTalentTree())
 				text = name
 				finalIcon = icon
+			else
+				text = "No Spec"
 			end
 			return text, finalIcon
 		end
@@ -818,9 +826,8 @@ function module:SetDualSpec()
 		stat.PLAYER_TALENT_UPDATE = function(self)
 			local activeSpec = GetActiveTalentGroup()
 			local specName, specIcon = GetTalentText(activeSpec)
-
-			if specIcon == nil then -- specIcon returns nil when reseting talents
-				local className, class = UnitClass("player")
+			if specIcon == nil or specName == "" then -- specIcon returns nil when reseting talents
+				local className, class, _ = UnitClass("player")
 				specIcon = iconTexture[class]
 				specName = className
 			end

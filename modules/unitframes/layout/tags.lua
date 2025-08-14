@@ -246,13 +246,13 @@ oUF.Tags.Methods["druidmana2"] = function(unit)
 		r, g, b = module.db.Player.Texts.DruidMana.IndividualColor.r*255,module.db.Player.Texts.DruidMana.IndividualColor.g*255,module.db.Player.Texts.DruidMana.IndividualColor.b*255
 	end
 
-	if module.db.Player.Texts.DruidMana.Format == "Absolut" then
+	if module.db.Player.Texts.DruidMana.Format == "Absolute" then
 		text = format("%d/%d", min, max)
-	elseif module.db.Player.Texts.DruidMana.Format == "Absolut & Percent" then
+	elseif module.db.Player.Texts.DruidMana.Format == "Absolute & Percent" then
 		text = format("%d/%d | %.1f", min, max, perc)
-	elseif module.db.Player.Texts.DruidMana.Format == "Absolut Short" then
+	elseif module.db.Player.Texts.DruidMana.Format == "Absolute Short" then
 		text = format("%s/%s", ShortValue(min), ShortValue(max))
-	elseif module.db.Player.Texts.DruidMana.Format == "Absolut Short & Percent" then
+	elseif module.db.Player.Texts.DruidMana.Format == "Absolute Short & Percent" then
 		text = format("%s/%s | %.1f", ShortValue(min), ShortValue(max), perc)
 	elseif module.db.Player.Texts.DruidMana.Format == "Standard" then
 		text = min

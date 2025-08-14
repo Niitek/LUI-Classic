@@ -922,16 +922,12 @@ module.ApplySettings = function(unit)
 
 				-- holy power
 				if class == "PALADIN" then
-					if LUI.Legion then
-						module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.HolyPower.Enable and not LUI.isClassic then
+						frame:EnableElement("HolyPower")
 					else
-						module.funcs.HolyPower(frame, frame.__unit, module.db.Player)
-						if module.db[unit].Bars.HolyPower.Enable then
-							frame:EnableElement("HolyPower")
-						else
-							frame:DisableElement("HolyPower")
-							frame.HolyPower:Hide()
-						end
+						frame:DisableElement("HolyPower")
+						frame.ClassIcons:Hide()
 					end
 				end
 				
@@ -947,32 +943,26 @@ module.ApplySettings = function(unit)
 				end
 
 				-- warlock stuff
-				-- if class == "WARLOCK" then
-				-- 	module.funcs.WarlockBar(frame, frame.__unit, module.db.Player)
-				-- 	if module.db[unit].Bars.WarlockBar.Enable then
-				-- 		frame:EnableElement("WarlockBar")
-				-- 	else
-				-- 		frame:DisableElement("WarlockBar")
-				-- 		frame.WarlockBar:Hide()
-				-- 	end
-				-- end
+				if class == "WARLOCK" then
+					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.WarlockBar.Enable then
+						frame:EnableElement("WarlockBar")
+					else
+						frame:DisableElement("WarlockBar")
+						frame.ClassIcons:Hide()
+					end
+				end
 
 				-- chi
-				-- if class == "MONK" then
-				-- 		module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-				-- 		module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-				-- 		else
-				-- 		module.funcs.Chi(frame, frame.__unit, module.db.Player)
-				-- 	module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
-				-- 		else
-				-- 		module.funcs.Chi(frame, frame.__unit, module.db.Player)
-				-- 	if module.db[unit].Bars.Chi.Enable then
-				-- 		frame:EnableElement("ClassIcons")
-				-- 	else
-				-- 		frame:DisableElement("ClassIcons")
-				-- 		frame.ClassIcons:Hide()
-				-- 	end
-				-- end
+				if class == "MONK" then
+					module.funcs.ClassIcons(frame, frame.__unit, module.db.Player)
+					if module.db[unit].Bars.Chi.Enable then
+						frame:EnableElement("ClassIcons")
+					else
+						frame:DisableElement("ClassIcons")
+						frame.ClassIcons:Hide()
+					end
+				end
 
 				-- druid mana bar
 				if class == "DRUID" or class == "PRIEST" or class == "SHAMAN" then

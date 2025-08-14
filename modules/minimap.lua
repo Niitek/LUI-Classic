@@ -238,7 +238,7 @@ function module:SetMinimap()
 		-- LFGMinimapFrame:Hide()
 		-- LFGMinimapFrame:ClearAllPoints()
 		-- LFGMinimapFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
-		-- -- LFGMinimapFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
+		-- LFGMinimapFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
 		-- LFGMinimapFrameBorder:Hide()
 	end
 	-- Hide Border
@@ -275,11 +275,12 @@ function module:SetMinimap()
 	end
 
 	MinimapNorthTag:SetTexture(nil) -- Hide North texture at top
-	-- LUI:Kill(MiniMapWorldMapButton) -- Hide world map button
 	LUI:Kill(MinimapZoneTextButton) -- Hide Zone Frame
 	LUI:Kill(TimeManagerClockButton) -- Hide Clock
 	LUI:Kill(GameTimeFrame)	-- Hide Calendar Button
-
+	if LUI.isMists then
+		LUI:Kill(MiniMapWorldMapButton) -- Hide world map button
+	end
 	-- Move Mail icon
 	MiniMapMailFrame:ClearAllPoints()
 	MiniMapMailFrame:SetPoint(db.Minimap.Icon.Mail, Minimap, LUI:Scale(3), LUI:Scale(6))

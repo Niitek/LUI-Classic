@@ -105,9 +105,9 @@
 	<Script file="modules\unitframes\plugins\vehicle.lua"/>
 
 	<!-- Class powers -->
-	<Script file="modules\unitframes\plugins\arcanecharges.lua"/>
-	<Script file="modules\unitframes\plugins\chi.lua"/>
-	<Script file="modules\unitframes\plugins\holypower.lua"/>
+	<!-- <Script file="modules\unitframes\plugins\arcanecharges.lua"/> -->
+	<!-- <Script file="modules\unitframes\plugins\chi.lua"/> -->
+	<!-- <Script file="modules\unitframes\plugins\holypower.lua"/> -->
 	<!-- <Script file="modules\unitframes\plugins\shadoworbs.lua"/> -->
 	<!-- <Script file="modules\unitframes\plugins\warlockbar.lua"/> -->
 	<!-- <Script file="modules\unitframes\plugins\totalabsorb.lua"/> -->

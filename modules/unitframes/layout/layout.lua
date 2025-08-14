@@ -491,13 +491,13 @@ local OverrideHealth = function(self, event, unit, powerType)
 			if min >= 1 then
 				if health.value.ShowAlways == false and min == max then
 					health.value:SetText()
-				elseif health.value.Format == "Absolut" then
+				elseif health.value.Format == "Absolute" then
 					health.value:SetFormattedText("%s/%s", min, max)
-				elseif health.value.Format == "Absolut & Percent" then
+				elseif health.value.Format == "Absolute & Percent" then
 					health.value:SetFormattedText("%s/%s | %.1f%%", min, max, healthPercent)
-				elseif health.value.Format == "Absolut Short" then
+				elseif health.value.Format == "Absolute Short" then
 					health.value:SetFormattedText("%s/%s", ShortValue(min), ShortValue(max))
-				elseif health.value.Format == "Absolut Short & Percent" then
+				elseif health.value.Format == "Absolute Short & Percent" then
 					health.value:SetFormattedText("%s/%s | %.1f%%", ShortValue(min),ShortValue(max), healthPercent)
 				elseif health.value.Format == "Standard" then
 					health.value:SetFormattedText("%s", min)
@@ -663,13 +663,13 @@ local OverridePower = function(self, event, unit)
 		if power.value.Enable == true then
 			if (power.value.ShowFull == false and min == max) or (power.value.ShowEmpty == false and min == 0) then
 				power.value:SetText()
-			elseif power.value.Format == "Absolut" then
+			elseif power.value.Format == "Absolute" then
 				power.value:SetFormattedText("%d/%d", min, max)
-			elseif power.value.Format == "Absolut & Percent" then
+			elseif power.value.Format == "Absolute & Percent" then
 				power.value:SetFormattedText("%d/%d | %.1f%%", min, max, powerPercent)
-			elseif power.value.Format == "Absolut Short" then
+			elseif power.value.Format == "Absolute Short" then
 				power.value:SetFormattedText("%s/%s", ShortValue(min), ShortValue(max))
-			elseif power.value.Format == "Absolut Short & Percent" then
+			elseif power.value.Format == "Absolute Short & Percent" then
 				power.value:SetFormattedText("%s/%s | %.1f%%", ShortValue(min), ShortValue(max), powerPercent)
 			elseif power.value.Format == "Standard" then
 				power.value:SetFormattedText("%d", min)
@@ -989,123 +989,6 @@ local ThreatOverride = function(self, event, unit)
 	end
 end
 
-local CPointsOverride = function(self, event, unit)
-	if unit ~= "target" then return end
-	self:SetScript("OnEvent", function()
-		local cp
-		if UnitExists("vehicle") then
-			cp = GetComboPoints("vehicle", "target")
-		else
-			cp = GetComboPoints("player", "target")
-		end
-
-		local cpoints = self.CPoints
-		if cp == 0 and not cpoints.showAlways then
-			return cpoints:Hide()
-		elseif not cpoints:IsShown() then
-			cpoints:Show()
-		end
-
-		for i = 1, MAX_COMBO_POINTS do
-			if i <= cp then
-				cpoints[i]:SetValue(1)
-			else
-				cpoints[i]:SetValue(0)
-			end
-		end
-	end)
-	self:RegisterEvent("UNIT_POWER_UPDATE")
-	self:RegisterEvent("UNIT_POWER_FREQUENT")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-end
-
-local ShadowOrbsOverride = function(self, event, unit)
-	if self.unit ~= unit then return end
-	-- local num = UnitPower(unit, SPELL_POWER_SHADOW_ORBS)
-	shadowOrbInfo = C_UnitAuras.GetPlayerAuraBySpellID(77487)
-	if type(shadowOrbInfo) ~= "table" then return nil end
-	local _, _, num = AuraUtil.FindAuraByName(shadowOrbInfo.name, unit)
-	if num == nil then num = 0 end
-	for i = 1, self.ShadowOrbs.Orbs do
-		if i <= num then
-			self.ShadowOrbs[i]:SetAlpha(1)
-		else
-			self.ShadowOrbs[i]:SetAlpha(.4)
-		end
-	end
-end
-
-local WarlockBarOverride = function(self, event, unit, powerType)
-	-- local specNum = GetPrimaryTalentTree() 
-	-- local spec = self.WarlockBar.SpecInfo[specNum]
-	-- if not spec then return end
-	if UnitLevel("player") < 10 then return end
-	-- if self.unit ~= unit or (powerType and powerType ~= spec.powerType) then return end
-	local num = UnitPower(unit, Enum.PowerType.SoulShards)
-	local text = ""
-	-- --Affliction
-	-- if specNum == 1 then
-	-- 	for i = 1, self.WarlockBar.Amount do
-	-- 		self.WarlockBar[i]:SetValue(spec.maxValue)
-	-- 		if i <= num then self.WarlockBar[i]:SetAlpha(1)
-	-- 		else self.WarlockBar[i]:SetAlpha(.4)
-	-- 		end
-	-- 	end
-	-- --Demonology
-	-- elseif specNum == 2 then
-	-- 	text = num
-	-- 	self.WarlockBar[1]:SetAlpha(1)
-	-- 	self.WarlockBar[1]:SetValue(num)	
-	-- --Destruction
-	-- elseif specNum == 3 then
-		local power = UnitPower(unit, Enum.PowerType.SoulShards, true)
-		for i = 1, 3 do
-			local numOver = power - (i-1)*10
-			if i <= num then
-				self.WarlockBar[i]:SetAlpha(1)
-				self.WarlockBar[i]:SetValue(3)
-			elseif numOver > 0 then
-				self.WarlockBar[i]:SetAlpha(.6)
-				self.WarlockBar[i]:SetValue(numOver)
-			else
-				self.WarlockBar[i]:SetAlpha(.6)
-				self.WarlockBar[i]:SetValue(3)
-			end
-		end
-	-- end
-	if self.WarlockBar.ShowText then
-		self.WarlockBar.Text:SetText(text)
-	end
-end
-
-local ArcaneChargesOverride = function(self, event, unit, powerType)
-	if self.unit ~= unit then return end
-
-	local _, _, _, num = UnitDebuff(unit, GetSpellInfo(36032)) -- Arcane Charges
-	if not num then num = 0 end
-	for i = 1, self.ArcaneCharges.Charges do
-		if i <= num then
-			self.ArcaneCharges[i]:SetAlpha(1)
-		else
-			self.ArcaneCharges[i]:SetAlpha(.4)
-		end
-	end
-end
-
-local HolyPowerOverride = function(self, event, unit, powerType)
-	if self.unit ~= unit or (powerType and powerType ~= "HOLY_POWER") then return end
-
-	 local num = UnitPower(unit, Enum.PowerType.HolyPower)
-	 for i = 1, self.HolyPower.Powers do
-		 if i <= num then
-			 self.HolyPower[i]:SetAlpha(1)
-		 else
-			 self.HolyPower[i]:SetAlpha(.4)
-		 end
-	 end
-end
-
 local TotemsUpdate = function(self, elapsed)
 	self.total = elapsed + (self.total or 0)
 	if self.total >= 0.02 then
@@ -1174,19 +1057,6 @@ local TotemsOverride = function(self, event, slot)
 		end
 	end
 
-end
-
-local ChiOverride = function(self, event, unit, powerType)
-	if self.unit ~= unit or (powerType and powerType ~= "CHI") then return end
-
-	 local num = UnitPower(unit, Enum.PowerType.Chi)
-	 for i = 1, self.Chi.Force do
-		 if i <= num then
-			 self.Chi[i]:SetAlpha(1)
-		 else
-			 self.Chi[i]:SetAlpha(.4)
-		 end
-	 end
 end
 
 local DruidManaOverride = function(self, event, unit)
@@ -1293,7 +1163,7 @@ local PostUpdateAltPower = function(altpowerbar, min, cur, max)
 		if altpowerbar.Text.Enable then
 			if altpowerbar.Text.ShowAlways == false and (cur == max or cur == min) then
 				altpowerbar.Text:SetText()
-			elseif altpowerbar.Text.Format == "Absolut" then
+			elseif altpowerbar.Text.Format == "Absolute" then
 				altpowerbar.Text:SetFormattedText("%d/%d", cur, max)
 			elseif altpowerbar.Text.Format == "Percent" then
 				altpowerbar.Text:SetFormattedText("%.1f%%", 100 * (cur / max))
@@ -2332,19 +2202,19 @@ module.funcs = {
 		local _, class = UnitClass("player")
 		local BASE_COUNT = {
 			MAGE = 4,
-			MONK = 5,
+			MONK = 4,
 			PALADIN = 3,
 			ROGUE = 5,
-			WARLOCK = 3,
+			WARLOCK = 1,
 			DRUID = 5,
 		}
 		-- The maximum of a ressource a given class can have
 		local MAX_COUNT = {
 			MAGE = 4,
-			MONK = 6,
+			MONK = 5,
 			PALADIN = 3,
 			ROGUE = 5,
-			WARLOCK = 3,
+			WARLOCK = 10,
 			DRUID = 5,
 		}
 		local r, g, b
@@ -2391,16 +2261,16 @@ module.funcs = {
 		local function checkPowers(event, level)
 			local pLevel = (event == "UNIT_LEVEL") and tonumber(level) or UnitLevel("player")
 			local count = BASE_COUNT[class]
-			-- if class == "MONK" then
-			-- 	if select(4, GetTalentInfo(3, 1, 1)) then
-			-- 		count = count + 1
-			-- 	end
-			-- elseif class == "ROGUE" then
-			-- 	--Check for Strategem, increase CPoints to 6.
-			-- 	if select(4, GetTalentInfo(3, 2, 1)) then
-			-- 		count = 6
-			-- 	end
-			-- end
+			if class == "MONK" then
+				if select(4, GetTalentInfo(3, 1, 1)) then
+					count = count + 1
+				end
+			elseif class == "ROGUE" then
+				--Check for Strategem, increase CPoints to 6.
+				if select(4, GetTalentInfo(3, 2, 1)) then
+					count = 6
+				end
+			end
 			self.ClassIcons.Count = count
 
 			for i = 1, MAX_COUNT[class] do
@@ -2411,15 +2281,19 @@ module.funcs = {
 					self.ClassIcons[i]:SetDesaturated(true)
 					self.ClassIcons[i]:SetVertexColor(r, g, b)
 				end
-				self.ClassIcons[i]:SetSize(((oufdb.Bars.ClassIcons.Width - (self.ClassIcons.Count - 1) * oufdb.Bars.ClassIcons.Padding) / self.ClassIcons.Count), oufdb.Bars.ClassIcons.Height)
+
+				if IsSpellKnown(104315) then
+					self.ClassIcons[i]:SetSize((oufdb.Bars.ClassIcons.Width * (UnitPower("player",15)/1000)), oufdb.Bars.ClassIcons.Height)
+				else
+					self.ClassIcons[i]:SetSize(((oufdb.Bars.ClassIcons.Width - (self.ClassIcons.Count - 1) * oufdb.Bars.ClassIcons.Padding) / self.ClassIcons.Count), oufdb.Bars.ClassIcons.Height)
+				end
+
 				self.ClassIcons[i]:ClearAllPoints()
 				if i == 1 then
 					self.ClassIcons[i]:SetPoint("LEFT", self.ClassIcons, "LEFT", 0, 0)
 				else
 					self.ClassIcons[i]:SetPoint("LEFT", self.ClassIcons[i-1], "RIGHT", oufdb.Bars.ClassIcons.Padding, 0)
 				end
-				--LUI:Print("ClassIcon["..i.."] Is Shown")
-				--self.ClassIcons[i]:Show()
 				if i > self.ClassIcons.Count then
 					self.ClassIcons[i]:Hide()
 				end
@@ -2432,337 +2306,6 @@ module.funcs = {
 		module:RegisterEvent("PLAYER_ENTERING_WORLD", checkPowers)
 		module:RegisterEvent("PLAYER_TALENT_UPDATE", checkPowers)
 		self.ClassIcons.UpdateTexture = checkPowers
-	end,
-	HolyPower = function(self, unit, oufdb)
-		if LUI.Legion then return end
-		if not self.HolyPower then
-			self.HolyPower = CreateFrame("Frame", nil, self)
-			self.HolyPower:SetFrameLevel(6)
-			self.HolyPower.Powers = 3
-
-			for i = 1, 5 do -- Always create frames for the max possible
-				self.HolyPower[i] = CreateFrame("StatusBar", nil, self.HolyPower, "BackdropTemplate")
-				self.HolyPower[i]:SetBackdrop(backdrop)
-				self.HolyPower[i]:SetBackdropColor(0.08, 0.08, 0.08)
-				self.HolyPower[i]:SetAlpha(.4)
-			end
-
-			self.HolyPower.FrameBackdrop = CreateFrame("Frame", nil, self.HolyPower, "BackdropTemplate")
-			self.HolyPower.FrameBackdrop:SetPoint("TOPLEFT", self.HolyPower, "TOPLEFT", -3.5, 3)
-			self.HolyPower.FrameBackdrop:SetPoint("BOTTOMRIGHT", self.HolyPower, "BOTTOMRIGHT", 3.5, -3)
-			self.HolyPower.FrameBackdrop:SetFrameStrata("BACKGROUND")
-			self.HolyPower.FrameBackdrop:SetBackdrop({
-				edgeFile = glowTex, edgeSize = 5,
-				insets = {left = 3, right = 3, top = 3, bottom = 3}
-			})
-			self.HolyPower.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
-			self.HolyPower.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-
-			self.HolyPower.Override = HolyPowerOverride
-		end
-
-		local x = oufdb.Bars.HolyPower.Lock and 0 or oufdb.Bars.HolyPower.X
-		local y = oufdb.Bars.HolyPower.Lock and 0.5 or oufdb.Bars.HolyPower.Y
-
-		self.HolyPower:SetHeight(oufdb.Bars.HolyPower.Height)
-		self.HolyPower:SetWidth(oufdb.Bars.HolyPower.Width)
-		self.HolyPower:ClearAllPoints()
-		self.HolyPower:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-	
-		local function checkPowers(event, level)
-			local pLevel = (event == "UNIT_LEVEL") and tonumber(level) or UnitLevel("player")
-			-- if pLevel >= 85 then j
-				-- self.HolyPower.Powers = 5
-				-- module:UnregisterEvent("UNIT_LEVEL")
-			-- else 
-				self.HolyPower.Powers = 3
-			-- end
-
-			for i = 1, 5 do
-				self.HolyPower[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.HolyPower.Texture))
-				self.HolyPower[i]:SetStatusBarColor(unpack(module.colors.holypowerbar[i]))
-				self.HolyPower[i]:SetSize(((oufdb.Bars.HolyPower.Width - 2*oufdb.Bars.HolyPower.Padding) / self.HolyPower.Powers), oufdb.Bars.HolyPower.Height)
-
-				self.HolyPower[i]:ClearAllPoints()
-				if i == 1 then
-					self.HolyPower[i]:SetPoint("LEFT", self.HolyPower, "LEFT", 0, 0)
-				else
-					self.HolyPower[i]:SetPoint("LEFT", self.HolyPower[i-1], "RIGHT", oufdb.Bars.HolyPower.Padding, 0)
-				end
-				self.HolyPower[i]:Show()
-				if i > self.HolyPower.Powers then
-					self.HolyPower[i]:Hide()
-				end
-			end
-		end
-		checkPowers()
-
-		module:RegisterEvent("UNIT_LEVEL", checkPowers)
-	end,
-	-- Chi = function(self, unit, oufdb)
-	-- 	if LUI.Legion then return end
-	-- 	if not self.Chi then
-	-- 		self.Chi = CreateFrame("Frame", nil, self)
-	-- 		self.Chi:SetFrameLevel(6)
-	-- 		self.Chi.Force = 4
-
-	-- 		for i = 1, 6 do -- Always create frames for the max possible
-	-- 			self.Chi[i] = CreateFrame("StatusBar", nil, self.Chi)
-	-- 			self.Chi[i]:SetBackdrop(backdrop)
-	-- 			self.Chi[i]:SetBackdropColor(0.08, 0.08, 0.08)
-	-- 			self.Chi[i]:SetAlpha(.4)
-	-- 		end
-
-	-- 		self.Chi.FrameBackdrop = CreateFrame("Frame", nil, self.Chi)
-	-- 		self.Chi.FrameBackdrop:SetPoint("TOPLEFT", self.Chi, "TOPLEFT", -3.5, 3)
-	-- 		self.Chi.FrameBackdrop:SetPoint("BOTTOMRIGHT", self.Chi, "BOTTOMRIGHT", 3.5, -3)
-	-- 		self.Chi.FrameBackdrop:SetFrameStrata("BACKGROUND")
-	-- 		self.Chi.FrameBackdrop:SetBackdrop({
-	-- 			edgeFile = glowTex, edgeSize = 5,
-	-- 			insets = {left = 3, right = 3, top = 3, bottom = 3}
-	-- 		})
-	-- 		self.Chi.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
-	-- 		self.Chi.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-
-	-- 		self.Chi.Override = ChiOverride
-	-- 	end
-
-	-- 	local x = oufdb.Bars.Chi.Lock and 0 or oufdb.Bars.Chi.X
-	-- 	local y = oufdb.Bars.Chi.Lock and 0.5 or oufdb.Bars.Chi.Y
-
-	-- 	self.Chi:SetHeight(oufdb.Bars.Chi.Height)
-	-- 	self.Chi:SetWidth(oufdb.Bars.Chi.Width)
-	-- 	self.Chi:ClearAllPoints()
-	-- 	self.Chi:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-	
-	-- 	local function checkChi(event)
-	-- 		self.Chi.Force = 4
-	-- 		local empowerChi = IsSpellKnown(157411)
-	-- 		local _, _, _, ascension = GetTalentInfo(3, 2, GetActiveTalentGroup()) -- Ascension
-	-- 		if empowerChi then self.Chi.Force = self.Chi.Force + 1 end
-	-- 		if ascension then self.Chi.Force = self.Chi.Force + 1 end
-	-- 		for i = 1, 6 do
-	-- 			self.Chi[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.Chi.Texture))
-	-- 			self.Chi[i]:SetStatusBarColor(unpack(module.colors.chibar[i]))
-	-- 			self.Chi[i]:SetSize(((oufdb.Bars.Chi.Width - 2*oufdb.Bars.Chi.Padding) / self.Chi.Force), oufdb.Bars.Chi.Height)
-
-	-- 			self.Chi[i]:ClearAllPoints()
-	-- 			if i == 1 then
-	-- 				self.Chi[i]:SetPoint("LEFT", self.Chi, "LEFT", 0, 0)
-	-- 			else
-	-- 				self.Chi[i]:SetPoint("LEFT", self.Chi[i-1], "RIGHT", oufdb.Bars.Chi.Padding, 0)
-	-- 			end
-	-- 			self.Chi[i]:Show()
-	-- 			if i > self.Chi.Force then
-	-- 				self.Chi[i]:Hide()
-	-- 			end
-	-- 		end
-	-- 	end
-	-- 	checkChi()
-	-- 	module:RegisterEvent("UNIT_LEVEL", checkChi)
-	-- 	module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", checkChi)
-	-- 	module:RegisterEvent("PLAYER_TALENT_UPDATE", checkChi)
-	-- end,
-	WarlockBar = function(self, unit, oufdb)
-		if LUI.Legion then return end
-		if not self.WarlockBar then
-			self.WarlockBar = CreateFrame("Frame", nil, self, "BackdropTemplate")
-			self.WarlockBar:SetFrameLevel(6)
-
-			for i = 1, 3 do -- Create the max so we dont have to worry about it later.
-				self.WarlockBar[i] = CreateFrame("StatusBar", nil, self.WarlockBar, "BackdropTemplate")
-				self.WarlockBar[i]:SetBackdrop(backdrop)
-				self.WarlockBar[i]:SetMinMaxValues(0,0)
-				self.WarlockBar[i]:SetBackdropColor(0.08, 0.08, 0.08)
-				self.WarlockBar[i]:SetAlpha(.4)
-			end
-
-			self.WarlockBar.FrameBackdrop = CreateFrame("Frame", nil, self.WarlockBar, "BackdropTemplate")
-			self.WarlockBar.FrameBackdrop:SetPoint("TOPLEFT", self.WarlockBar, "TOPLEFT", -3.5, 3)
-			self.WarlockBar.FrameBackdrop:SetPoint("BOTTOMRIGHT", self.WarlockBar, "BOTTOMRIGHT", 3.5, -3)
-			self.WarlockBar.FrameBackdrop:SetFrameStrata("BACKGROUND")
-			self.WarlockBar.FrameBackdrop:SetBackdrop({
-				edgeFile = glowTex, edgeSize = 5,
-				insets = {left = 3, right = 3, top = 3, bottom = 3}
-			})
-			self.WarlockBar.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
-			self.WarlockBar.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-
-			self.WarlockBar.Override = WarlockBarOverride
-		end
-
-		local x = oufdb.Bars.WarlockBar.Lock and 0 or oufdb.Bars.WarlockBar.X
-		local y = oufdb.Bars.WarlockBar.Lock and 0.5 or oufdb.Bars.WarlockBar.Y
-
-		self.WarlockBar:SetHeight(oufdb.Bars.WarlockBar.Height)
-		self.WarlockBar:SetWidth(oufdb.Bars.WarlockBar.Width)
-		self.WarlockBar:ClearAllPoints()
-		self.WarlockBar:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-		local function checkBar(event)
-			if oufdb.Bars.WarlockBar.Enable then self.WarlockBar:Show() end
-
-			for i = 1, 3 do
-				self.WarlockBar[i]:SetMinMaxValues(0,3)
-				self.WarlockBar[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.WarlockBar.Texture))
-				self.WarlockBar[i]:SetStatusBarColor(0.57, 0.22, 1) 
-				self.WarlockBar[i]:SetSize(((oufdb.Bars.WarlockBar.Width - 2 * oufdb.Bars.WarlockBar.Padding) / 3), oufdb.Bars.WarlockBar.Height)
-				-- (oufdb.Bars.WarlockBar.Width - 2 * oufdb.Bars.WarlockBar.Padding) / 3
-				self.WarlockBar[i]:ClearAllPoints()
-				self.WarlockBar[i]:Show()
-				if i == 1 then
-					self.WarlockBar[i]:SetPoint("LEFT", self.WarlockBar, "LEFT", 0, 0)
-				else
-					self.WarlockBar[i]:SetPoint("LEFT", self.WarlockBar[i-1], "RIGHT", oufdb.Bars.WarlockBar.Padding, 0)
-				end
-			end
-			WarlockBarOverride(self, "event", unit, 7)
-		end
-		checkBar()
-		module:RegisterEvent("GLYPH_ADDED", checkBar)
-		module:RegisterEvent("GLYPH_REMOVED", checkBar)
-		module:RegisterEvent("UNIT_POWER_FREQUENT", checkBar)
-		module:RegisterEvent("PLAYER_ENTERING_WORLD", checkBar)
-		module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", checkBar)
-	end,
-	ArcaneCharges = function(self, unit, oufdb)
-		if LUI.Legion then return end
-		if not self.ArcaneCharges then
-			self.ArcaneCharges = CreateFrame("Frame", nil, self)
-			self.ArcaneCharges:SetFrameLevel(6)
-
-			self.ArcaneCharges.Charges = 4
-			self.ArcaneCharges.Refresh = false
-
-			for i = 1, self.ArcaneCharges.Charges do
-				self.ArcaneCharges[i] = CreateFrame("StatusBar", nil, self.ArcaneCharges, "BackdropTemplate")
-				self.ArcaneCharges[i]:SetBackdrop(backdrop)
-				self.ArcaneCharges[i]:SetMinMaxValues(0,0)
-				self.ArcaneCharges[i]:SetBackdropColor(0.08, 0.08, 0.08)
-
-				self.ArcaneCharges[i]:SetAlpha(.4)
-			end
-
-			self.ArcaneCharges.FrameBackdrop = CreateFrame("Frame", nil, self.ArcaneCharges, "BackdropTemplate")
-			self.ArcaneCharges.FrameBackdrop:SetPoint("TOPLEFT", self.ArcaneCharges, "TOPLEFT", -3.5, 3)
-			self.ArcaneCharges.FrameBackdrop:SetPoint("BOTTOMRIGHT", self.ArcaneCharges, "BOTTOMRIGHT", 3.5, -3)
-			self.ArcaneCharges.FrameBackdrop:SetFrameStrata("BACKGROUND")
-			self.ArcaneCharges.FrameBackdrop:SetBackdrop({
-				edgeFile = glowTex, edgeSize = 5,
-				insets = {left = 3, right = 3, top = 3, bottom = 3}
-			})
-			self.ArcaneCharges.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
-			self.ArcaneCharges.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-
-			self.ArcaneCharges.Override = ArcaneChargesOverride
-		end
-
-		local x = oufdb.Bars.ArcaneCharges.Lock and 0 or oufdb.Bars.ArcaneCharges.X
-		local y = oufdb.Bars.ArcaneCharges.Lock and 0.5 or oufdb.Bars.ArcaneCharges.Y
-
-		self.ArcaneCharges:SetHeight(oufdb.Bars.ArcaneCharges.Height)
-		self.ArcaneCharges:SetWidth(oufdb.Bars.ArcaneCharges.Width)
-		self.ArcaneCharges:ClearAllPoints()
-		self.ArcaneCharges:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-		
-		for i = 1, self.ArcaneCharges.Charges do
-			self.ArcaneCharges[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.ArcaneCharges.Texture))
-			self.ArcaneCharges[i]:SetStatusBarColor(unpack(module.colors.arcanechargesbar[i]))
-			self.ArcaneCharges[i]:SetSize(((oufdb.Bars.ArcaneCharges.Width - 2*oufdb.Bars.ArcaneCharges.Padding) / self.ArcaneCharges.Charges), oufdb.Bars.ArcaneCharges.Height)
-
-			self.ArcaneCharges[i]:ClearAllPoints()
-			self.ArcaneCharges[i]:Show()
-			if i == 1 then
-				self.ArcaneCharges[i]:SetPoint("LEFT", self.ArcaneCharges, "LEFT", 0, 0)
-			else
-				self.ArcaneCharges[i]:SetPoint("LEFT", self.ArcaneCharges[i-1], "RIGHT", oufdb.Bars.ArcaneCharges.Padding, 0)
-			end
-		end
-			
-		local function checkSpec(event)
-			if GetPrimaryTalentTree() == 1 then self.ArcaneCharges:Show()
-			else self.ArcaneCharges:Hide()
-			end
-		end
-		checkSpec()
-		module:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", checkSpec)
-	end,
-	ShadowOrbs = function(self, unit, oufdb)
-		-- if not LUI.isRetail then return end
-		if not self.ShadowOrbs then
-			self.ShadowOrbs = CreateFrame("Frame", nil, self)
-			self.ShadowOrbs:SetFrameLevel(6)
-
-			self.ShadowOrbs.Orbs = 0
-
-			for i = 1, 3 do
-				self.ShadowOrbs[i] = CreateFrame("StatusBar", nil, self.ShadowOrbs, "BackdropTemplate")
-				self.ShadowOrbs[i]:SetBackdrop(backdrop)
-				self.ShadowOrbs[i]:SetBackdropColor(0.08, 0.08, 0.08)
-
-				self.ShadowOrbs[i]:SetAlpha(.4)
-			end
-
-			self.ShadowOrbs.FrameBackdrop = CreateFrame("Frame", nil, self.ShadowOrbs, "BackdropTemplate")
-			self.ShadowOrbs.FrameBackdrop:SetPoint("TOPLEFT", self.ShadowOrbs, "TOPLEFT", -3.5, 3)
-			self.ShadowOrbs.FrameBackdrop:SetPoint("BOTTOMRIGHT", self.ShadowOrbs, "BOTTOMRIGHT", 3.5, -3)
-			self.ShadowOrbs.FrameBackdrop:SetFrameStrata("BACKGROUND")
-			self.ShadowOrbs.FrameBackdrop:SetBackdrop({
-				edgeFile = glowTex, edgeSize = 5,
-				insets = {left = 3, right = 3, top = 3, bottom = 3}
-			})
-			self.ShadowOrbs.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
-			self.ShadowOrbs.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-
-			self.ShadowOrbs.Override = ShadowOrbsOverride
-		end
-
-		local x = oufdb.Bars.ShadowOrbs.Lock and 0 or oufdb.Bars.ShadowOrbs.X
-		local y = oufdb.Bars.ShadowOrbs.Lock and 0.5 or oufdb.Bars.ShadowOrbs.Y
-
-		self.ShadowOrbs:SetHeight(oufdb.Bars.ShadowOrbs.Height)
-		self.ShadowOrbs:SetWidth(oufdb.Bars.ShadowOrbs.Width)
-		self.ShadowOrbs:ClearAllPoints()
-		self.ShadowOrbs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", x, y)
-		
-		local function checkOrbs(event, level)
-			local playerLevel = (event == "UNIT_LEVEL") and tonumber(level) or UnitLevel("player")
-			if GetPrimaryTalentTree() == 3 then
-				if playerLevel >= 10 then 
-					self.ShadowOrbs.Orbs = 3
-					if IsSpellKnown(157217) then
-						self.ShadowOrbs.Orbs = 5
-					end
-				else 
-					self.ShadowOrbs.Orbs = 0
-				end
-			else
-				self.ShadowOrbs.Orbs = 0
-			end
-			
-			for i = 1, self.ShadowOrbs.Orbs do
-				self.ShadowOrbs[i]:SetStatusBarTexture(Media:Fetch("statusbar", oufdb.Bars.ShadowOrbs.Texture))
-				self.ShadowOrbs[i]:SetStatusBarColor(unpack(module.colors.shadoworbsbar[i]))
-				self.ShadowOrbs[i]:SetSize(((oufdb.Bars.ShadowOrbs.Width - 2*oufdb.Bars.ShadowOrbs.Padding) / self.ShadowOrbs.Orbs), oufdb.Bars.ShadowOrbs.Height)
-
-				self.ShadowOrbs[i]:ClearAllPoints()
-				self.ShadowOrbs[i]:Show()
-				if i == 1 then
-					self.ShadowOrbs[i]:SetPoint("LEFT", self.ShadowOrbs, "LEFT", 0, 0)
-				else
-					self.ShadowOrbs[i]:SetPoint("LEFT", self.ShadowOrbs[i-1], "RIGHT", oufdb.Bars.ShadowOrbs.Padding, 0)
-				end
-
-			end
-			if self.ShadowOrbs.Orbs == 0 then
-				self.ShadowOrbs:Hide()
-			else self.ShadowOrbs:Show()
-			end
-			ShadowOrbsOverride(self, event, unit)
-		end
-		checkOrbs()
-		module:RegisterEvent("UNIT_LEVEL", checkOrbs)
-		module:RegisterEvent("UNIT_AURA", checkOrbs)
-		module:RegisterEvent("PLAYER_TALENT_UPDATE", checkOrbs)
 	end,
 	EclipseBar = function(self, unit, oufdb)
 		-- if LUI.Legion then return end
@@ -3095,10 +2638,10 @@ module.funcs = {
 			self.RaidDebuffs:SetPoint("CENTER", self, "CENTER", 0, 0)
 			self.RaidDebuffs:SetFrameLevel(7)
 
-			self.RaidDebuffs:SetBackdrop({
-				bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-				insets = {top = -1, left = -1, bottom = -1, right = -1},
-			})
+			-- self.RaidDebuffs:SetBackdrop({
+			-- 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+			-- 	insets = {top = -1, left = -1, bottom = -1, right = -1},
+			-- })
 
 			self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "OVERLAY")
 			self.RaidDebuffs.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -3126,7 +2669,6 @@ module.funcs = {
 		self.Portrait:ClearAllPoints()
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", oufdb.Portrait.X * self:GetWidth() / oufdb.Width, oufdb.Portrait.Y) -- needed for 25/40 man raid width downscaling!
 	end,
-
 	Buffs = function(self, unit, oufdb)
 		if not self.Buffs then self.Buffs = CreateFrame("Frame", nil, self) end
 
@@ -3204,7 +2746,6 @@ module.funcs = {
 		if not self.Debuffs.createdIcons then self.Debuffs.createdIcons = 0 end
 		if not self.Debuffs.anchoredIcons then self.Debuffs.anchoredIcons = 0 end
 	end,
-
 	CombatFeedbackText = function(self, unit, oufdb)
 		if not self.CombatFeedbackText then
 			self.CombatFeedbackText = SetFontString(self.Health, Media:Fetch("font", oufdb.Texts.Combat.Font), oufdb.Texts.Combat.Size, oufdb.Texts.Combat.Outline)
@@ -3230,7 +2771,6 @@ module.funcs = {
 			self.CombatFeedbackText:Hide()
 		end
 	end,
-
 	Castbar = function(self, unit, oufdb)
 		local castbar = self.Castbar
 		if not castbar then
@@ -3432,7 +2972,6 @@ module.funcs = {
 			castbar.IconBackdrop:Hide()
 		end
 	end,
-
 	AggroGlow = function(self, unit, oufdb)
 		if self.Threat then return end
 
@@ -3486,7 +3025,6 @@ module.funcs = {
 
 		self.Threat.Override = ThreatOverride
 	end,
-
 	HealPrediction = function(self, unit, oufdb)
 		if not self.HealPrediction then
 			self.HealPrediction = {
@@ -3511,7 +3049,6 @@ module.funcs = {
 		self.HealPrediction.otherBar:SetPoint("TOPLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
 		self.HealPrediction.otherBar:SetPoint("BOTTOMLEFT", self.HealPrediction.myBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 	end,
-
 	TotalAbsorb = function(self, unit, oufdb)
 		if not self.TotalAbsorb then
 			self.TotalAbsorb = CreateFrame('StatusBar', nil, self.Health)
@@ -3529,7 +3066,6 @@ module.funcs = {
 
 		--self.TotalAbsorb.Override = TotalAbsorbOverride
 	end,
-	
 	V2Textures = function(from, to)
 		if not from.V2Tex then
 			local V2Tex = CreateFrame("Frame", nil, from)
@@ -3736,7 +3272,7 @@ local SetStyle = function(self, unit, isSingle)
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "PALADIN" then
-			if oufdb.Bars.HolyPower.Enable and not LUI.isClassicthen then module.funcs.ClassIcons(self, unit, oufdb) end
+			if oufdb.Bars.HolyPower.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "MONK" then
 			if oufdb.Bars.Energy.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "ROGUE" then
@@ -3744,12 +3280,12 @@ local SetStyle = function(self, unit, isSingle)
 		elseif class == "SHAMAN" then
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 			if oufdb.Bars.Totems.Enable and not LUI.isClassic then module.funcs.Totems(self, unit, oufdb) end
-		-- elseif class == "MAGE" then
-		-- 	if oufdb.Bars.ArcaneCharges.Enable then module.funcs.ClassIcons(self, unit, oufdb) end
+		elseif class == "MAGE" then
+			if oufdb.Bars.ArcaneCharges.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "WARLOCK" then 
-			if oufdb.Bars.WarlockBar.Enable and not LUI.isClassic then module.funcs.WarlockBar(self, unit, oufdb) end
+			if oufdb.Bars.WarlockBar.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
 		elseif class == "PRIEST" then
-			if oufdb.Bars.ShadowOrbs.Enable and not LUI.isClassic then module.funcs.ShadowOrbs(self, unit, oufdb) end
+			if oufdb.Bars.ShadowOrbs.Enable and not LUI.isClassic then module.funcs.ClassIcons(self, unit, oufdb) end
 			if oufdb.Bars.DruidMana.Enable then module.funcs.DruidMana(self, unit, oufdb) end
 		end
 	end

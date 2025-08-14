@@ -1,3 +1,7 @@
+2025.08.14  Core: Initial update to Mists Classic
+
+            UnitFrames: Fixed Typo.
+
 2024.12.29  Core: updated frame identifier.
 
             Auras: Fixed backdrop error.

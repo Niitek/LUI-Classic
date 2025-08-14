@@ -56,11 +56,12 @@ local barKeys = {
 	HolyPower = "HolyPower",
 	Eclipse = "EclipseBar",
 	-- AltPower = "AltPowerBar",
+	Chi = "Chi",
 	DruidMana = "DruidMana",
 	ShadowOrbs = "ShadowOrbs",
 	WarlockBar = "WarlockBar",
-	-- ArcaneCharges = "ArcaneCharges",
-	Energy= "ClassIcons",
+	ArcaneCharges = "ArcaneCharges",
+	Energy = "ClassIcons",
 }
 local barNames = {
 	Totems = "Totems",
@@ -68,9 +69,10 @@ local barNames = {
 	HolyPower = "Holy Power",
 	Eclipse = "Eclipse",
 	-- AltPower = "Alternate Power",
+	Chi = "Chi",
 	DruidMana = "Druid Mana",
 	ShadowOrbs = "Shadow Orbs",
-	-- ArcaneCharges = "Arcane Charges",
+	ArcaneCharges = "Arcane Charges",
 	WarlockBar = "Warlock Bar",
 	Energy = "Energy",
 }
@@ -83,7 +85,7 @@ local fontflags = {"OUTLINE", "THICKOUTLINE", "MONOCHROME", "NONE"}
 local directions = {"TOP", "BOTTOM", "RIGHT", "LEFT"}
 local positions = {"TOP", "TOPRIGHT", "TOPLEFT", "BOTTOM", "BOTTOMRIGHT", "BOTTOMLEFT", "RIGHT", "LEFT", "CENTER"}
 local justifications = {"RIGHT", "LEFT", "CENTER"}
-local valueFormat = {"Absolut", "Absolut & Percent", "Absolut Short", "Absolut Short & Percent", "Standard", "Standard & Percent", "Standard Short", "Standard Short & Percent"}
+local valueFormat = {"Absolute", "Absolute & Percent", "Absolute Short", "Absolute Short & Percent", "Standard", "Standard & Percent", "Standard Short", "Standard Short & Percent"}
 local nameFormat = {"Name", "Name + Level", "Name + Level + Class", "Name + Level + Race + Class", "Level", "Level + Name", "Level + Name + Class", "Level + Class + Name", "Level + Name + Race + Class", "Level + Race + Class + Name"}
 local nameLenghts = {"Short", "Medium", "Long"}
 local growthY = {"UP", "DOWN"}
@@ -634,11 +636,11 @@ function module:CreatePlayerBarTextOptions(barType, order)
 	local barKey = barKeys[barType]
 
 	local textformats = barType == "AltPower" and {
-		Absolut = "Absolut",
+		Absolute = "Absolute",
 		Percent = "Percent",
 		Standard = "Standard"
 	} or {
-		Absolut = "Absolut",
+		Absolute = "Absolute",
 		Standard = "Standard"
 	}
 
@@ -1139,17 +1141,18 @@ function module:CreateUnitOptions(unit, order)
 			Power = self:CreateBarOptions(unit, 2, "Power"),
 			Full = self:CreateBarOptions(unit, 3, "Full"),
 			HealPrediction = self.db[unit].Bars.HealPrediction and self:CreateHealPredictionOptions(unit, 4) or nil,
-			-- TotalAbsorb = self.db[unit].Bars.TotalAbsorb and self:CreateTotalAbsorbOptions(unit, 5) or nil,
+			TotalAbsorb = (not LUI.isClassic) and self.db[unit].Bars.TotalAbsorb and self:CreateTotalAbsorbOptions(unit, 5) or nil,
 			DruidMana = ((class == "DRUID" or class == "PRIEST" or class == "SHAMAN") and unit == "Player") and self:CreatePlayerBarOverlappingOptions("DruidMana", 11) or nil,
 			-- AltPower = (unit == "Player") and self:CreatePlayerBarOverlappingOptions("AltPower", 12) or nil,
-			Totems = (class == "SHAMAN" and unit == "Player" and not LUI.Legion) and self:CreatePlayerBarOptions("Totems", 13) or nil,
+			Totems = (class == "SHAMAN" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("Totems", 13) or nil,
 			Runes = ((class == "DEATHKNIGHT" or class == "DEATH KNIGHT") and unit == "Player") and self:CreatePlayerBarOptions("Runes", 14) or nil,
-			HolyPower = (class == "PALADIN" and unit == "Player") and self:CreatePlayerBarOptions("HolyPower", 15) or nil,
-			WarlockBar = (class == "WARLOCK" and unit == "Player") and self:CreatePlayerBarOptions("WarlockBar", 16) or nil,
-			ShadowOrbs = (class == "PRIEST" and unit == "Player" and not LUI.Legion) and self:CreatePlayerBarOptions("ShadowOrbs", 16) or nil,
-			-- ArcaneCharges = (class == "MAGE" and unit == "Player") and self:CreatePlayerBarOptions("ArcaneCharges", 16) or nil,
+			HolyPower = (class == "PALADIN" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("HolyPower", 15) or nil,
+			WarlockBar = (class == "WARLOCK" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("WarlockBar", 16) or nil,
+			ShadowOrbs = (class == "PRIEST" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("ShadowOrbs", 16) or nil,
+			ArcaneCharges = (class == "MAGE" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("ArcaneCharges", 16) or nil,
+			Chi = ((class == "MONK") and unit == "Player") and self:CreatePlayerBarOptions("Chi", 16) or nil,
 			Energy = ((class == "MONK" or class == "DRUID" or class == "ROGUE") and unit == "Player") and self:CreatePlayerBarOptions("Energy", 16) or nil,
-			Eclipse = (class == "DRUID" and unit == "Player") and self:CreatePlayerBarOptions("Eclipse", 17) or nil,
+			Eclipse = (class == "DRUID" and unit == "Player" and not LUI.isClassic) and self:CreatePlayerBarOptions("Eclipse", 17) or nil,
 			ComboPoints = ((class == "DRUID" or class == "ROGUE") and unit == "Target") and self:CreateComboPointsOptions(18) or nil,
 		}),
 		Texts = self:NewGroup("Texts", 4, "tab", nil, disabledFunc, {

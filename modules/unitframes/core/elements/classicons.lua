@@ -48,10 +48,13 @@
 
 ]]
 
-local parent, ns = ...
+local parent, ns, LUI = ...
 local oUF = ns.oUF
+local version, build, date, toc = GetBuildInfo()
 
-local _, PlayerClass = UnitClass'player'
+local ClassID, PlayerClass = UnitClass'player'
+local SpecID
+if toc > 50000 then SpecID = C_SpecializationInfo.GetSpecialization() end
 
 -- Holds the class specific stuff.
 local ClassPowerID, ClassPowerType
@@ -222,13 +225,22 @@ do
 	if(PlayerClass == 'MONK') then
 		ClassPowerID = Enum.PowerType.Chi or 12
 		ClassPowerType = "CHI"
-		RequireSpec = SPEC_MONK_WINDWALKER
+		-- RequireSpec = SPEC_MONK_WINDWALKER
 	elseif(PlayerClass == 'PALADIN') then
 		ClassPowerID = Enum.PowerType.HolyPower or 9
 		ClassPowerType = "HOLY_POWER"
 	elseif(PlayerClass == 'WARLOCK') then
-		ClassPowerID = Enum.PowerType.SoulShards or 7
-		ClassPowerType = "SOUL_SHARDS"
+		if SpecID == 3 then
+			ClassPowerID = Enum.PowerType.BurningEmbers or 14
+			ClassPowerType = "BURNING_EMBERS"
+			RequireSpell = 108647 -- Burning Embers
+			return
+		elseif SpecID == 2 then
+			ClassPowerID = Enum.PowerType.DemonicFury or 15
+			ClassPowerType = "DEMONIC_FURY"
+			RequireSpell = 104315 -- Demonic Fury
+			return
+		end
 	elseif(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
 		ClassPowerID = Enum.PowerType.ComboPoints or 4
 		ClassPowerType = 'COMBO_POINTS'
