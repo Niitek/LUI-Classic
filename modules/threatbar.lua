@@ -96,7 +96,7 @@ local function UpdateExpMode()
 			end
 		end
 	else -- REP MODE
-		local name, stand, barMin, barMax, barValue, factionID = GetWatchedFactionInfo()
+		local name, stand, barMin, barMax, barValue, factionID = C_Reputation.GetWatchedFactionDataInfo()
 
 		local repname = { "Ha", "Ho", "Un", "Ne", "Fr", "Hon", "Rev", "Ex" }
 		local repText = repname[stand]

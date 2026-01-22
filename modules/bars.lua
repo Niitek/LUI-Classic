@@ -191,7 +191,7 @@ end
 
 local function GetAnchor(anchor)
 	if string.find(anchor, "Dominos") then
-		if IsAddOnLoaded("Dominos") then
+		if C_AddOns.IsAddOnLoaded("Dominos") then
 			return Dominos.ActionBar:Get(string.match(anchor, "%d+"))
 		end
 	else
@@ -1379,7 +1379,7 @@ function module:SetLibKeyBound()
 end
 
 function module:SetBars()
-	if not (IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Dominos") or IsAddOnLoaded("Macaroon")) and db.General.Enable then
+	if not (C_AddOns.IsAddOnLoaded("Bartender4") or C_AddOns.IsAddOnLoaded("Dominos") or C_AddOns.IsAddOnLoaded("Macaroon")) and db.General.Enable then
 		-- ValidateStates()
 
 		-- module:SetLibKeyBound()
@@ -1900,7 +1900,7 @@ local btSideBarPresets = {
 
 function module:AutoAdjustBT4(sideID)
 	local bardb = module.db.profile["Sidebar"..sideID]
-	if not IsAddOnLoaded("Bartender4") or not strsub(bardb.Anchor, 1, 3) == "BT4" then return end
+	if not C_AddOns.IsAddOnLoaded("Bartender4") or not strsub(bardb.Anchor, 1, 3) == "BT4" then return end
 	local _, num = strsplit("r", bardb.Anchor)
 	local barOpt = Bartender4.db:GetNamespace("ActionBars").profile.actionbars[tonumber(num)]
 	--local barOpt = Bartender4DB.namespaces.ActionBars.profiles[Bartender4.db:GetCurrentProfile()].actionbars[tonumber(num)]
@@ -1947,7 +1947,7 @@ local function createSideBarOptions(side, num, order)
 		dialog.data = side..num
 	end
 	local hideAnchoredBar = function(...)
-		if IsAddOnLoaded("Bartender4") and strsub(bardb.Anchor, 1, 3) == "BT4" then
+		if C_AddOns.IsAddOnLoaded("Bartender4") and strsub(bardb.Anchor, 1, 3) == "BT4" then
 			local _, num = strsplit("r", bardb.Anchor)
 			local barOpt = Bartender4.db:GetNamespace("ActionBars").profile.actionbars[tonumber(num)]
 			barOpt.visibility.always = not bardb.Enable
@@ -1969,7 +1969,7 @@ local function createSideBarOptions(side, num, order)
 		Additional = module:NewInput("Additional Frames", "Type in any additional frame names (seperated by commas), that you would like to show/hide with the Sidebar.", 6, true, nil, disabledFunc),
 		empty2 = module:NewDesc(" ", 7),
 		Scale = module:NewSlider("Scale", "Choose the Scale for this Sidebar.", 7.33, 0.1, 1.5, 0.05, true, true, nil, disabledFunc),
-		AutoAdjust = module:NewExecute("Auto-Adjust BT4Bar", "If you recently changed the bar anchor, make sure to move the previous bar outside of the Sidebar to prevent overlaps.", 7.66, showDialog, nil, nil, disabledFunc, not IsAddOnLoaded("Bartender4")),
+		AutoAdjust = module:NewExecute("Auto-Adjust BT4Bar", "If you recently changed the bar anchor, make sure to move the previous bar outside of the Sidebar to prevent overlaps.", 7.66, showDialog, nil, nil, disabledFunc, not C_AddOns.IsAddOnLoaded("Bartender4")),
 		empty4 = module:NewDesc(" ", 8),
 		[""] = module:NewPosSliders(side.." Bar "..num, 9, false, function() return GetAnchor(sidebars[side..num].Main) end, true, nil, disabledPosFunc),
 		AutoPosDisable = g_isBarAddOnLoaded and module:NewToggle("Stop touching me!", "Whether or not to have LUI handle your Bar Positioning.", 10, true, nil, disabledFunc) or nil,

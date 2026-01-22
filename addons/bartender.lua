@@ -10,7 +10,7 @@ local addonname, LUI = ...
 LUI.Versions.bartender = 3300
 
 function LUI:InstallBartender()
-	if not IsAddOnLoaded("Bartender4") then return end
+	if not C_AddOns.IsAddOnLoaded("Bartender4") then return end
 
 	local CharName = UnitName("player")
 	local _, CharClass = UnitClass("player")
@@ -543,9 +543,9 @@ function LUI:InstallBartender()
 			},
 		}
 
-		for k,v in pairs(MultiCastDefaults) do
-			Bartender4DB.namespaces.MultiCast.profiles[k] = v
-		end
+		-- for k,v in pairs(MultiCastDefaults) do
+		-- 	Bartender4DB.namespaces.MultiCast.profiles[k] = v
+		-- end
 	end
 
 	local PetBarDefaults = {

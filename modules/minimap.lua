@@ -25,8 +25,8 @@ local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
 
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end
-	if not LUI.isClassic then 
-		self:SecureHook(WatchFrame, "SetPoint", "ObjectiveTrackerFrame_SetPoint")
+	if not LUI.isClassic and not LUI.isMists then 
+		WatchFrame = "ObjectiveTrackerFrame"
 	end
 	self:SecureHook(DurabilityFrame, "SetPoint", "DurabilityFrame_SetPoint")
 	self:SecureHook(UIWidgetTopCenterContainerFrame, "SetPoint", "AlwaysUpFrame_SetPoint")
@@ -45,8 +45,8 @@ function module:SetPosition(frame)
 		DurabilityFrame:ClearAllPoints()
 		DurabilityFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.DurabilityFrameX, db.Minimap.Frames.DurabilityFrameY)
 	elseif frame == "ObjectiveTrackerFrame" and not LUI.isClassic and db.Minimap.Frames.SetObjectiveTrackerFrame then
-		WatchFrame:ClearAllPoints() -- Cause a lot of odd behaviors with the quest tracker.
-		WatchFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.ObjectiveTrackerFrameX, db.Minimap.Frames.ObjectiveTrackerFrameY) -- uncommented for classic compatibility
+		-- frame:ClearAllPoints() -- Cause a lot of odd behaviors with the quest tracker.
+		-- frame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.ObjectiveTrackerFrameX, db.Minimap.Frames.ObjectiveTrackerFrameY) -- uncommented for classic compatibility
 	elseif frame == "TicketStatus" and db.Minimap.Frames.SetTicketStatus then
 		TicketStatusFrame:ClearAllPoints()
 		TicketStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", db.Minimap.Frames.TicketStatusX, db.Minimap.Frames.TicketStatusY)
@@ -243,22 +243,14 @@ function module:SetMinimap()
 	end
 	-- Hide Border
 	MinimapBorder:Hide()
-	MinimapBorderTop:Hide()
+	if LUI.isClassic or LUI.isMists then MinimapBorderTop:Hide() end
 
 	-- Hide Zoom Buttons
 	MinimapZoomIn:Hide()
 	MinimapZoomOut:Hide()
 
 	-- MiniMapInstanceDifficulty
-	if not LUI.isClassic then 
-		--MiniMap TrackingIcon
-		MiniMapTracking:Hide()
-		if db.Minimap.General.TrackingIcon then
-			MiniMapTracking:ClearAllPoints()
-			MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
-			MiniMapTracking:Show()
-			MiniMapTrackingButtonBorder:Hide()
-		end
+	if not LUI.isClassic and not LUI.isBCC then
 		MiniMapInstanceDifficulty.NewShow = MiniMapInstanceDifficulty.Show
 		MiniMapInstanceDifficulty.Show = MiniMapInstanceDifficulty.Hide
 		MiniMapInstanceDifficulty:Hide()
@@ -266,12 +258,25 @@ function module:SetMinimap()
 		MiniMapInstanceDifficulty:ClearAllPoints()
 		MiniMapInstanceDifficulty:SetParent(Minimap)
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-
 		-- Move LFG Eye icon
 		MiniMapLFGFrame:ClearAllPoints()
 		MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
 		-- MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
 		MiniMapLFGFrameBorder:Hide()
+	end
+	--MiniMap TrackingIcon
+	if not LUI.isClassic then
+		if not LUI.isMists then
+			MinimapToggleButton:Hide()
+			MinimapCluster.BorderTop:Hide()
+		end
+		MiniMapTracking:Hide()
+		if db.Minimap.General.TrackingIcon then
+			MiniMapTracking:ClearAllPoints()
+			MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
+			MiniMapTracking:Show()
+			MiniMapTrackingButtonBorder:Hide()
+		end
 	end
 
 	MinimapNorthTag:SetTexture(nil) -- Hide North texture at top
@@ -333,11 +338,11 @@ function module:SetMinimap()
 		{text = QUESTLOG_BUTTON, 			func = function() ToggleFrame(QuestLogFrame) end},
 		{text = SOCIAL_BUTTON, 				func = function() ToggleFriendsFrame(1) end},
 		{text = PLAYER_V_PLAYER, 			func = function() ToggleFrame(PVPFrame) end},
-		{text = ACHIEVEMENTS_GUILD_TAB, 	func = function() if IsInGuild() then if not GuildFrame then LoadAddOn("Blizzard_GuildUI") end GuildFrame_Toggle() end end},
+		{text = ACHIEVEMENTS_GUILD_TAB, 	func = function() if IsInGuild() then if not GuildFrame then C_AddOns.LoadAddOn("Blizzard_GuildUI") end GuildFrame_Toggle() end end},
 		{text = LFG_TITLE, 					func = function() ToggleFrame(LFDParentFrame) end},
 		{text = L_LFRAID, 					func = function() ToggleFrame(LFRParentFrame) end},
 		{text = HELP_BUTTON, 				func = function() ToggleHelpFrame() end},
-		{text = L_CALENDAR, 				func = function() if(not CalendarFrame) then LoadAddOn("Blizzard_Calendar") end Calendar_Toggle() end},
+		{text = L_CALENDAR, 				func = function() if(not CalendarFrame) then C_AddOns.LoadAddOn("Blizzard_Calendar") end Calendar_Toggle() end},
 	}
 
 	Minimap:SetScript("OnMouseUp", function(self, btn)
@@ -902,7 +907,7 @@ function module:OnInitialize()
 end
 
 function module:OnEnable()
-	if IsAddOnLoaded("SexyMap") then
+	if C_AddOns.IsAddOnLoaded("SexyMap") then
 		LUI:Printf("|cffFF0000%s could not be enabled because of a conflicting addon: SexyMap.", self:GetName())
 		return
 	end

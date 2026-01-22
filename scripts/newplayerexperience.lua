@@ -16,7 +16,7 @@ end
 
 local function isUsingLUIBars()
 	local db = barMod.db.profile.General
-	if not (IsAddOnLoaded("Bartender4") or IsAddOnLoaded("Dominos") or IsAddOnLoaded("Macaroon")) then
+	if not (C_AddOns.IsAddOnLoaded("Bartender4") or C_AddOns.IsAddOnLoaded("Dominos") or C_AddOns.IsAddOnLoaded("Macaroon")) then
 		return db.Enable
 	end 
 end
@@ -312,7 +312,7 @@ end
 
 function script:ADDON_LOADED(event, addon)
 	if addon == "Blizzard_NewPlayerExperience" then
-		if IsAddOnLoaded("Bartender4") then self.BT4 = true end
+		if C_AddOns.IsAddOnLoaded("Bartender4") then self.BT4 = true end
 		if isUsingLUIBars() or self.BT4 then
 			script:RawHook(TutorialHelper, "GetActionButtonBySpellID", "GetActionButtonBySpellID", true)
 			script:RawHook(TutorialHelper, "FindEmptyButton", "FindEmptyButton", true)

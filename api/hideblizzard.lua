@@ -72,11 +72,13 @@ do
 			end
 		end,
 		party = function()
-			for i = 1, 4 do
-				local frame = _G["PartyMemberFrame"..i]
-				frame:UnregisterAllEvents()
-				frame:Hide()
-				frame.Show = LUI.dummy
+			if LUI.isClassic then
+				for i = 1, 4 do
+					local frame = _G["PartyMemberFrame"..i]
+					frame:UnregisterAllEvents()
+					frame:Hide()
+					frame.Show = LUI.dummy
+				end
 			end
 
 			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
@@ -115,14 +117,18 @@ do
 			end
 		end,
 		arena = function()
-			if IsAddOnLoaded("Blizzard_ArenaUI") then
+			if C_AddOns.IsAddOnLoaded("Blizzard_ArenaUI") then
 				ArenaEnemyFrames:UnregisterAllEvents()
 			else
 				-- hook("arena", "Arena_LoadUI")
 			end
 		end,
 		castbar = function()
-			CastingBarFrame:UnregisterAllEvents()
+			if LUI.isClassic or LUI.isMists then
+				CastingBarFrame:UnregisterAllEvents()
+			else
+				PlayerCastingBarFrame:UnregisterAllEvents()
+			end
 			PetCastingBarFrame:UnregisterAllEvents()
 		end,
 		runebar = function()
@@ -132,8 +138,10 @@ do
 		end,
 		aura = function()
 			BuffFrame:Hide()
-			TemporaryEnchantFrame:Hide()
 			BuffFrame:UnregisterAllEvents()
+			if LUI.isClassic then
+				TemporaryEnchantFrame:Hide()
+			end
 		end,
 		actionbars = function()
 			for frame, hide in pairs(actionbarFrames) do
@@ -230,7 +238,7 @@ do
 			end
 		end,
 		arena = function()
-			if IsAddOnLoaded("Blizzard_ArenaUI") then
+			if C_AddOns.IsAddOnLoaded("Blizzard_ArenaUI") then
 				ArenaEnemyFrames:GetScript("OnLoad")(ArenaEnemyFrames)
 				ArenaEnemyFrames:GetScript("OnEvent")(ArenaEnemyFrames, "VARIABLES_LOADED")
 			end
@@ -252,8 +260,9 @@ do
 			if GetCVarBool("consolidateBuffs") then
 				ConsolidatedBuffs:Show()
 			end
-			TemporaryEnchantFrame:Show()
-
+			if LUI.isClassic then
+				TemporaryEnchantFrame:Show()
+			end
 			-- Can't use OnLoad because doing so resets some variables which requires an update to get the frame back in the proper state, which in Cata causes taint.
 			BuffFrame:RegisterEvent("UNIT_AURA")
 

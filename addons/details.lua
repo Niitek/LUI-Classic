@@ -5,7 +5,7 @@ LUI.Versions.details = 5
 function LUI:InstallDetails()
    
    -- HACK: Temporarily disable Details integration until they can be sorted.
-   if (not IsAddOnLoaded("Details")) then
+   if (not C_AddOns.IsAddOnLoaded("Details")) then
       return
    end
    

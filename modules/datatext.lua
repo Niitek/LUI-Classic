@@ -370,19 +370,19 @@ function module:SetClock()
 		local instanceInfo, guildParty = nil, ""
 		local invitesPending = false
 
-		-- Event functions
-		if not LUI.isClassic then
-			stat.Events = {"CALENDAR_UPDATE_PENDING_INVITES", "PLAYER_ENTERING_WORLD"}
-		else 
+		-- -- Event functions
+		-- if not LUI.isClassic then
+		-- 	stat.Events = {"CALENDAR_UPDATE_PENDING_INVITES", "PLAYER_ENTERING_WORLD"}
+		-- else 
 			stat.Events = {"PLAYER_ENTERING_WORLD"}
-		end
+		-- end
 		-- , "UPDATE_24HOUR", "UPDATE_LOCALTIME"
 
-		if not LUI.isClassic then
-			stat.CALENDAR_UPDATE_PENDING_INVITES = function(self) -- A change to number of pending invites for calendar events occurred
-				invitesPending = GameTimeFrame and (GameTimeFrame.pendingCalendarInvites > 0) or false
-			end
-		end
+		-- if not LUI.isClassic then
+		-- 	stat.CALENDAR_UPDATE_PENDING_INVITES = function(self) -- A change to number of pending invites for calendar events occurred
+		-- 		invitesPending = GameTimeFrame and (GameTimeFrame.pendingCalendarInvites > 0) or false
+		-- 	end
+		-- end
 
 
 		stat.GUILD_PARTY_STATE_UPDATED = function(self) -- Number of guildmates in group changed
@@ -453,24 +453,25 @@ function module:SetClock()
 				instanceInfo, guildParty = nil, ""
 			end
 
-			if not module:IsHooked(GameTimeFrame, "OnClick") and not LUI.isClassic then
-				module:SecureHookScript(GameTimeFrame, "OnClick", stat.CALENDAR_UPDATE_PENDING_INVITES) -- hook the OnClick function of the GameTimeFrame to update the pending invites
-			end
+			-- if not module:IsHooked(GameTimeFrame, "OnClick") and not LUI.isClassic then
+			-- 	module:SecureHookScript(GameTimeFrame, "OnClick", stat.CALENDAR_UPDATE_PENDING_INVITES) -- hook the OnClick function of the GameTimeFrame to update the pending invites
+			-- end
 			if not module:IsHooked(TimeManagerMilitaryTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerMilitaryTimeCheck, "OnClick", stat.UPDATE_24HOUR)
 			end
 			if not module:IsHooked(TimeManagerLocalTimeCheck, "OnClick") then
 				module:SecureHookScript(TimeManagerLocalTimeCheck, "OnClick", stat.UPDATE_LOCALTIME)
 			end
-			if not LUI.isClassic then
-				self:CALENDAR_UPDATE_PENDING_INVITES()
-			end
+			-- if not LUI.isClassic then
+			-- 	self:CALENDAR_UPDATE_PENDING_INVITES()
+			-- end
+			UIParentLoadAddOn("Blizzard_Calendar") -- Load Calander, commands won't work without it.
 			self:PLAYER_ENTERING_WORLD()
 		end
 
-		stat.OnDisable = function(self)
-			module:Unhook(GameTimeFrame, "OnClick")
-		end
+		-- stat.OnDisable = function(self)
+		-- 	module:Unhook(GameTimeFrame, "OnClick")
+		-- end
 
 		stat.OnUpdate = function(self, deltaTime)
 			self.dt = self.dt + deltaTime
@@ -522,8 +523,8 @@ function module:SetClock()
 				else
 					TimeManagerLocalTimeCheck:SetChecked(false)
 				end
-			elseif not LUI.isClassic then -- Toggle CalendarFrame
-				GameTimeFrame:Click() -- using just :Click() wont fire the hook
+			else -- Toggle CalendarFrame
+				Calendar_Toggle() -- using just :Click() wont fire the hook
 			end
 		end
 
@@ -765,7 +766,7 @@ function module:SetDualSpec()
 		NewIcon(stat)
 		stat.icon:SetScript("OnMouseDown", function(self, button) -- Toggle Specialization
 			if not PlayerTalentFrame then
-				LoadAddOn("Blizzard_TalentUI")
+				C_AddOns.LoadAddOn("Blizzard_TalentUI")
 			end
 
 			if PlayerTalentFrame and PlayerTalentFrame:IsShown() and (PanelTemplates_GetSelectedTab(PlayerTalentFrame) == 3) then
@@ -2704,12 +2705,12 @@ function module:SetMemory()
 				UpdateAddOnMemoryUsage()
 
 				total = 0
-				for i = 1, GetNumAddOns() do
+				for i = 1, C_AddOns.GetNumAddOns() do
 					if not memory[i] then memory[i] = {} end
 
-					memory[i][1] = select(2, GetAddOnInfo(i))
+					memory[i][1] = select(2, C_AddOns.GetAddOnInfo(i))
 					memory[i][2] = GetAddOnMemoryUsage(i)
-					memory[i][3] = IsAddOnLoaded(i)
+					memory[i][3] = C_AddOns.IsAddOnLoaded(i)
 					total = total + memory[i][2]
 				end
 

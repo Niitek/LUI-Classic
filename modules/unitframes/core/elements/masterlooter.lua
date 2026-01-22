@@ -43,7 +43,7 @@ local Update = function(self, event)
 		masterlooter:PreUpdate()
 	end
 
-	local method, pid, rid = GetLootMethod()
+	local method, pid, rid = C_PartyInfo.GetLootMethod()
 	if(method == 'master') then
 		local mlUnit
 		if(pid) then

@@ -19,7 +19,7 @@ local function RecountSetColor(Branch,Name,cr,cg,cb,ca)
 end
 
 function LUI:InstallRecount()
-	if not IsAddOnLoaded("Recount") then return end
+	if not C_AddOns.IsAddOnLoaded("Recount") then return end
 	local ProfileName = UnitName("Player").." - "..GetRealmName()
 	if LUI.db.global.luiconfig[ProfileName].Versions.recount == LUI.Versions.recount then return end
 	
@@ -107,7 +107,7 @@ frame:SetScript("OnEvent", function(self)
 	self:SetScript("OnEvent", nil)
 
 	-- Check if Recount is installed.
-	if not IsAddOnLoaded("Recount") then return end
+	if not C_AddOns.IsAddOnLoaded("Recount") then return end
 
 	-- Create Recount font hack functions.
 	function self:FontSizeFix(string)

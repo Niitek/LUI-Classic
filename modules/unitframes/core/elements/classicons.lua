@@ -240,6 +240,12 @@ do
 			ClassPowerType = "DEMONIC_FURY"
 			RequireSpell = 104315 -- Demonic Fury
 			return
+		elseif SpecID == 1 or toc < 50000 then
+			ClassPowerID = Enum.PowerType.SoulShards or 7
+			ClassPowerType = "SOUL_SHARDS"
+			if toc > 50000 then
+				RequireSpell = 74434 -- Soulburn
+			end
 		end
 	elseif(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
 		ClassPowerID = Enum.PowerType.ComboPoints or 4

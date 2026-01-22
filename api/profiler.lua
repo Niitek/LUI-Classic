@@ -319,7 +319,7 @@ excludes[module.TraceScope] = true
 -- Create Profilers GUI.
 if not Enabled then return end
 
-module.GUI = CreateFrame("Frame", format("LUI: Profiler (%s)", GetAddOnMetadata(addonname, "X-Curse-Packaged-Version") or "Working Copy"), nil, "BackdropTemplate")
+module.GUI = CreateFrame("Frame", format("LUI: Profiler (%s)", C_AddOns.GetAddOnMetadata(addonname, "X-Curse-Packaged-Version") or "Working Copy"), nil, "BackdropTemplate")
 local gui = module.GUI
 
 -- Apply frame settings.

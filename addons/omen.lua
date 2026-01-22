@@ -10,7 +10,7 @@ local addonname, LUI = ...
 LUI.Versions.omen = 3300
 
 function LUI:InstallOmen()
-	if (not IsAddOnLoaded("Omen")) and (not IsAddOnLoaded("Omen3")) then return end
+	if (not C_AddOns.IsAddOnLoaded("Omen")) and (not C_AddOns.IsAddOnLoaded("Omen3")) then return end
 	local ProfileName = UnitName("Player").." - "..GetRealmName()
 	if LUI.db.global.luiconfig[ProfileName].Versions.omen == LUI.Versions.omen then return end
 	

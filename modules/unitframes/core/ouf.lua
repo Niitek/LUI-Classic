@@ -1,6 +1,6 @@
 local parent, ns = ...
-local global = GetAddOnMetadata(parent, 'X-oUF')
-local _VERSION = GetAddOnMetadata(parent, 'version')
+local global = C_AddOns.GetAddOnMetadata(parent, 'X-oUF')
+local _VERSION = C_AddOns.GetAddOnMetadata(parent, 'version')
 
 local oUF = ns.oUF
 local Private = oUF.Private

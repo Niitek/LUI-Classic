@@ -10,7 +10,7 @@ local addonname, LUI = ...
 LUI.Versions.grid = 3300
 
 function LUI:InstallGrid()
-	if not IsAddOnLoaded("Grid") then return end
+	if not C_AddOns.IsAddOnLoaded("Grid") then return end
 	if LUICONFIG.Versions.grid == LUI.Versions.grid then return end
 
 	local Grid = LibStub("AceAddon-3.0"):GetAddon("Grid")

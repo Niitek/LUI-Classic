@@ -1,5 +1,5 @@
-## Interface: 50500
-## Version: 3.7
+## Interface: 20505
+## Version: 3.8
 ## Title: LUI_Classic
 ## Author: Siku, Nitsah
 ## FormerAuthor: Louí, @EU-Das, Syndikat, Hix, Thaly, Zista, Mule

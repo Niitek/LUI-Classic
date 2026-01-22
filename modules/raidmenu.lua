@@ -428,19 +428,19 @@ function module:SetRaidMenu()
 	LootMethod:SetScript("OnClick", function(self)
 		local LootMethodList = {
 			{text = "Group Loot",
-			checked = (GetLootMethod() == "group"),
+			checked = (C_PartyInfo.GetLootMethod() == "group"),
 			func = function() SetLootMethod("group") if db.AutoHide then LUI.MicroMenu.ButtonLeft.Clicker:Click() end end},
 			{text = "Free-For-All",
-			checked = (GetLootMethod() == "freeforall"),
+			checked = (C_PartyInfo.GetLootMethod() == "freeforall"),
 			func = function() SetLootMethod("freeforall") if db.AutoHide then LUI.MicroMenu.ButtonLeft.Clicker:Click() end end},
 			{text = "Master Looter",
-			checked = (GetLootMethod() == "master"),
+			checked = (C_PartyInfo.GetLootMethod() == "master"),
 			func = function() SetLootMethod("master", "player") if db.AutoHide then LUI.MicroMenu.ButtonLeft.Clicker:Click() end end},
 			{text = "Need Before Greed",
-			checked = (GetLootMethod() == "needbeforegreed"),
+			checked = (C_PartyInfo.GetLootMethod() == "needbeforegreed"),
 			func = function() SetLootMethod("needbeforegreed") if db.AutoHide then LUI.MicroMenu.ButtonLeft.Clicker:Click() end end},
 			{text = "Round Robin",
-			checked = (GetLootMethod() == "roundrobin"),
+			checked = (C_PartyInfo.GetLootMethod() == "roundrobin"),
 			func = function() SetLootMethod("roundrobin") if db.AutoHide then LUI.MicroMenu.ButtonLeft.Clicker:Click() end end}
 		}
 		EasyMenu(LootMethodList, LootMenuFrame, "cursor", 0, 0, "MENU", 1)

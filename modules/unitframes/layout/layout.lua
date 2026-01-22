@@ -1974,7 +1974,11 @@ module.funcs = {
 			self.Reputation.bg:SetTexture(normTex)
 
 			self.Reputation.Override = function()
-				local name, standing, min, max, value = GetWatchedFactionInfo()
+				if LUI.isClassic or LUI.isMists then
+					local name, standing, min, max, value, _ = GetWatchedFactionInfo()
+				else
+					local name, standing, min, max, value = C_Reputation.GetWatchedFactionData()
+				end
 				if name then
 					if min == max then
 						min, max, value = 41000, 42000, 42000
@@ -2007,8 +2011,8 @@ module.funcs = {
 
 				GameTooltip:SetOwner(self.Rep, "ANCHOR_LEFT")
 				GameTooltip:ClearLines()
-				if GetWatchedFactionInfo() then
-					local name, standing, min, max, value = GetWatchedFactionInfo()
+				if C_Reputation.GetWatchedFactionDataInfo() then
+					local name, standing, min, max, value = C_Reputation.GetWatchedFactionDataInfo()
 					GameTooltip:AddLine(name..": "..standings[standing])
 					GameTooltip:AddLine("Remaining: "..max - value)
 				else
@@ -2029,7 +2033,7 @@ module.funcs = {
 
 			self.Rep:SetScript("OnMouseUp", function(_, button)
 				if button == "LeftButton" then
-					local name, standing, min, max, value = GetWatchedFactionInfo()
+					local name, standing, min, max, value = C_Reputation.GetWatchedFactionDataInfo()
 					if not name then return end
 
 					local msg = "Reputation with "..name..": "..value - min.." / "..max - min.." "..standings[standing].." ("..max - value.." remaining)"

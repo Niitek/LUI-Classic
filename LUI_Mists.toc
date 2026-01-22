@@ -1,4 +1,4 @@
-## Interface: 11508
+## Interface: 50503
 ## Version: 3.8
 ## Title: LUI_Classic
 ## Author: Siku, Nitsah
@@ -11,4 +11,4 @@
 ## Dependancies:
 
 libs\libs.xml
-LUI_Vanilla.xml
+LUI_Mists.xml

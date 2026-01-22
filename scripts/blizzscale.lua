@@ -99,7 +99,7 @@ function script:ApplyBlizzScaling()
 		--Check if the frame exists
 		if frame then
 			--Check if the frame has no conflicting addons, or that the addon isn't loaded.
-			if not conflictAddons[frameName] or not IsAddOnLoaded(conflictAddons[frameName]) then
+			if not conflictAddons[frameName] or not C_AddOns.IsAddOnLoaded(conflictAddons[frameName]) then
 				frame:SetScale(scale)
 			end
 			

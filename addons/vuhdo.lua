@@ -11,6 +11,6 @@ local L = LUI.L
 LUI.Versions.vuhdo = 3300
 
 function LUI:InstallGrid()
-	if not IsAddOnLoaded("VuhDO") then return end
+	if not C_AddOns.IsAddOnLoaded("VuhDO") then return end
 	if LUICONFIG.Versions.vuhdo == LUI.Versions.vudho then return end
 end
