@@ -1977,16 +1977,28 @@ module.funcs = {
 				if LUI.isClassic or LUI.isMists then
 					local name, standing, min, max, value, _ = GetWatchedFactionInfo()
 				else
-					local name, standing, min, max, value = C_Reputation.GetWatchedFactionData()
+					-- local factionData = C_Reputation.GetWatchedFactionData()
+					-- local name, standing, = factionData.name, factionData.reaction
+					-- local min, max, value = 41000, 42000, 42000
+					local name, standingID, barMin, barMax, barValue, factionID
+					local factionData = C_Reputation.GetWatchedFactionData()
+					if factionData ~= nil then
+						name = factionData.name
+						standingID = factionData.currentStanding
+						barMin = factionData.currentReactionThreshold
+						barMax = factionData.nextReactionThreshold
+						barValue = factionData.reaction
+						factionID = factionData.factionID
+					end
 				end
 				if name then
-					if min == max then
-						min, max, value = 41000, 42000, 42000
-					end
+					-- if min == max then
+					-- 	min, max, value = 41000, 42000, 42000
+					-- end
 					
-					barMax = max - min
-					barValue = value - min
-					barMin = 0
+					-- barMax = max - min
+					-- barValue = value - min
+					-- barMin = 0
 					percentBar = barValue * 100 / barMax
 					
 					self.Reputation:SetMinMaxValues(barMin, barMax)
@@ -2011,10 +2023,21 @@ module.funcs = {
 
 				GameTooltip:SetOwner(self.Rep, "ANCHOR_LEFT")
 				GameTooltip:ClearLines()
-				if C_Reputation.GetWatchedFactionDataInfo() then
-					local name, standing, min, max, value = C_Reputation.GetWatchedFactionDataInfo()
-					GameTooltip:AddLine(name..": "..standings[standing])
-					GameTooltip:AddLine("Remaining: "..max - value)
+				if C_Reputation.GetWatchedFactionData() then
+					-- local factionID, name, description, standing, min, max, value = C_Reputation.GetWatchedFactionData()
+					local name, standingID, barMin, barMax, barValue, factionID
+					local factionData = C_Reputation.GetWatchedFactionData()
+					if factionData ~= nil then
+						name = factionData.name
+						barValue = factionData.currentStanding
+						barMin = factionData.currentReactionThreshold
+						barMax = factionData.nextReactionThreshold
+						standingID = factionData.reaction
+						factionID = factionData.factionID
+					end
+
+					GameTooltip:AddLine(name..": "..standings[standingID])
+					GameTooltip:AddLine("Remaining: "..barMax - barValue)
 				else
 					GameTooltip:AddLine("You are not tracking any factions")
 				end
@@ -2033,7 +2056,7 @@ module.funcs = {
 
 			self.Rep:SetScript("OnMouseUp", function(_, button)
 				if button == "LeftButton" then
-					local name, standing, min, max, value = C_Reputation.GetWatchedFactionDataInfo()
+					local factionID, name, description, standing, min, max, value = C_Reputation.GetWatchedFactionData()
 					if not name then return end
 
 					local msg = "Reputation with "..name..": "..value - min.." / "..max - min.." "..standings[standing].." ("..max - value.." remaining)"
