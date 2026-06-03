@@ -32,9 +32,13 @@ BuffFrame.AuraContainer.addIconsToTop = false
 BuffFrame.AuraContainer.isHorizontal = true
 
 BuffFrame:ClearAllPoints()
-BuffFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT",30,-35)
+BuffFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT",30, 0)
 BuffFrame.AuraContainer.addIconsToRight = true
 BuffFrame:UpdateAuraContainerAnchor()
+
+DebuffFrame:ClearAllPoints()
+DebuffFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT",30, 0)
+DebuffFrame:UpdateAuraContainerAnchor()
 
 -- print(profile.Buffs.Anchor)
 ----------------------------------------------------------------------

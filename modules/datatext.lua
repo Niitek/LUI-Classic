@@ -76,8 +76,10 @@ end
 local function SetFontSettings(stat)
 	if type(stat) == "string" then stat = InfoStats[stat] end
 	if not stat then return end
+	local fontFlag
+	if LUI.isMists and db[stat.db].Outline == "NONE" then fontFlag = '' else fontFlag = db[stat.db].Outline end
 
-	stat.text:SetFont(Media:Fetch("font", db[stat.db].Font), db[stat.db].FontSize, db[stat.db].Outline)
+	stat.text:SetFont(Media:Fetch("font", db[stat.db].Font), db[stat.db].FontSize, fontFlag)
 	local color = db[stat.db].Color
 	stat.text:SetTextColor(color.r, color.g, color.b, color.a)
 end
@@ -2370,7 +2372,12 @@ function module:SetGuild()
 
 		stat.OnClick = function(self, button)
 			if button == "LeftButton" then -- toggle Guild Roster
-					ToggleFriendsFrame(3)
+					-- ToggleFriendsFrame(3)			
+			if not CommunitiesFrame:IsShown() then
+				ShowUIPanel(CommunitiesFrame)
+			else
+				HideUIPanel(CommunitiesFrame)
+			end
 			elseif button == "RightButton" then -- toggle guild and officer notes
 				db.Guild.ShowNotes = not db.Guild.ShowNotes
 				tooltip:Update()

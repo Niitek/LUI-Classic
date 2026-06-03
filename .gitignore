@@ -16,6 +16,7 @@
 
 # Project Ignores
 .vscode
+.VSCodeCounter
 CHANGES.txt
 /.vs
 .github

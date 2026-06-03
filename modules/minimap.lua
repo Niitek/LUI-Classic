@@ -21,7 +21,7 @@ local widgetLists = AceGUIWidgetLSMlists
 
 local db
 local shouldntSetPoint = false
-local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'NONE'}
+local fontflags = {'OUTLINE', 'THICKOUTLINE', 'MONOCHROME', 'SLUG'}
 
 function module:SetAdditionalFrames()
 	if db.Minimap.Enable ~= true then return end
@@ -243,7 +243,7 @@ function module:SetMinimap()
 	end
 	-- Hide Border
 	MinimapBorder:Hide()
-	if LUI.isClassic or LUI.isMists then MinimapBorderTop:Hide() end
+	if LUI.isClassic then MinimapBorderTop:Hide() end
 
 	-- Hide Zoom Buttons
 	MinimapZoomIn:Hide()
@@ -259,17 +259,21 @@ function module:SetMinimap()
 		MiniMapInstanceDifficulty:SetParent(Minimap)
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 		-- Move LFG Eye icon
-		MiniMapLFGFrame:ClearAllPoints()
-		MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
+		LFGMinimapFrame:Hide()
+		LFGMinimapFrame:ClearAllPoints()
+		LFGMinimapFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
+		LFGMinimapFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
+		LFGMinimapFrameBorder:Hide()
+		-- Move LFG Eye icon
+		-- MiniMapLFGFrame:ClearAllPoints()
+		-- MiniMapLFGFrame:SetPoint(db.Minimap.Icon.LFG, Minimap, db.Minimap.Icon.LFG, LUI:Scale(2), LUI:Scale(1))
 		-- MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", LUI:Scale(2), LUI:Scale(1))
-		MiniMapLFGFrameBorder:Hide()
+		-- MiniMapLFGFrameBorder:Hide()
 	end
 	--MiniMap TrackingIcon
 	if not LUI.isClassic then
-		if not LUI.isMists then
-			MinimapToggleButton:Hide()
-			MinimapCluster.BorderTop:Hide()
-		end
+		MinimapToggleButton:Hide()
+		MinimapCluster.BorderTop:Hide()
 		MiniMapTracking:Hide()
 		if db.Minimap.General.TrackingIcon then
 			MiniMapTracking:ClearAllPoints()
@@ -366,6 +370,8 @@ function module:SetMinimap()
 	----------------------------------------------------------------------------------------
 	-- Animation Coords and Current Zone. Awesome feature by AlleyKat.
 	----------------------------------------------------------------------------------------
+	local fontFlag
+	if LUI.isMists and db.Minimap.Font.FontFlag == "NONE" then fontFlag = '' else fontFlag = db.Minimap.Font.FontFlag end
 
 	--Style Zone and Coord panels
 	local m_zone = CreateFrame( "Frame","m_zone",Minimap)
@@ -374,9 +380,8 @@ function module:SetMinimap()
 	m_zone:SetFrameStrata("LOW")
 	m_zone:SetPoint("TOPRIGHT",Minimap,-2,-2)
 	m_zone:Hide()
-
 	local m_zone_text = m_zone:CreateFontString("m_zone_text","Overlay")
-	m_zone_text:SetFont(FONT,db.Minimap.Font.FontSize,db.Minimap.Font.FontFlag)
+	m_zone_text:SetFont(FONT,db.Minimap.Font.FontSize,fontFlag)
 	m_zone_text:SetPoint("Center",0,0)
 	m_zone_text:SetJustifyH("CENTER")
 	m_zone_text:SetJustifyV("MIDDLE")
@@ -389,7 +394,7 @@ function module:SetMinimap()
 	m_coord:Hide()
 
 	local m_coord_text = m_coord:CreateFontString("m_coord_text","Overlay")
-	m_coord_text:SetFont(FONT,db.Minimap.Font.FontSize,db.Minimap.Font.FontFlag)
+	m_coord_text:SetFont(FONT,db.Minimap.Font.FontSize,fontFlag)
 	m_coord_text:SetPoint("Center",LUI:Scale(-1),0)
 	m_coord_text:SetJustifyH("CENTER")
 	m_coord_text:SetJustifyV("MIDDLE")

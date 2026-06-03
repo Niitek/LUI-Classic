@@ -79,6 +79,9 @@ do
 					frame:Hide()
 					frame.Show = LUI.dummy
 				end
+			else
+				PartyFrame:UnregisterAllEvents()
+				PartyFrame:Hide()
 			end
 
 			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
@@ -124,7 +127,7 @@ do
 			end
 		end,
 		castbar = function()
-			if LUI.isClassic or LUI.isMists then
+			if LUI.isClassic then
 				CastingBarFrame:UnregisterAllEvents()
 			else
 				PlayerCastingBarFrame:UnregisterAllEvents()

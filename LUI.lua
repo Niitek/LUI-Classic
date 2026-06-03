@@ -131,13 +131,13 @@ LUI.Opposites = {
 }
 
 local screen_height, screen_width = 1920, 1080
-local screenRes = {GetScreenResolutions()}
-local currentRes = GetCurrentResolution()
-if currentRes == 0 then currentRes = #screenRes end
-if screenRes[currentRes] then
-	screen_height = string.match(screenRes[currentRes], "%d+x(%d+)")
-	screen_width = string.match(screenRes[currentRes], "(%d+)x%d+")
-end
+-- local screenRes = {GetScreenResolutions()}
+-- local currentRes = GetCurrentResolution()
+-- if currentRes == 0 then currentRes = #screenRes end
+-- if screenRes[currentRes] then
+-- 	screen_height = string.match(screenRes[currentRes], "%d+x(%d+)")
+-- 	screen_width = string.match(screenRes[currentRes], "(%d+)x%d+")
+-- end
 local _, class = UnitClass("player")
 
 ------------------------------------------------------

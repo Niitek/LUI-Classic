@@ -459,7 +459,8 @@ function module:SetMicroMenu()
 		end)
 		MicroMenuButtonPVPClicker:SetScript("OnClick", function(self)
 			if UnitLevel("player") >= 10 then
-				TogglePVPUI()
+				TogglePVPFrame()
+				-- TogglePVPUI()
 			end
 		end)
 

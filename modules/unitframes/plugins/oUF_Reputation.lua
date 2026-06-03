@@ -2,10 +2,20 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, 'oUF Reputation was unable to locate oUF install')
 
+function getFactionData(self, event, unit)
+	local factionData
+	if LUI.isBCC or LUI.isMists then
+		factiondata = C_Reputation.GetWatchedFactionData()
+	elseif LUI.isVanilla then
+		factiondata = GetWatchedFactionInfo()
+	end
+	return factionData
+end
+
 for tag, func in pairs({
 	['currep'] = function()
-		local _, _, _, _, value = C_Reputation.GetWatchedFactionDataInfo()
-		return value
+		-- local _, _, _, _, value = C_Reputation.GetWatchedFactionDataInfo()
+		return getFactionData.value
 	end,
 	['maxrep'] = function()
 		local _, _, _, max = C_Reputation.GetWatchedFactionDataInfo()
@@ -29,8 +39,8 @@ end
 
 local function Update(self, event, unit)
 	local reputation = self.Reputation
-	
-	if(not C_Reputation.GetWatchedFactionDataInfo()) then
+	-- print(getFactionData)
+	if(not getFactionData()) then
 		return reputation:Hide()
 	else
 		reputation:Show()

@@ -465,12 +465,15 @@ function module:Refresh(...)
 		r, g, b = nil, nil, nil
 	end
 
-	LUIThreat.Text:SetFont(Media:Fetch("font", db.Text.Font), db.Text.Size, db.Text.Outline)
+	local fontOutline
+	if LUI.isMists and db.Text.Outline == "NONE" then fontOutline = '' else fontOutline = db.Text.Outline end
+
+	LUIThreat.Text:SetFont(Media:Fetch("font", db.Text.Font), db.Text.Size, fontOutline)
 	LUIThreat.Text:ClearAllPoints()
 	LUIThreat.Text:SetPoint("RIGHT", LUIThreat, "RIGHT", LUI:Scale(db.Text.X), LUI:Scale(db.Text.Y))
 	if r then LUIThreat.Text:SetTextColor(r, g, b) end
 
-	LUIThreat.artifact.Text:SetFont(Media:Fetch("font", db.Text.Font), db.Text.Size, db.Text.Outline)
+	LUIThreat.artifact.Text:SetFont(Media:Fetch("font", db.Text.Font), db.Text.Size, fontOutline)
 	LUIThreat.artifact.Text:ClearAllPoints()
 	LUIThreat.artifact.Text:SetPoint("LEFT", LUIThreat.artifact, "LEFT", -LUI:Scale(db.Text.X), LUI:Scale(db.Text.Y))
 	if r then LUIThreat.artifact.Text:SetTextColor(r, g, b) end
