@@ -466,7 +466,7 @@ function module:Refresh(...)
 	end
 
 	local fontOutline
-	if LUI.isMists and db.Text.Outline == "NONE" then fontOutline = '' else fontOutline = db.Text.Outline end
+	if LUI.isMists or LUI.isBCC and db.Text.Outline == "NONE" then fontOutline = '' else fontOutline = db.Text.Outline end
 
 	LUIThreat.Text:SetFont(Media:Fetch("font", db.Text.Font), db.Text.Size, fontOutline)
 	LUIThreat.Text:ClearAllPoints()

@@ -634,7 +634,7 @@ function module:SetMicroMenu()
 
 	-- Alert Frames
 	-- if LUI.isMists then module:SecureHook(HelpTip, "Show", "ScanHelpTips") end
-	-- if LUI.isMists and HelpTip.framePool.numActiveObjects > 0 then
+	-- if LUI.isMists or LUI.isBCC and HelpTip.framePool.numActiveObjects > 0 then
 	-- 	module:ScanHelpTips()
 	-- end
 	-- hooksecurefunc(HelpTipTemplateMixin,"Init",function(self,parent,info,relregion)
@@ -643,7 +643,7 @@ function module:SetMicroMenu()
 	-- 		self:AnchorAndRotate();
 	-- 	end
 	-- end);
-	-- if LUI.isMists and TalentMicroButtonAlert:IsShown() then
+	-- if LUI.isMists or LUI.isBCC and TalentMicroButtonAlert:IsShown() then
 	-- 	TalentMicroButtonAlert:ClearAllPoints()
 	-- 	TalentMicroButtonAlert:SetPoint("TOP", MicroMenuButtonTalentsClicker, "TOP", 0, -50)
 	-- 	TalentMicroButtonAlert.Arrow:ClearAllPoints()

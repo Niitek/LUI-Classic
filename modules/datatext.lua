@@ -77,7 +77,7 @@ local function SetFontSettings(stat)
 	if type(stat) == "string" then stat = InfoStats[stat] end
 	if not stat then return end
 	local fontFlag
-	if LUI.isMists and db[stat.db].Outline == "NONE" then fontFlag = '' else fontFlag = db[stat.db].Outline end
+	if LUI.isMists or LUI.isBCC and db[stat.db].Outline == "NONE" then fontFlag = '' else fontFlag = db[stat.db].Outline end
 
 	stat.text:SetFont(Media:Fetch("font", db[stat.db].Font), db[stat.db].FontSize, fontFlag)
 	local color = db[stat.db].Color

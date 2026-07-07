@@ -371,7 +371,7 @@ function module:SetMinimap()
 	-- Animation Coords and Current Zone. Awesome feature by AlleyKat.
 	----------------------------------------------------------------------------------------
 	local fontFlag
-	if LUI.isMists and db.Minimap.Font.FontFlag == "NONE" then fontFlag = '' else fontFlag = db.Minimap.Font.FontFlag end
+	if LUI.isMists or LUI.isBCC and db.Minimap.Font.FontFlag == "NONE" then fontFlag = '' else fontFlag = db.Minimap.Font.FontFlag end
 
 	--Style Zone and Coord panels
 	local m_zone = CreateFrame( "Frame","m_zone",Minimap)

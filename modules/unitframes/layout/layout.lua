@@ -319,7 +319,7 @@ end
 
 local SetFontString = function(parent, fontName, fontHeight, fontStyle)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
-	if LUI.isMists and fontStyle == "NONE" then fontStyle = '' end
+	if LUI.isMists or LUI.isBCC and fontStyle == "NONE" then fontStyle = '' end
 
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
@@ -1569,7 +1569,7 @@ module.funcs = {
 	Info = function(self, unit, oufdb)
 		if not self.Info then self.Info = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.Name.Font), oufdb.Texts.Name.Size, oufdb.Texts.Name.Outline) end
 		
-		if LUI.isMists and oufdb.Texts.Name.Outline == "NONE" then oufdb.Texts.Name.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.Name.Outline == "NONE" then oufdb.Texts.Name.Outline = '' end
 		self.Info:SetFont(Media:Fetch("font", oufdb.Texts.Name.Font), oufdb.Texts.Name.Size, oufdb.Texts.Name.Outline)
 		self.Info:SetTextColor(oufdb.Texts.Name.IndividualColor.r, oufdb.Texts.Name.IndividualColor.g, oufdb.Texts.Name.IndividualColor.b)
 		self.Info:ClearAllPoints()
@@ -1592,7 +1592,7 @@ module.funcs = {
 			self.Info:SetPoint("CENTER", self, "CENTER", 0, 0)
 		end
 		self.Info:SetTextColor(oufdb.Texts.Name.IndividualColor.r, oufdb.Texts.Name.IndividualColor.g, oufdb.Texts.Name.IndividualColor.b)
-		if LUI.isMists and oufdb.Texts.Name.Outline == "NONE" then oufdb.Texts.Name.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.Name.Outline == "NONE" then oufdb.Texts.Name.Outline = '' end
 		self.Info:SetFont(Media:Fetch("font", oufdb.Texts.Name.Font), oufdb.Texts.Name.Size, oufdb.Texts.Name.Outline)
 
 		if oufdb.Texts.Name.Enable == true then
@@ -1610,7 +1610,7 @@ module.funcs = {
 
 	HealthValue = function(self, unit, oufdb)
 		if not self.Health.value then self.Health.value = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.Health.Font), oufdb.Texts.Health.Size, oufdb.Texts.Health.Outline) end
-		if LUI.isMists and oufdb.Texts.Health.Outline == "NONE" then oufdb.Texts.Health.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.Health.Outline == "NONE" then oufdb.Texts.Health.Outline = '' end
 		self.Health.value:SetFont(Media:Fetch("font", oufdb.Texts.Health.Font), oufdb.Texts.Health.Size, oufdb.Texts.Health.Outline)
 		self.Health.value:ClearAllPoints()
 		self.Health.value:SetPoint(oufdb.Texts.Health.Point, self, oufdb.Texts.Health.RelativePoint, oufdb.Texts.Health.X, oufdb.Texts.Health.Y)
@@ -1630,7 +1630,7 @@ module.funcs = {
 	end,
 	HealthPercent = function(self, unit, oufdb)
 		if not self.Health.valuePercent then self.Health.valuePercent = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.HealthPercent.Font), oufdb.Texts.HealthPercent.Size, oufdb.Texts.HealthPercent.Outline) end
-		if LUI.isMists and oufdb.Texts.HealthPercent.Outline == "NONE" then oufdb.Texts.HealthPercent.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.HealthPercent.Outline == "NONE" then oufdb.Texts.HealthPercent.Outline = '' end
 		self.Health.valuePercent:SetFont(Media:Fetch("font", oufdb.Texts.HealthPercent.Font), oufdb.Texts.HealthPercent.Size, oufdb.Texts.HealthPercent.Outline)
 		self.Health.valuePercent:ClearAllPoints()
 		self.Health.valuePercent:SetPoint(oufdb.Texts.HealthPercent.Point, self, oufdb.Texts.HealthPercent.RelativePoint, oufdb.Texts.HealthPercent.X, oufdb.Texts.HealthPercent.Y)
@@ -1649,7 +1649,7 @@ module.funcs = {
 	end,
 	HealthMissing = function(self, unit, oufdb)
 		if not self.Health.valueMissing then self.Health.valueMissing = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.HealthMissing.Font), oufdb.Texts.HealthMissing.Size, oufdb.Texts.HealthMissing.Outline) end
-		if LUI.isMists and oufdb.Texts.HealthMissing.Outline == "NONE" then oufdb.Texts.HealthMissing.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.HealthMissing.Outline == "NONE" then oufdb.Texts.HealthMissing.Outline = '' end
 		self.Health.valueMissing:SetFont(Media:Fetch("font", oufdb.Texts.HealthMissing.Font), oufdb.Texts.HealthMissing.Size, oufdb.Texts.HealthMissing.Outline)
 		self.Health.valueMissing:ClearAllPoints()
 		self.Health.valueMissing:SetPoint(oufdb.Texts.HealthMissing.Point, self, oufdb.Texts.HealthMissing.RelativePoint, oufdb.Texts.HealthMissing.X, oufdb.Texts.HealthMissing.Y)
@@ -1669,7 +1669,7 @@ module.funcs = {
 
 	PowerValue = function(self, unit, oufdb)
 		if not self.Power.value then self.Power.value = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.Power.Font), oufdb.Texts.Power.Size, oufdb.Texts.Power.Outline) end
-		if LUI.isMists and oufdb.Texts.Power.Outline == "NONE" then oufdb.Texts.Power.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.Power.Outline == "NONE" then oufdb.Texts.Power.Outline = '' end
 		self.Power.value:SetFont(Media:Fetch("font", oufdb.Texts.Power.Font), oufdb.Texts.Power.Size, oufdb.Texts.Power.Outline)
 		self.Power.value:ClearAllPoints()
 		self.Power.value:SetPoint(oufdb.Texts.Power.Point, self, oufdb.Texts.Power.RelativePoint, oufdb.Texts.Power.X, oufdb.Texts.Power.Y)
@@ -1689,7 +1689,7 @@ module.funcs = {
 	end,
 	PowerPercent = function(self, unit, oufdb)
 		if not self.Power.valuePercent then self.Power.valuePercent = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.PowerPercent.Font), oufdb.Texts.PowerPercent.Size, oufdb.Texts.PowerPercent.Outline) end
-		if LUI.isMists and oufdb.Texts.PowerPercent.Outline == "NONE" then oufdb.Texts.PowerPercent.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.PowerPercent.Outline == "NONE" then oufdb.Texts.PowerPercent.Outline = '' end
 		self.Power.valuePercent:SetFont(Media:Fetch("font", oufdb.Texts.PowerPercent.Font), oufdb.Texts.PowerPercent.Size, oufdb.Texts.PowerPercent.Outline)
 		self.Power.valuePercent:ClearAllPoints()
 		self.Power.valuePercent:SetPoint(oufdb.Texts.PowerPercent.Point, self, oufdb.Texts.PowerPercent.RelativePoint, oufdb.Texts.PowerPercent.X, oufdb.Texts.PowerPercent.Y)
@@ -1708,7 +1708,7 @@ module.funcs = {
 	end,
 	PowerMissing = function(self, unit, oufdb)
 		if not self.Power.valueMissing then self.Power.valueMissing = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.PowerMissing.Font), oufdb.Texts.PowerMissing.Size, oufdb.Texts.PowerMissing.Outline) end
-		if LUI.isMists and oufdb.Texts.PowerMissing.Outline == "NONE" then oufdb.Texts.PowerMissing.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.PowerMissing.Outline == "NONE" then oufdb.Texts.PowerMissing.Outline = '' end
 		self.Power.valueMissing:SetFont(Media:Fetch("font", oufdb.Texts.PowerMissing.Font), oufdb.Texts.PowerMissing.Size, oufdb.Texts.PowerMissing.Outline)
 		self.Power.valueMissing:ClearAllPoints()
 		self.Power.valueMissing:SetPoint(oufdb.Texts.PowerMissing.Point, self, oufdb.Texts.PowerMissing.RelativePoint, oufdb.Texts.PowerMissing.X, oufdb.Texts.PowerMissing.Y)
@@ -1775,7 +1775,7 @@ module.funcs = {
 		if not self.PvP then
 			self.PvP = self.Overlay:CreateTexture(nil, "OVERLAY")
 			if unit == "player" then
-				if LUI.isMists and oufdb.Texts.PvP.Outline == "NONE" then oufdb.Texts.PvP.Outline = '' end
+				if LUI.isMists or LUI.isBCC and oufdb.Texts.PvP.Outline == "NONE" then oufdb.Texts.PvP.Outline = '' end
 				self.PvP.Timer = SetFontString(self.Overlay, Media:Fetch("font", oufdb.Texts.PvP.Font), oufdb.Texts.PvP.Size, oufdb.Texts.PvP.Outline)
 				self.Health:HookScript("OnUpdate", function(_, elapsed)
 					if UnitIsPVP(unit) and oufdb.Icons.PvP.Enable and oufdb.Texts.PvP.Enable then
@@ -1946,7 +1946,7 @@ module.funcs = {
 
 		self.Experience:SetStatusBarColor(ouf_xp_rep.Experience.FillColor.r, ouf_xp_rep.Experience.FillColor.g, ouf_xp_rep.Experience.FillColor.b, ouf_xp_rep.Experience.FillColor.a)
 		
-		if LUI.isMists and ouf_xp_rep.General.FontFlag == "NONE" then ouf_xp_rep.General.FontFlag = '' end
+		if LUI.isMists or LUI.isBCC and ouf_xp_rep.General.FontFlag == "NONE" then ouf_xp_rep.General.FontFlag = '' end
 		self.Experience.Value:SetFont(Media:Fetch("font", ouf_xp_rep.General.Font), ouf_xp_rep.General.FontSize, ouf_xp_rep.General.FontFlag)
 		self.Experience.Value:SetJustifyH(ouf_xp_rep.General.FontJustify)
 		self.Experience.Value:SetTextColor(ouf_xp_rep.General.FontColor.r, ouf_xp_rep.General.FontColor.g, ouf_xp_rep.General.FontColor.b, ouf_xp_rep.General.FontColor.a)
@@ -2383,7 +2383,7 @@ module.funcs = {
 			self.EclipseBar.FrameBackdrop:SetBackdropColor(0, 0, 0, 1)
 			self.EclipseBar.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
 
-			if LUI.isMists and oufdb.Texts.Eclipse.Outline == "NONE" then oufdb.Texts.Eclipse.Outline = '' end
+			if LUI.isMists or LUI.isBCC and oufdb.Texts.Eclipse.Outline == "NONE" then oufdb.Texts.Eclipse.Outline = '' end
 			self.EclipseBar.LunarText = SetFontString(self.EclipseBar.LunarBar, Media:Fetch("font", oufdb.Texts.Eclipse.Font), oufdb.Texts.Eclipse.Size, oufdb.Texts.Eclipse.Outline)
 			self.EclipseBar.SolarText = SetFontString(self.EclipseBar.SolarBar, Media:Fetch("font", oufdb.Texts.Eclipse.Font), oufdb.Texts.Eclipse.Size, oufdb.Texts.Eclipse.Outline)
 		end
@@ -2446,7 +2446,7 @@ module.funcs = {
 				self.AltPowerBar:ForceUpdate()
 			end)
 			self.AltPowerBar:SetScript("OnHide", self.AltPowerBar.SetPosition)
-			if LUI.isMists and oufdb.Texts.AltPowerBar.Outline == "NONE" then oufdb.Texts.AltPowerBar.Outline = '' end
+			if LUI.isMists or LUI.isBCC and oufdb.Texts.AltPowerBar.Outline == "NONE" then oufdb.Texts.AltPowerBar.Outline = '' end
 			self.AltPowerBar.Text = SetFontString(self.AltPowerBar, Media:Fetch("font", module.db.Player.Texts.AltPower.Font), module.db.Player.Texts.AltPower.Size, module.db.Player.Texts.AltPower.Outline)
 		end
 
@@ -2475,7 +2475,7 @@ module.funcs = {
 		self.AltPowerBar.color = module.db.Player.Bars.AltPower.Color
 		self.AltPowerBar.colorIndividual = module.db.Player.Bars.AltPower.IndividualColor
 		
-		if LUI.isMists and oufdb.Texts.AltPowerBar.Outline == "NONE" then oufdb.Texts.AltPowerBar.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.AltPowerBar.Outline == "NONE" then oufdb.Texts.AltPowerBar.Outline = '' end
 		self.AltPowerBar.Text:SetFont(Media:Fetch("font", module.db.Player.Texts.AltPower.Font), module.db.Player.Texts.AltPower.Size, module.db.Player.Texts.AltPower.Outline)
 		self.AltPowerBar.Text:ClearAllPoints()
 		self.AltPowerBar.Text:SetPoint("CENTER", self.AltPowerBar, "CENTER", module.db.Player.Texts.AltPower.X, module.db.Player.Texts.AltPower.Y)
@@ -2507,7 +2507,7 @@ module.funcs = {
 
 			self.DruidMana.Smooth = oufdb.Bars.DruidMana.Smooth
 
-			if LUI.isMists and oufdb.Texts.DruidMana.Outline == "NONE" then oufdb.Texts.DruidMana.Outline = '' end
+			if LUI.isMists or LUI.isBCC and oufdb.Texts.DruidMana.Outline == "NONE" then oufdb.Texts.DruidMana.Outline = '' end
 			self.DruidMana.value = SetFontString(self.DruidMana, Media:Fetch("font", oufdb.Texts.DruidMana.Font), oufdb.Texts.DruidMana.Size, oufdb.Texts.DruidMana.Outline)
 			self:Tag(self.DruidMana.value, "[druidmana2]")
 			
@@ -2791,7 +2791,7 @@ module.funcs = {
 		if not self.Debuffs.anchoredIcons then self.Debuffs.anchoredIcons = 0 end
 	end,
 	CombatFeedbackText = function(self, unit, oufdb)
-		if LUI.isMists and oufdb.Texts.Combat.Outline == "NONE" then oufdb.Texts.Combat.Outline = '' end
+		if LUI.isMists or LUI.isBCC and oufdb.Texts.Combat.Outline == "NONE" then oufdb.Texts.Combat.Outline = '' end
 		if not self.CombatFeedbackText then
 			self.CombatFeedbackText = SetFontString(self.Health, Media:Fetch("font", oufdb.Texts.Combat.Font), oufdb.Texts.Combat.Size, oufdb.Texts.Combat.Outline)
 		else
