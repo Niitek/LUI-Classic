@@ -72,17 +72,17 @@ do
 			end
 		end,
 		party = function()
-			if LUI.isClassic then
-				for i = 1, 4 do
-					local frame = _G["PartyMemberFrame"..i]
-					frame:UnregisterAllEvents()
-					frame:Hide()
-					frame.Show = LUI.dummy
-				end
-			else
+			-- if LUI.isClassic then
+			-- 	for i = 1, 4 do
+			-- 		local frame = _G["PartyMemberFrame"..i]
+			-- 		frame:UnregisterAllEvents()
+			-- 		frame:Hide()
+			-- 		frame.Show = LUI.dummy
+			-- 	end
+			-- else
 				PartyFrame:UnregisterAllEvents()
 				PartyFrame:Hide()
-			end
+			-- end
 
 			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 
@@ -127,11 +127,7 @@ do
 			end
 		end,
 		castbar = function()
-			if LUI.isClassic then
-				CastingBarFrame:UnregisterAllEvents()
-			else
-				PlayerCastingBarFrame:UnregisterAllEvents()
-			end
+			PlayerCastingBarFrame:UnregisterAllEvents()
 			PetCastingBarFrame:UnregisterAllEvents()
 		end,
 		runebar = function()
@@ -142,9 +138,9 @@ do
 		aura = function()
 			BuffFrame:Hide()
 			BuffFrame:UnregisterAllEvents()
-			if LUI.isClassic then
-				TemporaryEnchantFrame:Hide()
-			end
+			-- if LUI.isClassic then
+			-- 	TemporaryEnchantFrame:Hide()
+			-- end
 		end,
 		actionbars = function()
 			for frame, hide in pairs(actionbarFrames) do

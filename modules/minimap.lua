@@ -243,7 +243,6 @@ function module:SetMinimap()
 	end
 	-- Hide Border
 	MinimapBorder:Hide()
-	if LUI.isClassic then MinimapBorderTop:Hide() end
 
 	-- Hide Zoom Buttons
 	MinimapZoomIn:Hide()
@@ -271,17 +270,16 @@ function module:SetMinimap()
 		-- MiniMapLFGFrameBorder:Hide()
 	end
 	--MiniMap TrackingIcon
-	if not LUI.isClassic then
-		MinimapToggleButton:Hide()
-		MinimapCluster.BorderTop:Hide()
-		MiniMapTracking:Hide()
-		if db.Minimap.General.TrackingIcon then
-			MiniMapTracking:ClearAllPoints()
-			MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
-			MiniMapTracking:Show()
-			MiniMapTrackingButtonBorder:Hide()
-		end
+	MinimapToggleButton:Hide()
+	MinimapCluster.BorderTop:Hide()
+	MiniMapTracking:Hide()
+	if db.Minimap.General.TrackingIcon and not LUI.isClassic then
+		MiniMapTracking:ClearAllPoints()
+		MiniMapTracking:SetPoint(db.Minimap.Icon.Tracking, Minimap, db.Minimap.Icon.Tracking, 0,0)
+		MiniMapTracking:Show()
+		MiniMapTrackingButtonBorder:Hide()
 	end
+	
 
 	MinimapNorthTag:SetTexture(nil) -- Hide North texture at top
 	LUI:Kill(MinimapZoneTextButton) -- Hide Zone Frame
@@ -515,7 +513,7 @@ local defaults = {
 		Font = {
 			Font = "vibroceb",
 			FontSize = 12,
-			FontFlag = "NONE",
+			FontFlag = "",
 		},
 		Icon = {
 			Mail = "BOTTOMLEFT", -- LFG and MAIL icon positions changed for better visibilty of the Tooltip
